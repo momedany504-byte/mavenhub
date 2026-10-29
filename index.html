@@ -2719,6 +2719,63 @@
               console.error("خطأ في حفظ البيانات: ", e);
           }
       };
+  <!-- كود فايربيز الشامل والمربوط بمشروعك الحقيقي مع جلب البيانات تلقائياً -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyClxz9mtvmFU_IdE3VFDAIbkhpPpnjtrwY",
+        authDomain: "mavenhub-c622a.firebaseapp.com",
+        projectId: "mavenhub-c622a",
+        storageBucket: "mavenhub-c622a.appspot.com",
+        messagingSenderId: "660667699408",
+        appId: "1:660667699408:web:baf3421fd8ddbcdb2bced5",
+        measurementId: "G-3N0003DNWH"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // دالة الحفظ السحابي التلقائي
+      window.saveMyData = async function(collectionName, dataObject) {
+          try {
+              await addDoc(collection(db, collectionName), {
+                  ...dataObject,
+                  timestamp: new Date().toISOString()
+              });
+              console.log("تم الحفظ في فايربيز بنجاح!");
+          } catch (e) {
+              console.error("خطأ في حفظ البيانات: ", e);
+          }
+      };
+
+      // دالة لجلب واسترجاع البيانات القديمة عند فتح الموقع لتجنب اختفائها
+      window.loadAllCloudData = async function() {
+          try {
+              const querySnapshot = await getDocs(collection(db, "players_data"));
+              querySnapshot.forEach((doc) => {
+                  let cloudPlayer = doc.data();
+                  // دمج البيانات المسترجعة مع الفئات الحالية
+                  for(let g in playersData) {
+                      let exists = playersData[g].find(p => p.id === cloudPlayer.id || p.name === cloudPlayer.name);
+                      if(!exists && cloudPlayer.pos) {
+                          playersData[g].push(cloudPlayer);
+                      }
+                  }
+              });
+              console.log("تم تحميل بيانات اللاعبين من السحابة بنجاح!");
+          } catch (e) {
+              console.log("جارٍ تهيئة البيانات...");
+          }
+      };
+
+      // تشغيل عملية الجلب أول ما الصفحة تفتح
+      window.addEventListener('load', () => {
+          setTimeout(() => {
+              if(window.loadAllCloudData) window.loadAllCloudData();
+          }, 1000);
+      });
     </script>
 </body>
 </html>
