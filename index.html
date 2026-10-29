@@ -495,30 +495,56 @@
         .social-links { display: flex; justify-content: center; gap: 20px; margin: 20px 0; font-size: 1.5rem; }
         .social-links a { color: var(--text); background: var(--card-bg); border: 2px solid var(--accent); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); box-shadow: 0 0 15px var(--accent-glow); }
         .social-links a:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 0 25px var(--accent-glow); }
-        /* تعديلات مخصصة لتظبيط الواجهة على الموبايل والشاشات الصغيرة */
+    /* تعديلات متقدمة لتظبيط الواجهة والهيدر على الموبايل والشاشات الصغيرة */
     @media (max-width: 768px) {
+        header {
+            padding: 8px 10px !important;
+            flex-wrap: nowrap !important;
+            justify-content: space-between !important;
+        }
+        .logo-area {
+            gap: 6px !important;
+        }
+        .single-logo-img {
+            width: 36px !important;
+            height: 36px !important;
+        }
+        .logo-title {
+            font-size: 1.1rem !important;
+        }
+        .header-center-ticker {
+            display: none !important; /* إخفاء الشريط المتحرك لتوفير مساحة */
+        }
+        /* إخفاء الأزرار الطويلة في الهيدر وترك زر القائمة وجرس الإشعارات فقط لتوفير مساحة */
+        .header-controls .ctrl-btn, 
+        .header-controls .lang-dropdown,
+        .header-controls .login-dropdown-container {
+            display: none !important; 
+        }
+        .header-user-avatar-area {
+            display: flex !important;
+            padding: 2px 6px !important;
+        }
+        .header-user-name {
+            display: none !important; /* إخفاء الاسم الطويل وترك الصورة فقط في الهيدر */
+        }
+        .menu-toggle {
+            font-size: 1.3rem !important;
+            padding: 4px !important;
+        }
         .maven-hero {
-            padding: 30px 15px !important;
+            padding: 25px 15px !important;
             margin-bottom: 15px !important;
         }
         .hero-left h1 {
-            font-size: 2.1rem !important;
+            font-size: 2rem !important;
         }
         .hero-content-grid {
             gap: 20px !important;
         }
-        header {
-            padding: 10px 12px !important;
-        }
-        .logo-title {
-            font-size: 1.15rem !important;
-        }
-        .header-center-ticker {
-            display: none !important;
-        }
         .main-container {
-            padding: 20px 10px !important;
-            margin-top: 80px !important;
+            padding: 15px 10px !important;
+            margin-top: 75px !important;
         }
         .grid-cards {
             grid-template-columns: 1fr !important;
