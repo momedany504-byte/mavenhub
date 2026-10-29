@@ -1630,14 +1630,19 @@
             const text = input.value.trim();
             if(!text) { alert('اكتب نص الملاحظة أولاً'); return; }
             const now = new Date();
-            coachNotebookEntries.unshift({
+            let noteObj = {
                 text: text,
                 dateTime: `${now.toLocaleDateString('ar-EG')} - ${now.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}`,
                 author: loggedInStaffName || 'مشرف النادي'
-            });
+            };
+            coachNotebookEntries.unshift(noteObj);
             input.value = '';
             renderCoachNotebookList();
-            alert('تم حفظ الملاحظة بنجاح وتوثيقها بالتاريخ والوقت!');
+            
+            // حفظ تلقائي في فايربيز
+            if(window.saveMyData) {
+                window.saveMyData("coach_notes", noteObj);
+            }
         }
 
         function renderCoachNotebookList() {
@@ -1668,19 +1673,25 @@
             if(!title || !content) { alert('أدخل عنوان ومحتوى الخبر'); return; }
 
             const now = new Date();
-            newsArticles.unshift({
+            let newsObj = {
                 id: Date.now(),
                 title: title,
                 content: content,
                 img: imgUrl,
                 date: now.toLocaleDateString('ar-EG')
-            });
+            };
+            newsArticles.unshift(newsObj);
             document.getElementById('admin-news-title').value = '';
             document.getElementById('admin-news-content').value = '';
             window.tempNewsCroppedImg = '';
             renderNewsTickers();
             renderNewsFullList();
-            alert('تم نشر الخبر بنجاح في الواجهة!');
+            
+            // حفظ تلقائي في فايربيز
+            if(window.saveMyData) {
+                window.saveMyData("club_news", newsObj);
+            }
+            alert('تم نشر الخبر بنجاح في الواجهة وحفظه سحابياً!');
         }
 
         function renderNewsTickers() {
@@ -1869,20 +1880,26 @@
             }
 
             const avatarUrl = document.getElementById('parent-avatar').src || '';
-            pendingParentRequests.push({
+            let requestObj = {
                 parentName: fullName,
                 sonName: foundPlayer.name,
                 phone: phone,
                 pass: pass,
                 avatar: avatarUrl,
                 sonObj: foundPlayer
-            });
+            };
+            pendingParentRequests.push(requestObj);
             addSystemNotification(`طلب حساب ولي أمر جديد لـ (${fullName}) خاص بالابن (${foundPlayer.name}).`, 'coach');
             
+            // حفظ تلقائي للطلب في فايربيز
+            if(window.saveMyData) {
+                window.saveMyData("parent_requests", requestObj);
+            }
+
             const waMessage = encodeURIComponent(`مرحباً إدارة نادي Maven Hub، أود طلب تفعيل حساب ولي الأمر.\nاسم ولي الأمر: ${fullName}\nاسم الابن اللاعب: ${foundPlayer.name}\nرقم الهاتف: ${phone}`);
             window.open(`https://wa.me/201009955294?text=${waMessage}`, '_blank');
 
-            alert('تم إرسال طلب انضمامك وجاري توجيهك لواتساب النادي لإتمام التفعيل مع المدربين.');
+            alert('تم إرسال طلب انضمامك وحفظه سحابياً، وجاري توجيهك لواتساب النادي لإتمام التفعيل.');
             switchParentTab('login');
         }
 
@@ -2167,6 +2184,11 @@
             
             player.schedule[sessionIdx].attended = !player.schedule[sessionIdx].attended;
             checkAndResetScheduleIfCompleted(player);
+            
+            // حفظ الحضور سحابياً
+            if(window.saveMyData) {
+                window.saveMyData("players_data", player);
+            }
             renderPlayerDetailsModal(player, true, true);
         }
 
@@ -2338,7 +2360,12 @@
             if(!player.warnings) player.warnings = [];
             player.warnings.push({ text: text, date: dateStr });
             document.getElementById('new-warning-input').value = '';
-            alert('تم إرسال الإنذار وتوثيقه تاريخياً بنجاح!');
+            
+            // حفظ سحابي للاعب مع التنبيه
+            if(window.saveMyData) {
+                window.saveMyData("players_data", player);
+            }
+            alert('تم إرسال الإنذار وتوثيقه سحابياً بنجاح!');
             renderPlayerDetailsModal(player, true, false);
         }
 
@@ -2377,7 +2404,12 @@
             });
             player.eval.finalDecision = document.getElementById('edit-decision').value.trim();
 
-            alert('تم تحديث استمارة التقييم الاحترافية بنجاح!');
+            // حفظ الاستمارة بالكامل في فايربيز تلقائياً
+            if(window.saveMyData) {
+                window.saveMyData("players_data", player);
+            }
+
+            alert('تم تحديث استمارة التقييم الاحترافية وحفظها سحابياً بنجاح!');
             renderPlayerDetailsModal(player, true, false);
             if(currentGroupKey) renderPlayersCards(currentGroupKey);
         }
@@ -2467,6 +2499,11 @@
             parentsAccounts[req.sonName.toLowerCase()] = { parentName: req.parentName, pass: req.pass, avatar: req.avatar, sonObj: req.sonObj };
             pendingParentRequests.splice(idx, 1);
             addSystemNotification(`تمت الموافقة على حساب ولي الأمر لـ (${req.parentName}).`, 'parent');
+            
+            // حفظ الموافقة في فايربيز
+            if(window.saveMyData) {
+                window.saveMyData("approved_parents", { parentName: req.parentName, sonName: req.sonName });
+            }
             alert('تم اعتماد ولي الأمر بنجاح!');
             renderCoachDashboardData();
         }
@@ -2475,6 +2512,10 @@
             const name = document.getElementById('admin-potm-name').value.trim();
             if(name) playerOfTheMonth.name = name;
             updatePotmUI();
+            
+            if(window.saveMyData) {
+                window.saveMyData("club_potm", playerOfTheMonth);
+            }
             alert('تم تحديث لاعب الشهر بنجاح!');
         }
 
@@ -2487,6 +2528,10 @@
             const name = document.getElementById('admin-potw-name').value.trim();
             if(name) playerOfTheWeek.name = name;
             updatePotwUI();
+            
+            if(window.saveMyData) {
+                window.saveMyData("club_potw", playerOfTheWeek);
+            }
             alert('تم تحديث لاعب الأسبوع (فضي) بنجاح!');
         }
 
@@ -2511,6 +2556,10 @@
                     academyLegendsData[monthIdx].nameKa = newName;
                 }
                 renderAcademyLegends();
+                
+                if(window.saveMyData) {
+                    window.saveMyData("academy_legends", academyLegendsData[monthIdx]);
+                }
                 alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
             }
         }
@@ -2560,7 +2609,13 @@
             };
             playersData[group].push(newPlayerObj);
             window.tempNewPlayerCroppedImg = '';
-            alert('تم إنشاء بروفايل اللاعب بنجاح!');
+
+            // حفظ اللاعب الجديد في فايربيز سحابياً
+            if(window.saveMyData) {
+                window.saveMyData("players_data", newPlayerObj);
+            }
+
+            alert('تم إنشاء بروفايل اللاعب وحفظه سحابياً بنجاح!');
             closeCoachDashboard();
             if(currentGroupKey === group) renderPlayersCards(group);
         }
@@ -2591,7 +2646,11 @@
             let senderName = loggedInUserType === 'player' ? currentLoggedInPlayer.name : currentLoggedInParentObj.name;
             let senderTypeLabel = loggedInUserType === 'player' ? 'اللاعب' : 'ولي أمر اللاعب';
             addSystemNotification(`رسالة جديدة للمدرب (${targetCoachForDirectMsg}) من ${senderTypeLabel}: (${senderName}). النص: ${msg}`, 'coach');
-            alert('تم إرسال رسالتك للمدرب كإشعار فوري بنجاح!');
+            
+            if(window.saveMyData) {
+                window.saveMyData("coach_messages", { to: targetCoachForDirectMsg, from: senderName, message: msg });
+            }
+            alert('تم إرسال رسالتك للمدرب وحفظها سحابياً بنجاح!');
             document.getElementById('directCoachMsgInput').value = '';
             closeCoachBio();
         }
@@ -2630,6 +2689,36 @@
         function closeLightbox() {
             document.getElementById('lightbox-modal').classList.remove('active');
         }
+    </script>
+
+    <!-- كود فايربيز الخاص بحفظ البيانات تلقائياً على السحابة -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      const firebaseConfig = {
+        apiKey: "AIzaSyClxz9mtvmFU_IdE3VFDAIbkhpPpnjtrwY",
+        authDomain: "mavenhub-c622a.firebaseapp.com",
+        projectId: "mavenhub-c622a",
+        storageBucket: "mavenhub-c622a.appspot.com",
+        messagingSenderId: "660667699408",
+        appId: "1:660667699408:web:5e2fa851fabe15bc2bced5",
+        measurementId: "G-EW6BQV0P1K"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      window.saveMyData = async function(collectionName, dataObject) {
+          try {
+              await addDoc(collection(db, collectionName), {
+                  ...dataObject,
+                  timestamp: new Date().toISOString()
+              });
+              console.log("تم الحفظ في فايربيز بنجاح!");
+          } catch (e) {
+              console.error("خطأ في حفظ البيانات: ", e);
+          }
+      };
     </script>
 </body>
 </html>
