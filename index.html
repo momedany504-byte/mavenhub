@@ -2719,7 +2719,7 @@
               console.error("خطأ في حفظ البيانات: ", e);
           }
       };
-  <!-- كود فايربيز الشامل والمربوط بمشروعك الحقيقي مع جلب البيانات تلقائياً -->
+ <!-- كود فايربيز الشامل والمربوط بمشروعك الحقيقي مع جلب والحفظ التلقائي -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
       import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -2750,17 +2750,16 @@
           }
       };
 
-      // دالة لجلب واسترجاع البيانات القديمة عند فتح الموقع لتجنب اختفائها
+      // دالة لجلب واسترجاع البيانات القديمة عند فتح الموقع
       window.loadAllCloudData = async function() {
           try {
               const querySnapshot = await getDocs(collection(db, "players_data"));
               querySnapshot.forEach((doc) => {
                   let cloudPlayer = doc.data();
-                  // دمج البيانات المسترجعة مع الفئات الحالية
                   for(let g in playersData) {
                       let exists = playersData[g].find(p => p.id === cloudPlayer.id || p.name === cloudPlayer.name);
                       if(!exists && cloudPlayer.pos) {
-                          playersData[g].push(cloudPlayer);
+                        playersData[g].push(cloudPlayer);
                       }
                   }
               });
@@ -2770,12 +2769,12 @@
           }
       };
 
-      // تشغيل عملية الجلب أول ما الصفحة تفتح
       window.addEventListener('load', () => {
           setTimeout(() => {
               if(window.loadAllCloudData) window.loadAllCloudData();
           }, 1000);
       });
     </script>
+    
 </body>
 </html>
