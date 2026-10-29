@@ -496,66 +496,42 @@
         .social-links a { color: var(--text); background: var(--card-bg); border: 2px solid var(--accent); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); box-shadow: 0 0 15px var(--accent-glow); }
         .social-links a:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 0 25px var(--accent-glow); }
     /* تعديلات متقدمة لتظبيط الواجهة والهيدر على الموبايل والشاشات الصغيرة */
-    @media (max-width: 768px) {
+   @media (max-width: 768px) {
         header {
             padding: 8px 10px !important;
-            flex-wrap: nowrap !important;
-            justify-content: space-between !important;
+            flex-wrap: wrap !important; /* السماح بتنظيم الأزرار على سطرين لو احتجنا */
+            justify-content: center !important;
+            gap: 8px !important;
         }
         .logo-area {
-            gap: 6px !important;
-        }
-        .single-logo-img {
-            width: 36px !important;
-            height: 36px !important;
-        }
-        .logo-title {
-            font-size: 1.1rem !important;
+            margin-bottom: 5px;
         }
         .header-center-ticker {
-            display: none !important; /* إخفاء الشريط المتحرك لتوفير مساحة */
+            display: none !important;
         }
-        /* إخفاء الأزرار الطويلة في الهيدر وترك زر القائمة وجرس الإشعارات فقط لتوفير مساحة */
-        .header-controls .ctrl-btn, 
-        .header-controls .lang-dropdown,
-        .header-controls .login-dropdown-container {
-            display: none !important; 
+        /* تصغير حجم أزرار الهيدر عشان تظهر جنب بعضها بشكل شيك ومنظم */
+        .header-controls {
+            gap: 6px !important;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        .header-user-avatar-area {
-            display: flex !important;
-            padding: 2px 6px !important;
+        .ctrl-btn {
+            padding: 5px 10px !important;
+            font-size: 0.8rem !important;
         }
-        .header-user-name {
-            display: none !important; /* إخفاء الاسم الطويل وترك الصورة فقط في الهيدر */
-        }
-        .menu-toggle {
-            font-size: 1.3rem !important;
-            padding: 4px !important;
+        .lang-dropdown {
+            padding: 4px 6px !important;
+            font-size: 0.8rem !important;
         }
         .maven-hero {
             padding: 25px 15px !important;
-            margin-bottom: 15px !important;
         }
         .hero-left h1 {
             font-size: 2rem !important;
         }
-        .hero-content-grid {
-            gap: 20px !important;
-        }
-        .main-container {
-            padding: 15px 10px !important;
-            margin-top: 75px !important;
-        }
         .grid-cards {
             grid-template-columns: 1fr !important;
             gap: 20px !important;
-        }
-        .potw-banner-floating {
-            padding: 15px !important;
-        }
-        .form-box {
-            padding: 20px !important;
-            width: 100% !important;
         }
     }
     </style>
