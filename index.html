@@ -2690,7 +2690,7 @@
             document.getElementById('lightbox-modal').classList.remove('active');
         }
     </script>
-<!-- كود فايربيز الشامل والمحدث للربط والحفظ السحابي -->
+<!-- كود فايربيز الشامل لربط وحفظ كافة بيانات النادي (اللاعبين، POTM، POTW، الملاحظات، الأخبار، وطلبات أولياء الأمور) -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
       import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -2708,35 +2708,72 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // دالة الحفظ السحابي التلقائي
+      // دالة الحفظ السحابي العامة لكل الأقسام
       window.saveMyData = async function(collectionName, dataObject) {
           try {
               await addDoc(collection(db, collectionName), {
                   ...dataObject,
                   timestamp: new Date().toISOString()
               });
-              console.log("تم الحفظ في فايربيز بنجاح!");
+              console.log(`تم الحفظ في كوليكشن (${collectionName}) بنجاح!`);
           } catch (e) {
-              console.error("خطأ في حفظ البيانات: ", e);
+              console.error("خطأ في الحفظ السحابي: ", e);
           }
       };
 
-      // دالة لجلب واسترجاع البيانات القديمة عند فتح الموقع
+      // دالة جلب كافة بيانات السحابة وتحديث الواجهة تلقائياً عند فتح الموقع أو عمل Refresh
       window.loadAllCloudData = async function() {
           try {
-              const querySnapshot = await getDocs(collection(db, "players_data"));
-              querySnapshot.forEach((doc) => {
+              // 1. جلب اللاعبين وتحديثهم
+              const playersSnap = await getDocs(collection(db, "players_data"));
+              playersSnap.forEach((doc) => {
                   let cloudPlayer = doc.data();
                   for(let g in playersData) {
                       let exists = playersData[g].find(p => p.id === cloudPlayer.id || p.name === cloudPlayer.name);
                       if(!exists && cloudPlayer.pos) {
-                        playersData[g].push(cloudPlayer);
+                          playersData[g].push(cloudPlayer);
                       }
                   }
               });
-              console.log("تم تحميل بيانات اللاعبين من السحابة بنجاح!");
+
+              // 2. جلب لاعب الشهر (POTM)
+              const potmSnap = await getDocs(collection(db, "club_potm"));
+              potmSnap.forEach((doc) => {
+                  let data = doc.data();
+                  if(data && data.name) playerOfTheMonth = data;
+              });
+              if(typeof updatePotmUI === 'function') updatePotmUI();
+
+              // 3. جلب لاعب الأسبوع (POTW)
+              const potwSnap = await getDocs(collection(db, "club_potw"));
+              potwSnap.forEach((doc) => {
+                  let data = doc.data();
+                  if(data && data.name) playerOfTheWeek = data;
+              });
+              if(typeof updatePotwUI === 'function') updatePotwUI();
+
+              // 4. جلب الملاحظات التدريبية للمدربين
+              const notesSnap = await getDocs(collection(db, "coach_notes"));
+              notesSnap.forEach((doc) => {
+                  let data = doc.data();
+                  if(data && data.text) coachNotebookEntries.push(data);
+              });
+              if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
+
+              // 5. جلب أخبار النادي (News)
+              const newsSnap = await getDocs(collection(db, "club_news"));
+              newsSnap.forEach((doc) => {
+                  let data = doc.data();
+                  if(data && data.title && !newsArticles.some(n => n.title === data.title)) {
+                      newsArticles.push(data);
+                  }
+              });
+              if(typeof renderNewsTickers === 'function') renderNewsTickers();
+              if(typeof renderNewsFullList === 'function') renderNewsFullList();
+
+              console.log("تم مزامنة وتحميل كافة بيانات السحابة بنجاح تام!");
           } catch (e) {
-              console.log("جارٍ تهيئة البيانات...");
+              console.log("جارٍ تهيئة البيانات...", e);
           }
       };
 
