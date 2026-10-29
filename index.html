@@ -2690,36 +2690,7 @@
             document.getElementById('lightbox-modal').classList.remove('active');
         }
     </script>
-
-    <!-- كود فايربيز الخاص بحفظ البيانات تلقائياً على السحابة -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-      const firebaseConfig = {
-        apiKey: "AIzaSyClxz9mtvmFU_IdE3VFDAIbkhpPpnjtrwY",
-        authDomain: "mavenhub-c622a.firebaseapp.com",
-        projectId: "mavenhub-c622a",
-        storageBucket: "mavenhub-c622a.appspot.com",
-        messagingSenderId: "660667699408",
-        appId: "1:660667699408:web:5e2fa851fabe15bc2bced5",
-        measurementId: "G-EW6BQV0P1K"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-
-      window.saveMyData = async function(collectionName, dataObject) {
-          try {
-              await addDoc(collection(db, collectionName), {
-                  ...dataObject,
-                  timestamp: new Date().toISOString()
-              });
-              console.log("تم الحفظ في فايربيز بنجاح!");
-          } catch (e) {
-              console.error("خطأ في حفظ البيانات: ", e);
-          }
-      };
- <!-- كود فايربيز الشامل والمربوط بمشروعك الحقيقي مع جلب والحفظ التلقائي -->
+<!-- كود فايربيز الشامل والمحدث للربط والحفظ السحابي -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
       import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -2775,6 +2746,5 @@
           }, 1000);
       });
     </script>
-    
 </body>
 </html>
