@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maven Hub Club | Where Legends Begin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #081b29;
+            --secondary: #112233;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.85);
+            --hover-blue: #1d4ed8;
+            --bg: #030712;
+            --card-bg: rgba(6, 13, 26, 0.88);
+            --text: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #1e293b;
+            --header-bg: rgba(3, 7, 18, 0.96);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        [data-theme="light"] {
+            --primary: #f0f4f8;
+            --secondary: #e2e8f0;
+            --accent: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.4);
+            --hover-blue: #1d4ed8;
+            --bg: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --header-bg: rgba(255, 255, 255, 0.98);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            background-image: linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)), url('https://i.ibb.co/R46BGfyH/mavenhub-jpg.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: var(--text); transition: var(--transition); overflow-x: hidden;
+        }
+
+        [data-theme="light"] body {
+            background-image: linear-gradient(rgba(241, 245, 249, 0.92), rgba(241, 245, 249, 0.92)), url('https://i.ibb.co/R46BGfyH/mavenhub-jpg.jpg');
+        }
+
+        .maven-hero {
+            position: relative;
+            background: linear-gradient(135deg, rgba(8, 27, 41, 0.9), rgba(17, 34, 51, 0.9)), url('https://i.ibb.co/R46BGfyH/mavenhub-jpg.jpg') center/cover no-repeat;
+            border-radius: 24px; border: 2px solid var(--accent); padding: 70px 40px;
+            overflow: hidden; 
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 50px var(--accent-glow);
+            margin-bottom: 25px; transition: var(--transition);
+        }
+        body.preview-mode {
+            background-image: linear-gradient(rgba(3, 7, 18, 0.2), rgba(3, 7, 18, 0.2)), url('https://i.ibb.co/R46BGfyH/mavenhub-jpg.jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+        }
+
+        body.preview-mode .maven-hero {
+            background: linear-gradient(135deg, rgba(8, 27, 41, 0.4), rgba(17, 34, 51, 0.4)), url('https://i.ibb.co/R46BGfyH/mavenhub-jpg.jpg') center/cover no-repeat !important;
+            border-color: var(--accent);
+            box-shadow: 0 0 80px var(--accent-glow), inset 0 0 40px rgba(59, 130, 246, 0.5);
+            filter: brightness(1.255) contrast(1.1);
+        }
+        body.preview-mode .section-view, body.preview-mode header, body.preview-mode footer, body.preview-mode .potw-banner-floating, body.preview-mode .floating-preview-eye-btn {
+            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+        }
+        .exit-preview-btn {
+            position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: #fff;
+            border: none; padding: 12px 24px; border-radius: 30px; font-weight: 700; z-index: 99999;
+            display: none; box-shadow: 0 0 30px var(--accent-glow); cursor: pointer;
+        }
+        body.preview-mode .exit-preview-btn { display: flex; align-items: center; gap: 8px; }
+
+        .floating-preview-eye-btn {
+            position: fixed; top: 85px; right: 25px; background: var(--card-bg); color: var(--accent);
+            border: 2px solid var(--accent); width: 45px; height: 45px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            z-index: 990; box-shadow: 0 0 20px var(--accent-glow); transition: var(--transition);
+        }
+        .floating-preview-eye-btn:hover { background: var(--accent); color: #fff; transform: scale(1.1); }
+
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #030712; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+        #loading-screen.fade-out { opacity: 0; pointer-events: none; }
+        .loader-logo-container {
+            width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--accent);
+            animation: pulseLogo 1.5s infinite; margin-bottom: 25px; overflow: hidden;
+            background: #112233; box-shadow: 0 0 45px var(--accent-glow);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .loader-logo-container img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes pulseLogo {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 var(--accent-glow); }
+            70% { transform: scale(1.08); box-shadow: 0 0 0 35px rgba(59, 130, 246, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        
+        .loading-phrase {
+            font-size: 2rem; font-weight: 900; color: #fff; text-align: center;
+            text-shadow: 0 0 25px var(--accent-glow); letter-spacing: 1px;
+            animation: fadeInText 1s ease-in-out infinite alternate;
+        }
+        @keyframes fadeInText { from { opacity: 0.7; transform: translateY(5px); } to { opacity: 1; transform: translateY(-5px); } }
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: var(--header-bg); backdrop-filter: blur(14px);
+            border-bottom: 2px solid var(--accent);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 25px; z-index: 1000; box-shadow: 0 4px 30px var(--accent-glow);
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .single-logo-img {
+            width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
+            border: 2px solid var(--accent); box-shadow: 0 0 15px var(--accent-glow);
+            background: #112233;
+        }
+        .logo-title {
+            font-size: 1.45rem; font-weight: 900; color: var(--text);
+            text-shadow: 0 0 20px var(--accent), 0 0 35px var(--accent-glow);
+            letter-spacing: 0.5px;
+        }
+        .logo-title span { 
+            color: var(--accent); 
+            text-shadow: 0 0 12px #3b82f6, 0 0 25px #3b82f6, 0 0 40px #60a5fa; 
+        }
+
+        .header-center-ticker { flex: 1; text-align: center; margin: 0 15px; }
+        .static-ticker-text {
+            font-size: 1rem; font-weight: 800; color: var(--text);
+            text-shadow: 0 0 15px rgba(147, 197, 253, 0.6);
+            background: rgba(59, 130, 246, 0.12); padding: 5px 18px; border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.3); display: inline-block;
+        }
+
+        .header-controls { display: flex; align-items: center; gap: 10px; }
+        
+        .header-user-avatar-area {
+            display: none; align-items: center; gap: 8px; background: var(--card-bg);
+            border: 2px solid #fbbf24; padding: 4px 10px; border-radius: 30px;
+            cursor: pointer; box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); transition: var(--transition);
+            position: relative;
+        }
+        .header-user-avatar-area:hover { transform: scale(1.05); }
+        .header-user-img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid #fbbf24; background:#112233; cursor: pointer; }
+        .header-user-name { font-size: 0.9rem; font-weight: 800; color: var(--text); cursor: pointer; }
+
+        .staff-dropdown-menu {
+            position: absolute; top: 120%; right: 0; background: var(--card-bg); backdrop-filter: blur(14px);
+            border: 2px solid #fbbf24; border-radius: 14px; width: 210px;
+            box-shadow: 0 0 35px rgba(251, 191, 36, 0.5); display: none; flex-direction: column; gap: 6px; padding: 10px; z-index: 1300;
+        }
+        .staff-dropdown-menu.active { display: flex; }
+        .staff-dropdown-item {
+            background: var(--card-bg); border: 1px solid #fbbf24; color: var(--text);
+            padding: 9px 12px; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.88rem;
+            cursor: pointer; transition: var(--transition); text-decoration: none; display: block;
+        }
+        .staff-dropdown-item:hover { background: #fbbf24; color: #030712; box-shadow: 0 0 20px rgba(251, 191, 36, 0.8); }
+
+        .ctrl-btn {
+            background: var(--card-bg); border: 2px solid var(--accent); color: var(--text);
+            padding: 7px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.9rem;
+            transition: var(--transition); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+        .ctrl-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 25px var(--accent-glow); }
+        
+        .lang-dropdown {
+            background: var(--card-bg); border: 2px solid var(--accent); color: var(--text);
+            padding: 6px 10px; border-radius: 10px; cursor: pointer; font-weight: 700;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); outline: none; font-family: 'Cairo', sans-serif;
+        }
+        .menu-toggle { font-size: 1.4rem; background: none; border: none; color: var(--text); cursor: pointer; }
+
+        .login-dropdown-container { position: relative; display: inline-block; }
+        .login-menu-box {
+            position: absolute; top: 115%; left: 0; background: var(--card-bg); backdrop-filter: blur(14px);
+            border: 2px solid var(--accent); border-radius: 14px; width: 190px;
+            box-shadow: 0 0 35px var(--accent-glow); display: none; flex-direction: column; gap: 5px; padding: 10px; z-index: 1200;
+        }
+        .login-menu-box.active { display: flex; }
+        .login-menu-item {
+            background: var(--card-bg); border: 1px solid var(--accent); color: var(--text);
+            padding: 10px 12px; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; transition: var(--transition); text-decoration: none;
+        }
+        .login-menu-item:hover { background: var(--accent); color: #fff; box-shadow: 0 0 20px var(--accent-glow); }
+
+        .notification-bell-area { position: relative; display: inline-block; }
+        .bell-btn {
+            background: var(--card-bg); border: 2px solid var(--accent); color: var(--text);
+            width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; position: relative; box-shadow: 0 0 15px var(--accent-glow); transition: var(--transition);
+        }
+        .bell-btn:hover { background: var(--accent); color: #fff; }
+        .bell-badge {
+            position: absolute; top: -5px; right: -5px; background: #dc2626; color: #fff;
+            font-size: 0.7rem; font-weight: 900; width: 18px; height: 18px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg);
+        }
+        .notification-dropdown {
+            position: absolute; top: 120%; left: 0; width: 320px; max-height: 380px; overflow-y: auto;
+            background: var(--card-bg); backdrop-filter: blur(15px); border: 2px solid var(--accent); border-radius: 16px;
+            box-shadow: 0 0 40px var(--accent-glow); display: none; flex-direction: column; padding: 15px; z-index: 1500;
+        }
+        .notification-dropdown.active { display: flex; }
+        .notif-item {
+            background: var(--card-bg); border: 1px solid var(--accent); border-radius: 10px;
+            padding: 10px 12px; margin-bottom: 8px; font-size: 0.88rem; color: var(--text); line-height: 1.5;
+        }
+
+        .sidebar {
+            position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
+            background: var(--card-bg); backdrop-filter: blur(14px); box-shadow: -5px 0 35px rgba(0,0,0,0.6);
+            z-index: 1100; transition: right 0.4s ease; display: flex; flex-direction: column;
+            padding: 30px 20px; border-left: 2px solid var(--accent);
+        }
+        .sidebar.active { right: 0; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 15px; }
+        .close-sidebar { background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; }
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .sidebar-menu li a, .sidebar-menu .menu-dropdown-btn {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; color: var(--text); background: var(--card-bg); border-radius: 10px;
+            text-decoration: none; font-weight: 700; cursor: pointer; border: 2px solid var(--accent);
+            transition: var(--transition); box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+        .sidebar-menu li a:hover, .sidebar-menu .menu-dropdown-btn:hover {
+            background: var(--accent); color: #fff; box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .submenu { display: none; flex-direction: column; gap: 6px; padding-right: 15px; margin-top: 6px; }
+        .submenu.active { display: flex; }
+        .submenu a { font-size: 0.95rem; padding: 8px 12px !important; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .overlay.active { opacity: 1; pointer-events: auto; }
+
+        .main-container {
+            margin-top: 95px; padding: 40px 20px; max-width: 1200px;
+            margin-left: auto; margin-right: auto; min-height: 80vh;
+        }
+
+        .section-view { display: none; animation: fadeIn 0.4s ease; }
+        .section-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hero-content-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 40px; position: relative; z-index: 2; }
+        .hero-left { text-align: right; }
+        .hero-badge-top {
+            display: inline-block; background: rgba(59, 130, 246, 0.2); color: var(--accent);
+            border: 1px solid var(--accent); padding: 6px 16px; border-radius: 20px;
+            font-size: 0.95rem; font-weight: 700; margin-bottom: 20px; box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .hero-left h1 { font-size: 3rem; font-weight: 900; line-height: 1.2; margin-bottom: 20px; color: var(--text); }
+        .hero-left h1 span { color: var(--accent); display: block; text-shadow: 0 0 25px var(--accent); }
+        .hero-left p { color: var(--text-muted); font-size: 1.12rem; line-height: 1.8; margin-bottom: 25px; }
+        
+        .hero-action-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .hero-btns { display: flex; gap: 15px; }
+        .btn-primary-custom {
+            background: var(--accent); color: #fff; border: none; padding: 14px 30px; border-radius: 30px;
+            font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: var(--transition); box-shadow: 0 0 30px var(--accent-glow);
+        }
+        .btn-primary-custom:hover { transform: translateY(-3px); background: var(--hover-blue); box-shadow: 0 0 45px var(--accent-glow); }
+        .btn-secondary-custom {
+            background: transparent; color: var(--text); border: 2px solid var(--accent); padding: 14px 26px; border-radius: 30px;
+            font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: var(--transition); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        .btn-secondary-custom:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); }
+
+        .training-playground-box {
+            display: flex; align-items: center; gap: 10px; background: var(--card-bg);
+            border: 2px solid var(--accent); padding: 10px 18px; border-radius: 20px;
+            box-shadow: 0 0 20px var(--accent-glow); text-decoration: none; color: var(--text);
+            transition: var(--transition); cursor: pointer;
+        }
+        .training-playground-box:hover { transform: scale(1.05); box-shadow: 0 0 35px var(--accent-glow); background: var(--accent); color: #fff; }
+        .training-playground-box i { color: var(--accent); font-size: 1.4rem; animation: bounceMap 2s infinite; }
+        .training-playground-box:hover i { color: #fff; }
+        @keyframes bounceMap { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        .training-text-label { font-size: 0.95rem; font-weight: 700; }
+
+        .hero-right { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        
+        .logos-dual-showcase { display: flex; gap: 15px; width: 100%; max-width: 360px; justify-content: center; }
+        .academy-logo-showcase-box {
+            background: var(--card-bg); backdrop-filter: blur(12px); border: 2px solid #fbbf24;
+            border-radius: 20px; padding: 15px 15px; text-align: center; width: 50%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+        .logo-frame-circle {
+            width: 70px; height: 70px; border-radius: 50%; border: 3px solid #fbbf24;
+            margin: 0 auto 8px auto; overflow: hidden; background: #112233; display: flex;
+            justify-content: center; align-items: center; box-shadow: 0 0 25px rgba(251, 191, 36, 0.7);
+            animation: goldNeonPulse 2s infinite alternate;
+        }
+        @keyframes goldNeonPulse {
+            0% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.6), inset 0 0 10px rgba(251, 191, 36, 0.6); border-color: #fbbf24; }
+            100% { box-shadow: 0 0 30px #fbbf24, inset 0 0 20px #fbbf24; border-color: #fde047; }
+        }
+        .logo-frame-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+        .brand-font-fancy {
+            font-family: 'Cairo', sans-serif; font-weight: 900; letter-spacing: 1px;
+            color: #fbbf24; text-shadow: 0 0 15px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+
+        .potm-hero-showcase {
+            width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--card-bg); backdrop-filter: blur(12px);
+            border: 3px solid var(--accent); border-radius: 20px; padding: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 35px var(--accent-glow);
+            position: relative; text-align: center;
+        }
+        .potm-crown-header {
+            display: flex; align-items: center; gap: 8px; color: #fbbf24; font-size: 1.1rem; font-weight: 900;
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.8); margin-bottom: 10px;
+        }
+        
+        .royal-ring-frame {
+            position: relative; width: 120px; height: 120px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(59,130,246,0.3), var(--card-bg));
+            border: 4px solid var(--accent); box-shadow: 0 0 30px var(--accent-glow);
+            display: flex; justify-content: center; align-items: center; margin-bottom: 10px;
+            overflow: hidden; cursor: pointer;
+            animation: neonPulse 2s infinite alternate;
+        }
+        .royal-ring-frame img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid #fbbf24; background: #112233; }
+
+        .silver-ring-frame {
+            position: relative; width: 100px; height: 100px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(148,163,184,0.3), var(--card-bg));
+            border: 4px solid #94a3b8; box-shadow: 0 0 25px rgba(148,163,184,0.6);
+            display: flex; justify-content: center; align-items: center; margin-bottom: 8px;
+            overflow: hidden; cursor: pointer;
+        }
+        .silver-ring-frame img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #cbd5e1; background: #112233; }
+
+        .potw-banner-floating {
+            background: var(--card-bg); backdrop-filter: blur(14px); border: 2px solid #94a3b8; border-radius: 20px;
+            padding: 20px 30px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(148, 163, 184, 0.4);
+        }
+
+        .potm-player-name { font-size: 1.35rem; font-weight: 900; color: var(--text); }
+
+        .home-news-ticker-container {
+            display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px;
+        }
+        .news-neon-strip {
+            background: var(--card-bg); backdrop-filter: blur(14px);
+            border: 2px solid var(--accent); border-radius: 18px; padding: 18px 25px;
+            box-shadow: 0 0 25px var(--accent-glow); cursor: pointer; transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .news-neon-strip:hover { transform: scale(1.02); box-shadow: 0 0 40px var(--accent-glow); background: rgba(59, 130, 246, 0.1); }
+        .news-strip-header { display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 1.1rem; color: var(--text); text-shadow: 0 0 10px var(--accent-glow); }
+        .news-strip-body {
+            max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.5s ease;
+            color: var(--text-muted); font-size: 1rem; line-height: 1.7; padding: 0 5px;
+        }
+        .news-neon-strip.expanded .news-strip-body { max-height: 500px; padding-top: 15px; border-top: 1px dashed var(--border); margin-top: 10px; }
+
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 35px; }
+        .player-card {
+            position: relative; background: var(--card-bg); backdrop-filter: blur(12px); border-radius: 22px; padding: 35px 20px;
+            text-align: center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 25px rgba(59, 130, 246, 0.2);
+            border: 2px solid var(--accent);
+        }
+        .player-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 50px var(--accent-glow); }
+        
+        .player-card img { 
+            width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; 
+            border: 4px solid var(--accent); box-shadow: 0 0 30px var(--accent-glow); background: #112233;
+        }
+
+        .gallery-artistic-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 25px; margin-top: 30px;
+        }
+        .art-slot {
+            position: relative; border-radius: 18px; overflow: hidden; border: 2px solid var(--accent);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow); cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease; min-height: 200px;
+            background: #081b29; display: flex; justify-content: center; align-items: center;
+        }
+        .art-slot:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 25px 50px var(--accent-glow); z-index: 5; }
+        .art-slot img { width: 100%; height: 100%; object-fit: cover; min-height: 200px; background: #112233; }
+        
+        .slot-1 { grid-column: span 5; }
+        .slot-2 { grid-column: span 3; margin-top: 20px; }
+        .slot-3 { grid-column: span 4; }
+        .slot-4 { grid-column: span 3; }
+        .slot-5 { grid-column: span 6; margin-bottom: 15px; }
+        .slot-6 { grid-column: span 3; }
+        .slot-7 { grid-column: span 4; margin-top: -20px; }
+        .slot-8 { grid-column: span 5; }
+        .slot-9 { grid-column: span 3; }
+        .slot-10 { grid-column: span 4; }
+
+        @media(max-width: 900px) {
+            .gallery-artistic-grid { grid-template-columns: repeat(2, 1fr); }
+            .art-slot { grid-column: span 1 !important; margin: 0 !important; }
+            .hero-content-grid { grid-template-columns: 1fr; }
+            .potw-banner-floating { flex-direction: column; text-align: center; gap: 15px; }
+        }
+
+        .accordion-container { display: flex; flex-direction: column; gap: 20px; max-width: 850px; margin: 0 auto; }
+        .accordion-item {
+            background: var(--card-bg); backdrop-filter: blur(12px); border: 2px solid var(--accent); border-radius: 18px;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 25px rgba(59, 130, 246, 0.25); transition: var(--transition);
+        }
+        .accordion-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 22px 30px;
+            cursor: pointer; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), transparent);
+            font-size: 1.3rem; font-weight: 900; color: var(--text);
+        }
+        .accordion-header i { color: var(--accent); transition: transform 0.5s ease; font-size: 1.2rem; }
+        .accordion-item.active .accordion-header i { transform: rotate(180deg); }
+        .accordion-body {
+            max-height: 0; overflow: hidden; padding: 0 30px; color: var(--text); line-height: 1.9; font-size: 1.05rem;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), padding 0.6s ease;
+        }
+        .accordion-item.active .accordion-body { max-height: 700px; padding: 20px 30px 30px 30px; border-top: 1px dashed var(--border); }
+        
+        .georgia-highlight { 
+            font-size: 1.35rem !important; font-weight: 800 !important; color: #3b82f6 !important; 
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.4); display: block; margin: 15px 0; line-height: 1.6;
+            background: rgba(59, 130, 246, 0.12); padding: 12px 18px; border-radius: 12px; border-left: 4px solid var(--accent);
+        }
+
+        .fullscreen-flip-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #030712; z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .fullscreen-flip-overlay.active { opacity: 1; pointer-events: auto; }
+        .flipping-card-container { width: 320px; height: 450px; perspective: 1500px; transform-style: preserve-3d; }
+        .f-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1); transform-style: preserve-3d; box-shadow: 0 0 50px var(--accent-glow); border-radius: 20px; }
+        .flipping-card-container.flip .f-card-inner { transform: rotateY(180deg) scale(3.5); }
+        .f-card-front, .f-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; border: 3px solid var(--accent); box-shadow: 0 0 40px var(--accent-glow); }
+        .f-card-front { background: var(--card-bg); backdrop-filter: blur(12px); color: var(--text); }
+        .f-card-back { background: linear-gradient(135deg, #081b29, #112233); color: #fff; transform: rotateY(180deg); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--card-bg); backdrop-filter: blur(15px); width: 90%; max-width: 950px; max-height: 90vh; overflow-y: auto; border-radius: 20px; padding: 30px; position: relative; transform: scale(0.8) translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 2px solid var(--accent); box-shadow: 0 25px 70px rgba(0,0,0,0.8), 0 0 50px var(--accent-glow); }
+        .modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+        
+        .close-modal { 
+            position: sticky; top: 10px; float: left; background: var(--accent); color: #fff; border: none; 
+            width: 40px; height: 40px; border-radius: 50%; font-size: 1.3rem; cursor: pointer; 
+            transition: var(--transition); box-shadow: 0 0 20px var(--accent-glow); z-index: 100;
+            display: flex; justify-content: center; align-items: center; margin-bottom: -40px;
+        }
+        .close-modal:hover { transform: rotate(90deg) scale(1.1); background: var(--hover-blue); }
+
+        .eval-sheet { margin-top: 20px; }
+        .eval-section { background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--accent); border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+        .eval-section h4 { color: var(--accent); margin-bottom: 12px; border-bottom: 1px dashed var(--border); padding-bottom: 6px; font-size: 1.15rem; }
+        .eval-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 1.02rem; border-bottom: 1px solid var(--border); }
+        .eval-row:last-child { border-bottom: none; }
+        .eval-input { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--accent); background: var(--bg); color: var(--text); margin-top: 5px; font-family: 'Cairo', sans-serif; box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
+
+        .bubble-sheet-container { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; margin-top: 10px; scrollbar-width: thin; }
+        .bubble-item {
+            min-width: 80px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--border); border-radius: 10px;
+            padding: 8px 6px; text-align: center; transition: var(--transition); cursor: pointer; box-shadow: 0 0 8px rgba(0,0,0,0.3);
+        }
+        .bubble-item.attended { background: rgba(34, 197, 94, 0.25); border-color: #22c55e; box-shadow: 0 0 12px rgba(34, 197, 94, 0.4); }
+        .bubble-day { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+        .bubble-date { font-size: 0.85rem; font-weight: 900; color: var(--text); margin: 3px 0; }
+        .bubble-status-icon { font-size: 0.95rem; margin-top: 3px; }
+        .bubble-item.attended .bubble-status-icon { color: #22c55e; }
+        .bubble-item:not(.attended) .bubble-status-icon { color: var(--text-muted); }
+
+        .form-box { background: var(--card-bg); backdrop-filter: blur(14px); border: 2px solid var(--accent); border-radius: 20px; padding: 35px; max-width: 480px; margin: 0 auto; box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 40px var(--accent-glow); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: var(--text); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--accent); background: var(--bg); color: var(--text); font-family: 'Cairo', sans-serif; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+
+        footer { background: var(--primary); color: var(--text); text-align: center; padding: 40px 20px; margin-top: 60px; border-top: 2px solid var(--accent); box-shadow: -15px 40px var(--accent-glow); }
+        .social-links { display: flex; justify-content: center; gap: 20px; margin: 20px 0; font-size: 1.5rem; }
+        .social-links a { color: var(--text); background: var(--card-bg); border: 2px solid var(--accent); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); box-shadow: 0 0 15px var(--accent-glow); }
+        .social-links a:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 0 25px var(--accent-glow); }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <button class="exit-preview-btn" onclick="togglePreviewMode()"><i class="fa-solid fa-eye-slash"></i> إيقاف معاينة الخلفية</button>
+    <div class="floating-preview-eye-btn" onclick="togglePreviewMode()" title="معاينة الخلفية صافية"><i class="fa-solid fa-eye"></i></div>
+
+    <div id="loading-screen">
+       <div class="loader-logo-container">
+    <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" alt="Maven Logo">
+</div>
+        <div class="loading-phrase" data-translate="loading_phrase">فخورين انك جزء من رحلتنا</div>
+    </div>
+
+    <div class="fullscreen-flip-overlay" id="flipOverlay">
+        <div class="flipping-card-container" id="flippingCardContainer">
+            <div class="f-card-inner">
+                <div class="f-card-front" id="flipCardFront"></div>
+                <div class="f-card-back">
+                    <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--accent); object-fit:cover; margin-bottom:15px; box-shadow:0 0 20px var(--accent-glow); background:#112233;">
+                    <h2 style="color:#fff;">Maven Hub</h2>
+                    <p style="color:#cbd5e1; font-size:0.95rem; margin-top:10px;">جاري تحميل الملف الشخصي...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-area" onclick="switchSection('home-section')">
+            <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" alt="Maven Logo" class="single-logo-img">
+            <h1 class="logo-title">Maven <span>Hub</span></h1>
+        </div>
+
+        <div class="header-center-ticker">
+            <div class="static-ticker-text" data-translate="header_ticker"> Professional Football Analytics & Training Club • Where Legends Begin</div>
+        </div>
+
+        <div class="header-controls">
+            <div class="notification-bell-area">
+                <div class="bell-btn" onclick="toggleNotificationDropdown()">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="bell-badge" id="notifBadge">0</span>
+                </div>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <h4 style="color:var(--accent); margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:5px;"><i class="fa-solid fa-bell"></i> <span data-translate="notif_center_title">مركز الإشعارات الفورية</span></h4>
+                    <div id="notificationList" style="display:flex; flex-direction:column; gap:8px;">
+                        <p style="color:var(--text-muted); font-size:0.9rem; text-align:center;" data-translate="no_notifications">لا توجد إشعارات جديدة حالياً.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-dropdown-container">
+                <button class="ctrl-btn" onclick="toggleLoginMenu()" id="unifiedLoginBtn" data-translate="login_menu_btn"><i class="fa-solid fa-right-to-bracket"></i> تسجيل دخول</button>
+                <div class="login-menu-box" id="loginMenuBox">
+                    <a href="#" class="login-menu-item" onclick="openLoginModal('player')" data-translate="login_player">لاعب</a>
+                    <a href="#" class="login-menu-item" onclick="openLoginModal('parent')" data-translate="login_parent">ولي أمر</a>
+                    <a href="#" class="login-menu-item" onclick="openLoginModal('coach')" data-translate="login_coach">مدرب / محلل</a>
+                </div>
+            </div>
+
+            <div class="header-user-avatar-area" id="headerUserAvatarArea">
+                <img id="headerUserImg" src="" class="header-user-img" onclick="triggerHeaderAvatarUpload()" title="انقر لتغيير صورتك عبر الـ Canvas">
+                <span id="headerUserName" class="header-user-name" onclick="toggleStaffDropdown()" title="انقر لفتح خيارات الإدارة والملاحظات وتسجيل الخروج">زائر</span>
+                <div class="staff-dropdown-menu" id="staffDropdownMenu">
+                    <a href="#" class="staff-dropdown-item" onclick="openCoachDashboard()"><i class="fa-solid fa-gauge"></i> لوحة التحكم الكاملة</a>
+                    <a href="#" class="staff-dropdown-item" onclick="openCoachDashboardTab('notes')"><i class="fa-solid fa-book"></i> دفتر الملاحظات</a>
+                    <a href="#" class="staff-dropdown-item" onclick="globalLogout()" style="color:#ef4444; border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج</a>
+                </div>
+            </div>
+
+            <button class="ctrl-btn" onclick="switchSection('home-section')" data-translate="home_btn">الرئيسية</button>
+            <select id="language-selector" class="lang-dropdown" onchange="changeLanguage(this.value)">
+                <option value="ar">عربي</option>
+                <option value="en">English</option>
+                <option value="ka">ქართული</option>
+            </select>
+            <button class="ctrl-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 data-translate="nav_menu">قائمة التنقل</h3>
+            <button class="close-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <div class="menu-dropdown-btn" onclick="toggleSubmenu('home-sub')">
+                    <span data-translate="nav_home">الرئيسية (Home)</span> <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <ul class="submenu" id="home-sub">
+                    <li><a href="#" onclick="switchSection('players-cat')" data-translate="sub_players">Players (اللاعبون)</a></li>
+                    <li><a href="#" onclick="switchSection('coaches-sec')" data-translate="sub_coaches">Coaches & Analysts</a></li>
+                    <li><a href="#" onclick="switchSection('parents-sec')" data-translate="sub_parents">Parents (أولياء الأمور)</a></li>
+                </ul>
+            </li>
+            <li><a href="#" onclick="switchSection('legends-sec')" data-translate="nav_legends">POTM</a></li>
+            <li><a href="#" onclick="switchSection('gallery-sec')" data-translate="nav_gallery">Gallery (معرض الصور)</a></li>
+            <li><a href="#" onclick="switchSection('about-sec')" data-translate="nav_about">Who We Are</a></li>
+            <li><a href="#" onclick="switchSection('news-sec')" data-translate="nav_news">News (الأخـبـار)</a></li>
+            <li><a href="#" onclick="switchSection('contact-sec')" data-translate="nav_contact">Contact Us (اتصل بنا)</a></li>
+        </ul>
+    </div>
+
+    <div class="main-container">
+
+        <div id="home-section" class="section-view active">
+            <div class="maven-hero">
+                <div class="hero-content-grid">
+                    <div class="hero-left">
+                        <span class="hero-badge-top" data-translate="hero_badge">النظام الاحترافي للتحليل والتطوير</span>
+                        <h1 data-translate="hero_title">Where Legends <span>Begin</span></h1>
+                        <p data-translate="hero_desc">نصنع نجوم المستقبل في كرة القدم عبر أحدث أنظمة التحليل التكتيكي، القياسات البدنية، والمتابعة الدقيقة لأولياء الأمور.</p>
+                        
+                        <div class="hero-action-row">
+                            <div class="hero-btns">
+                                <button class="btn-primary-custom" onclick="switchSection('players-cat')" data-translate="explore_btn">استكشف اللاعبين</button>
+                                <button class="btn-secondary-custom" onclick="switchSection('gallery-sec')" data-translate="gallery_btn">معرض الصور</button>
+                            </div>
+                            <a href="https://maps.app.goo.gl/CdPAunhMBqVfC4CV8" target="_blank" class="training-playground-box">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                                <span class="training-text-label" data-translate="training_playground">Training Playground</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-right">
+                      <div class="logos-dual-showcase">
+                        <div class="academy-logo-showcase-box">
+                            <div class="logo-frame-circle">
+                                <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" alt="MavenHub Logo">
+                            </div>
+                            <h4 class="brand-font-fancy" style="font-size: 1rem;">MavenHub</h4>
+                        </div>
+                        <div class="academy-logo-showcase-box">
+                            <div class="logo-frame-circle">
+                                <img src="https://i.ibb.co/QF4Bqtzw/Whats-App-Image-2026-10-25-at-12-16-11-AM.jpg" alt="Champion Logo">
+                            </div>
+                            <h4 class="brand-font-fancy" style="font-size: 1rem;">Champion</h4>
+                        </div>
+                    </div>
+
+                        <div class="potm-hero-showcase">
+                            <div class="potm-crown-header">
+                                <i class="fa-solid fa-crown"></i> <span data-translate="potm_crown_title">لاعب الشهر (POTM)</span>
+                            </div>
+                            <div class="royal-ring-frame">
+                                <img id="homePotmImg" src="" alt="Player of the Month">
+                            </div>
+                            <h3 id="homePotmName" class="potm-player-name">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-news-ticker-container" id="homeNewsTickerContainer"></div>
+
+            <div class="potw-banner-floating">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div class="silver-ring-frame">
+                        <img id="homePotwImg" src="" alt="Player of the Week">
+                    </div>
+                    <div>
+                        <div style="display:flex; align-items:center; gap:8px; color:var(--text); font-size:1.1rem; font-weight:900; margin-bottom:5px;">
+                            <i class="fa-solid fa-medal" style="color:#94a3b8;"></i> <span data-translate="potw_crown_title">لاعب الأسبوع (Player of the Week)</span>
+                        </div>
+                        <h3 id="homePotwName" style="color:var(--text); font-size:1.3rem;">--</h3>
+                    </div>
+                </div>
+                <div>
+                    <button class="ctrl-btn" onclick="switchSection('players-cat')" style="border-color:#94a3b8;"><i class="fa-solid fa-star"></i> <span data-translate="show_stars">عرض النجوم</span></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="players-cat" class="section-view">
+            <h2 style="margin-bottom: 25px; text-align: center;" data-translate="players_cat_title">فئات اللاعبين</h2>
+            <div class="grid-cards">
+                <div class="player-card" onclick="openPlayersGroup('2010-2012')">
+                    <i class="fa-solid fa-shield-halved fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+                    <h3 data-translate="cat_1">مواليد 2010 - 2011 - 2012</h3>
+                    <p style="color:var(--text-muted); margin-top:10px;" data-translate="cat_1_desc">إعمار النخبة وتطوير التكتيكات العالية</p>
+                </div>
+                <div class="player-card" onclick="openPlayersGroup('2013-2014')">
+                    <i class="fa-solid fa-futbol fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+                    <h3 data-translate="cat_2">مواليد 2013 - 2014</h3>
+                    <p style="color:var(--text-muted); margin-top:10px;" data-translate="cat_2_desc">بناء المهارات الأساسية وفن اللعب الجماعي</p>
+                </div>
+                <div class="player-card" onclick="openPlayersGroup('2015-2016')">
+                    <i class="fa-solid fa-star fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+                    <h3 data-translate="cat_3">مواليد 2015 - 2016</h3>
+                    <p style="color:var(--text-muted); margin-top:10px;" data-translate="cat_3_desc">البراعم والخطوات الأولى نحو الاحتراف</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="players-list-view" class="section-view">
+            <button class="ctrl-btn" style="margin-bottom:20px;" onclick="switchSection('players-cat')"><i class="fa-solid fa-arrow-right"></i> <span data-translate="back_btn">رجوع للفئات</span></button>
+            <h2 id="group-title-label" style="margin-bottom: 25px; text-align: center;" data-translate="players_list_title">قائمة اللاعبين</h2>
+            <div class="grid-cards" id="players-cards-container"></div>
+        </div>
+
+        <div id="coaches-sec" class="section-view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 data-translate="coaches_section_title">الجهاز الفني ومحلل الأداء</h2>
+            </div>
+            <div class="grid-cards">
+                <div class="player-card" onclick="triggerCoachFlipAndBio('khalil')">
+                    <img id="coachImg_khalil" src="" alt="Coach" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="coach_1_name">ك/ خليل عمارة</h3>
+                    <p style="color:var(--text-muted);" data-translate="coach_1_role">مؤسس نادي Maven Hub ومدرب الحراس</p>
+                </div>
+                <div class="player-card" onclick="triggerCoachFlipAndBio('abdelrahman')">
+                    <img id="coachImg_abdelrahman" src="" alt="Coach" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="coach_2_name">ك/ عبد الرحمن خليل</h3>
+                    <p style="color:var(--text-muted);" data-translate="coach_2_role">مدرب الأحمال والسرعات</p>
+                </div>
+                <div class="player-card" onclick="triggerCoachFlipAndBio('amir')">
+                    <img id="coachImg_amir" src="" alt="Coach" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="coach_3_name">ك/ أمير أحمد</h3>
+                    <p style="color:var(--text-muted);" data-translate="coach_3_role">مدرب المهارات والبراعم</p>
+                </div>
+                <div class="player-card" onclick="triggerCoachFlipAndBio('medany')">
+                    <img id="coachImg_medany" src="" alt="Analyst" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="analyst_name">محلل الأداء/ محمد مدني</h3>
+                    <p style="color:var(--accent); font-weight:bold;" data-translate="analyst_role">محلل الأداء الكروي</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="parents-sec" class="section-view">
+            <div class="form-box" id="parent-auth-box">
+                <div style="display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">
+                    <button class="ctrl-btn" onclick="switchParentTab('login')" id="tab-login-btn" style="border-color:var(--accent);" data-translate="parent_login_tab">تسجيل دخول</button>
+                    <button class="ctrl-btn" onclick="switchParentTab('register')" id="tab-reg-btn" data-translate="parent_reg_tab">إنشاء حساب جديد</button>
+                </div>
+
+                <div id="parent-login-form">
+                    <h3 style="text-align: center; margin-bottom: 15px;" data-translate="parent_login_title">تسجيل دخول ولي الأمر</h3>
+                    <div class="form-group">
+                        <label data-translate="son_name_label">اسم الابن اللاعب</label>
+                        <input type="text" id="parent-login-name" placeholder="أدخل اسم ابنك">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="password_label">كلمة المرور</label>
+                        <input type="password" id="parent-login-pass" placeholder="كلمة المرور">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="parent-remember-me" style="width:auto; cursor:pointer;">
+                            <label for="parent-remember-me" style="margin:0; cursor:pointer;" data-translate="remember_me">تذكرني</label>
+                        </div>
+                        <a href="#" onclick="openForgotPasswordModal('parent')" style="color:var(--accent); text-decoration:none; font-weight:700;" data-translate="forgot_pass_link">نسيت كلمة المرور؟</a>
+                    </div>
+                    <button class="btn-primary-custom" style="width: 100%;" onclick="parentLogin()" data-translate="parent_login_submit">دخول لحساب ولي الأمر</button>
+                </div>
+
+                <div id="parent-register-form" style="display: none;">
+                    <h3 style="text-align: center; margin-bottom: 15px;" data-translate="parent_reg_title">إنشاء حساب ولي أمر جديد</h3>
+                    <p style="font-size: 0.85rem; color:var(--text-muted); margin-bottom: 15px; text-align: center;" data-translate="parent_reg_hint">* أدخل بياناتك، ارفع صورتك، ورقم هاتفك لإرسال طلب الموافقة عبر واتساب مجاناً للمدربين.</p>
+                    
+                    <div class="form-group" style="text-align:center;">
+                        <label data-translate="parent_avatar_label">صورتك الشخصية (بروفايل ولي الأمر)</label>
+                        <input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'parent')">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="son_name_label">اسم الابن اللاعب</label>
+                        <input type="text" id="parent-reg-sonname" placeholder="مثال: عمر أحمد">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="parent_full_name">اسم ولي الأمر</label>
+                        <input type="text" id="parent-reg-fullname" placeholder="اسمك الكامل">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="parent_phone_label">رقم الهاتف (للتواصل عبر واتساب)</label>
+                        <input type="text" id="parent-reg-phone" placeholder="010XXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="new_pass_label">اختر كلمة مرور جديدة لك</label>
+                        <input type="password" id="parent-reg-pass" placeholder="كلمة المرور">
+                    </div>
+                    <button class="btn-primary-custom" style="width: 100%; background: #25d366;" onclick="parentRegisterWhatsApp()" data-translate="parent_whatsapp_submit"><i class="fa-brands fa-whatsapp"></i> إرسال طلب الانضمام عبر واتساب مجاناً</button>
+                </div>
+            </div>
+
+            <div id="parent-dashboard" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--card-bg); backdrop-filter: blur(12px); padding: 20px; border-radius: 15px; border: 2px solid var(--accent); box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 30px var(--accent-glow);">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img id="parent-avatar" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); cursor:pointer; background:#112233;" title="انقر لتغيير صورتك الشخصية" onclick="triggerParentAvatarUpload()">
+                        <div>
+                            <h3 id="welcome-parent-name" style="color:var(--text);"></h3>
+                            <p style="color:var(--text-muted); font-size:0.95rem;" data-translate="parent_portal">بوابة متابعة الابن اللاعب</p>
+                        </div>
+                    </div>
+                    <button class="ctrl-btn" onclick="globalLogout()" data-translate="logout_btn">تسجيل خروج</button>
+                </div>
+
+                <div id="parent-warning-box" style="display:none; background: rgba(239, 68, 68, 0.2); backdrop-filter: blur(10px); border: 2px solid #ef4444; border-radius: 15px; padding: 20px; margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <i class="fa-solid fa-triangle-exclamation fa-2x" style="color:#ef4444;"></i>
+                        <h3 style="color:#ef4444;" data-translate="parent_warnings_title">سجل الإنذارات والتنبيهات الموجهة من الجهاز الفني</h3>
+                    </div>
+                    <div id="parent-warnings-list" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+                </div>
+
+                <div class="grid-cards" style="margin-bottom: 30px;" id="son-card-container"></div>
+
+                <div style="background: var(--card-bg); backdrop-filter: blur(12px); border: 2px solid var(--accent); border-radius: 15px; padding: 20px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="color: var(--accent); font-size: 1.1rem;"><i class="fa-solid fa-calendar-days"></i> <span id="parent-schedule-title-label">سجل الحصص التدريبية (الشهر الحالي)</span></h3>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);" id="parent-attendance-ratio-label"></span>
+                    </div>
+                    <div id="parent-compact-bubble-container"></div>
+                </div>
+
+                <div style="background: var(--card-bg); backdrop-filter: blur(12px); border: 2px solid var(--accent); border-radius: 15px; padding: 25px;">
+                    <h3 style="margin-bottom: 15px; color: var(--accent);" data-translate="parent_eval_title">معايير تقييم ولي الأمر (الالتزام والحضور)</h3>
+                    <div id="parent-son-evaluation-view" style="color:var(--text);"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="legends-sec" class="section-view">
+            <h2 style="margin-bottom: 10px; text-align: center; color:var(--text);" data-translate="potm_main_title">POTM (لاعب الشهر)</h2>
+            <p style="text-align: center; color:var(--text-muted); margin-bottom: 30px;" data-translate="potm_main_subtitle">قائمة نجوم وأساطير النادي المعتمدة لكل شهر</p>
+            <div class="grid-cards" id="academy-legends-grid"></div>
+        </div>
+
+        <div id="gallery-sec" class="section-view">
+            <h2 style="margin-bottom: 15px; text-align: center; color:var(--text);" data-translate="gallery_title">معرض الصور والذكريات</h2>
+            <div class="gallery-artistic-grid" id="artistic-gallery-container"></div>
+        </div>
+
+        <div id="news-sec" class="section-view">
+            <h2 style="text-align: center; margin-bottom: 10px; color: var(--accent);" data-translate="news_section_header">أحدث أخبار النادي (News)</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;" data-translate="news_section_subheader">تابع كافة مستجدات وإعلانات النادي الرسمية</p>
+            <div id="newsSectionFullList" style="display:flex; flex-direction:column; gap:20px; max-width:850px; margin:0 auto;"></div>
+        </div>
+
+        <div id="about-sec" class="section-view">
+            <h2 style="text-align: center; margin-bottom: 30px; color: var(--accent);" data-translate="who_we_are_title">Who We Are</h2>
+            <div class="accordion-container">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-translate="about_title_1">Our journey</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-body">
+                        <span data-translate="about_part_1">تأسست نادي Maven Hub في يوليو 2024 في ملعب ريو لكرة القدم، وانطلقت برؤية واضحة لتشكيل الجيل القادم من مواهب كرة القدم.</span> 
+                        <span class="georgia-highlight" data-translate="about_georgia_highlight">ومن خلال شراكتنا مع نادي لكرة القدم في جورجيا، نفتح أفقاً واسعاً وفرصاً حقيقية للاعبين لتحقيق طموحاتهم خارج الحدود.</span> 
+                        <span data-translate="about_part_2">تقوم شبكة الكشافين لدينا بمتابعة أداء اللاعبين وتطورهم باستمرار لتحديد المواهب الواعدة القادرة على السفر للخارج وبناء مسيرة احترافية ناجحة.</span>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-translate="about_title_2">Our vision</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-body" data-translate="about_desc_2">
+                        في Maven Hub، رسالتنا تتجاوز حدود التدريب التقليدي. نهدف إلى صناعة لاعب متكامل عبر تطوير مهاراته التقنية، قوته البدنية، فهمه التكتيكي، وصلابته الذهنية. نؤمن بأن النجاح الحقيقي ينبع من الانضباط، الثقة، العمل الجماعي، والعقلية الصحيحة.
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-translate="about_title_3">The next chapter</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-body" data-translate="about_desc_3">
+                        تمتد رحلتنا إلى ما بعد ملاعب التدريب؛ حيث يشارك نادي Maven Hub في البطولات الرسمية التي ينظمها الاتحاد المصري لكرة القدم، مما يمنح لاعبينا خبرة مباريات قياسية.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="contact-sec" class="section-view">
+            <div class="form-box">
+                <h2 style="text-align: center; margin-bottom: 20px; color:var(--text);" data-translate="nav_contact">تواصل معنا</h2>
+                <p style="text-align: center; color:var(--text-muted); margin-bottom: 20px;" data-translate="contact_text">تابعنا عبر منصات التواصل الاجتماعي أو تفضل بزيارتنا.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61576938111991&locale=ar_AR" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://wa.me/201009955294" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/_mavenhubfootball/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@_mavenhub" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <input type="file" id="photo-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'player')">
+    <input type="file" id="coach-avatar-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'coach')">
+    <input type="file" id="parent-avatar-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'parent')">
+    <input type="file" id="gallery-slot-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'gallery')">
+
+    <div class="modal" id="crop-modal">
+        <div class="modal-content" style="max-width: 450px; text-align:center;">
+            <button class="close-modal" onclick="closeCropModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--accent); margin-bottom:15px;">قص وتحديد الجزء المطلوب من الصورة</h3>
+            <div style="margin: 15px auto; overflow: hidden; max-height: 300px; display:flex; justify-content:center;">
+                <canvas id="cropCanvas" style="border: 2px solid var(--accent); border-radius: 12px; max-width: 100%; cursor: crosshair;"></canvas>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">اسحب داخل المربع لتحديد واختصار الجزء المراد حفظه.</p>
+            <button class="btn-primary-custom" style="width:100%;" onclick="executeCropAndSave()">حفظ الصورة بالقص المختار</button>
+        </div>
+    </div>
+
+    <div class="modal" id="player-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closePlayerModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="player-modal-body"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="lightbox-modal">
+        <div class="modal-content" style="max-width: 600px; text-align: center; padding: 20px;">
+            <button class="close-modal" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightbox-img" src="" style="width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; border: 2px solid var(--accent); margin-top: 15px;">
+        </div>
+    </div>
+
+    <div class="modal" id="coach-bio-modal">
+        <div class="modal-content" style="max-width: 520px; text-align: center;">
+            <button class="close-modal" onclick="closeCoachBio()"><i class="fa-solid fa-xmark"></i></button>
+            <img id="coach-bio-img" src="" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 15px; background:#112233;">
+            <h2 id="coach-bio-name" style="margin-bottom: 5px; color:var(--text);"></h2>
+            <p id="coach-bio-role" style="color: var(--accent); font-weight: bold; margin-bottom: 15px;"></p>
+            <p id="coach-bio-desc" style="color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; text-align: justify; font-size: 0.98rem; padding: 0 10px;"></p>
+
+            <div id="coach-messaging-box" style="display:none; border-top:2px solid var(--accent); padding-top:15px; text-align:right;">
+                <h5 style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-paper-plane"></i> <span>إرسال رسالة / استفسار للمدرب</span></h5>
+                <textarea id="directCoachMsgInput" class="eval-input" placeholder="اكتب رسالتك هنا..." rows="3"></textarea>
+                <button class="btn-primary-custom" style="width:100%; margin-top:10px; font-size:0.9rem;" onclick="sendDirectMessageToCoach()">إرسال الرسالة فوراً</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="auth-modal">
+        <div class="modal-content" style="max-width: 480px;">
+            <button class="close-modal" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="authModalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="forgot-pass-modal">
+        <div class="modal-content" style="max-width: 450px; text-align:center;">
+            <button class="close-modal" onclick="closeForgotPasswordModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--accent); margin-bottom:15px;">استعادة كلمة المرور</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">أدخل اسمك أو اسم ابنك، وسيتم إرسال إشعار فوري للمدربين.</p>
+            <div class="form-group" style="text-align:right;">
+                <label>اسم المستخدم / اسم الابن اللاعب</label>
+                <input type="text" id="forgotInputName" class="eval-input" placeholder="أدخل الاسم">
+            </div>
+            <button class="btn-primary-custom" style="width:100%; margin-top:10px;" onclick="submitForgotPasswordRequest()">إرسال طلب استعادة للمدربين</button>
+        </div>
+    </div>
+
+    <div class="modal" id="coach-dashboard-modal">
+        <div class="modal-content" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
+            <button class="close-modal" onclick="closeCoachDashboard()"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--accent); padding-bottom:15px; margin-bottom:20px;">
+                <h2 id="coachDashboardTitle" style="color:var(--accent);">لوحة إدارة المدرب الاحترافية</h2>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="ctrl-btn" onclick="switchCoachTab('mgmt')" id="tabMgmt" style="border-color:var(--accent);">إدارة اللاعبين والطلبات</button>
+                    <button class="ctrl-btn" onclick="switchCoachTab('academy')" id="tabAcademy">بيانات النادي</button>
+                    <button class="ctrl-btn" onclick="switchCoachTab('notes')" id="tabNotes">دفتر الملاحظات</button>
+                    <button class="ctrl-btn" onclick="switchCoachTab('news')" id="tabNews">الأخبار (News)</button>
+                </div>
+            </div>
+
+            <div id="coachTabMgmtContent">
+                <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px; margin-bottom:20px;">
+                    <h4 style="color:#fbbf24; margin-bottom:12px;"><i class="fa-solid fa-user-check"></i> <span>طلبات انضمام أولياء الأمور الجديدة</span></h4>
+                    <div id="parentRequestsContainer">
+                        <p style="color:var(--text-muted);">لا توجد طلبات معلقة حالياً.</p>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                    <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px;">
+                        <h5 style="color:#fbbf24; margin-bottom:10px;"><i class="fa-solid fa-crown"></i> <span>تعديل "لاعب الشهر" (POTM)</span></h5>
+                        <div class="form-group"><label>الاسم</label><input type="text" id="admin-potm-name" class="eval-input" value=""></div>
+                        <div class="form-group"><label>الصورة (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'potm')"></div>
+                        <button class="btn-primary-custom" style="width:100%; font-size:0.9rem; padding:8px;" onclick="updatePotmSettingsDevice()">تحديث لاعب الشهر</button>
+                    </div>
+
+                    <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px;">
+                        <h5 style="color:#94a3b8; margin-bottom:10px;"><i class="fa-solid fa-medal"></i> <span>تعديل "لاعب الأسبوع" (سيلفر فضي)</span></h5>
+                        <div class="form-group"><label>الاسم</label><input type="text" id="admin-potw-name" class="eval-input" value=""></div>
+                        <div class="form-group"><label>الصورة (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'potw')"></div>
+                        <button class="btn-primary-custom" style="width:100%; font-size:0.9rem; padding:8px; background:#64748b;" onclick="updatePotwSettingsDevice()">تحديث لاعب الأسبوع</button>
+                    </div>
+                </div>
+
+                <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px; margin-bottom:20px;">
+                    <h5 style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-star"></i> <span>أساطير POTM (مع تحديد الشهر لكل بطاقة)</span></h5>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="form-group">
+                            <label>اختر الشهر للأرشيف</label>
+                            <select id="admin-legend-month-select" class="eval-input" onchange="loadLegendMonthData()">
+                                <option value="0">نوفمبر (November)</option><option value="1">ديسمبر (December)</option><option value="2">يناير (January)</option>
+                                <option value="3">فبراير (February)</option><option value="4">مارس (March)</option><option value="5">أبريل (April)</option>
+                                <option value="6">مايو (May)</option><option value="7">يونيو (June)</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>اسم اللاعب النجم</label><input type="text" id="admin-legend-name" class="eval-input"></div>
+                    </div>
+                    <div class="form-group"><label>صورة النجم (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'legend')"></div>
+                    <button class="btn-primary-custom" style="width:100%; font-size:0.9rem; padding:8px;" onclick="saveAcademyLegendEditDevice()">حفظ بطاقة POTM الشهرية</button>
+                </div>
+
+                <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px;">
+                    <h5 style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-user-plus"></i> <span>إضافة لاعب جديد للنادي</span></h5>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                        <div class="form-group"><label>اسم اللاعب</label><input type="text" id="new-p-name" class="eval-input"></div>
+                        <div class="form-group"><label>كلمة مرور اللاعب الخاصة</label><input type="text" id="new-p-pass" class="eval-input"></div>
+                        <div class="form-group"><label>الفئة العمرية</label>
+                            <select id="new-p-group" class="eval-input">
+                                <option value="2010-2012">2010 - 2011 - 2012</option>
+                                <option value="2013-2014">2013 - 2014</option>
+                                <option value="2015-2016">2015 - 2016</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>صورة اللاعب (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'newPlayer')"></div>
+                    </div>
+                    <button class="btn-primary-custom" style="width:100%; margin-top:10px;" onclick="addNewPlayerByStaffDevice()">حفظ وإنشاء بروفايل اللاعب</button>
+                </div>
+            </div>
+
+            <div id="coachTabAcademyContent" style="display:none;">
+                <h3 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-database"></i> <span>بيانات النادي الشاملة</span></h3>
+                <div id="academyGlobalDatabaseView" style="display:flex; flex-direction:column; gap:15px;"></div>
+            </div>
+
+            <div id="coachTabNotesContent" style="display:none;">
+                <h3 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-book"></i> <span>دفتر ملاحظات المدرب التلقائي (بالتاريخ والوقت)</span></h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <textarea id="coachNewNoteInput" class="eval-input" placeholder="اكتب ملاحظتك التكتيكية الجديدة هنا..." rows="3" style="margin:0;"></textarea>
+                    <button class="btn-primary-custom" style="padding: 0 25px;" onclick="addNewCoachNote()">إضافة ملاحظة</button>
+                </div>
+                <div id="coachNotebookListContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+
+            <div id="coachTabNewsContent" style="display:none;">
+                <h3 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-newspaper"></i> <span>إضافة ونشر أخبار النادي (News)</span></h3>
+                <div class="form-group"><label>عنوان الخبر</label><input type="text" id="admin-news-title" class="eval-input" placeholder="مثال: انطلاق معسكر النخبة الصيفي..."></div>
+                <div class="form-group"><label>محتوى الخبر التفصيلي</label><textarea id="admin-news-content" class="eval-input" rows="4" placeholder="اكتب نص الخبر..."></textarea></div>
+                <div class="form-group"><label>صورة الخبر (اختياري)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'news')"></div>
+                <button class="btn-primary-custom" style="width:100%;" onclick="addNewNewsArticle()">نشر الخبر فوراً في الواجهة</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <h3 style="color:var(--text);">Maven Hub • Where Legends Begin</h3>
+        <div class="social-links">
+            <a href="https://www.facebook.com/profile.php?id=61576938111991&locale=ar_AR" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://wa.me/201009955294" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/_mavenhubfootball/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@_mavenhub" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.95rem;">جميع الحقوق محفوظة © 2026 Maven Hub</p>
+    </footer>
+
+    <script>
+        const translations = {
+            ar: {
+                loading_phrase: "فخورين انك جزء من رحلتنا",
+                header_ticker: " Professional Football Analytics & Training Club • Where Legends Begin",
+                home_btn: "الرئيسية",
+                nav_menu: "قائمة التنقل",
+                nav_home: "الرئيسية (Home)",
+                sub_players: "Players (اللاعبون)",
+                sub_coaches: "Coaches & Analysts",
+                sub_parents: "Parents (أولياء الأمور)",
+                nav_legends: "POTM",
+                nav_gallery: "Gallery (معرض الصور)",
+                nav_about: "Who We Are",
+                nav_news: "News (الأخـبـار)",
+                nav_contact: "Contact Us (اتصل بنا)",
+                hero_badge: "النظام الاحترافي للتحليل والتطوير",
+                hero_title: "Where Legends Begin",
+                hero_desc: "نصنع نجوم المستقبل في كرة القدم عبر أحدث أنظمة التحليل التكتيكي، القياسات البدنية، والمتابعة الدقيقة لأولياء الأمور.",
+                explore_btn: "استكشف اللاعبين",
+                gallery_btn: "معرض الصور",
+                training_playground: "Training Playground",
+                potm_crown_title: "لاعب الشهر (POTM)",
+                potw_crown_title: "لاعب الأسبوع (Player of the Week)",
+                show_stars: "عرض النجوم",
+                potm_main_title: "POTM (لاعب الشهر)",
+                potm_main_subtitle: "قائمة نجوم وأساطير النادي المعتمدة لكل شهر",
+                news_section_header: "أحدث أخبار النادي (News)",
+                news_section_subheader: "تابع كافة مستجدات وإعلانات النادي الرسمية",
+                who_we_are_title: "Who We Are",
+                about_title_1: "Our journey",
+                about_title_2: "Our vision",
+                about_title_3: "The next chapter",
+                about_part_1: "تأسست نادي Maven Hub في يوليو 2024 في ملعب ريو لكرة القدم، وانطلقت برؤية واضحة لتشكيل الجيل القادم من مواهب كرة القدم.",
+                about_georgia_highlight: "ومن خلال شراكتنا مع نادي لكرة القدم في جورجيا، نفتح أفقاً واسعاً وفرصاً حقيقية للاعبين لتحقيق طموحاتهم خارج الحدود.",
+                about_part_2: "تقوم شبكة الكشافين لدينا بمتابعة أداء اللاعبين وتطورهم باستمرار لتحديد المواهب الواعدة القادرة على السفر للخارج وبناء مسيرة احترافية ناجحة.",
+                about_desc_2: "في Maven Hub، رسالتنا تتجاوز حدود التدريب التقليدي. نهدف إلى صناعة لاعب متكامل عبر تطوير مهاراته التقنية، قوته البدنية، فهمه التكتيكي، وصلابته الذهنية.",
+                about_desc_3: "تمتد رحلتنا إلى ما بعد ملاعب التدريب؛ حيث يشارك نادي Maven Hub في البطولات الرسمية التي ينظمها الاتحاد المصري لكرة القدم.",
+                contact_text: "تابعنا عبر منصات التواصل الاجتماعي أو تفضل بزيارتنا.",
+                visitor_label: "زائر",
+                login_menu_btn: "تسجيل دخول",
+                login_player: "لاعب",
+                login_parent: "ولي أمر",
+                login_coach: "مدرب / محلل",
+                coaches_section_title: "الجهاز الفني ومحلل الأداء",
+                players_cat_title: "فئات اللاعبين",
+                cat_1: "مواليد 2010 - 2011 - 2012",
+                cat_1_desc: "إعمار النخبة وتطوير التكتيكات العالية",
+                cat_2: "مواليد 2013 - 2014",
+                cat_2_desc: "بناء المهارات الأساسية وفن اللعب الجماعي",
+                cat_3: "مواليد 2015 - 2016",
+                cat_3_desc: "البراعم والخطوات الأولى نحو الاحتراف",
+                back_btn: "رجوع للفئات",
+                players_list_title: "قائمة اللاعبين",
+                parent_login_tab: "تسجيل دخول",
+                parent_reg_tab: "إنشاء حساب جديد",
+                parent_login_title: "تسجيل دخول ولي الأمر",
+                parent_reg_title: "إنشاء حساب ولي أمر جديد",
+                parent_reg_hint: "* أدخل بياناتك، ارفع صورتك، ورقم هاتفك لإرسال طلب الموافقة عبر واتساب مجاناً للمدربين.",
+                parent_full_name: "اسم ولي الأمر",
+                parent_phone_label: "رقم الهاتف (للتواصل عبر واتساب)",
+                son_name_label: "اسم الابن اللاعب",
+                password_label: "كلمة المرور",
+                remember_me: "تذكرني",
+                forgot_pass_link: "نسيت كلمة المرور؟",
+                new_pass_label: "اختر كلمة مرور جديدة لك",
+                parent_login_submit: "دخول لحساب ولي الأمر",
+                parent_whatsapp_submit: "إرسال طلب الانضمام عبر واتساب مجاناً",
+                parent_portal: "بوابة متابعة الابن اللاعب",
+                logout_btn: "تسجيل خروج",
+                parent_eval_title: "معايير تقييم ولي الأمر (الالتزام والحضور)",
+                parent_warnings_title: "سجل الإنذارات والتنبيهات الموجهة من الجهاز الفني",
+                gallery_title: "معرض الصور والذكريات",
+                coach_1_name: "ك/ خليل عمارة",
+                coach_1_role: "مؤسس نادي Maven Hub ومدرب الحراس",
+                coach_2_name: "ك/ عبد الرحمن خليل",
+                coach_2_role: "مدرب الأحمال والسرعات",
+                coach_3_name: "ك/ أمير أحمد",
+                coach_3_role: "مدرب المهارات والبراعم",
+                analyst_name: "محلل الأداء/ محمد مدني",
+                analyst_role: "محلل الأداء الكروي",
+                parent_avatar_label: "صورتك الشخصية (بروفايل ولي الأمر)"
+            },
+            en: {
+                loading_phrase: "Proud You Are Part Of Our Journey",
+                header_ticker: " Professional Football Analytics & Training Club • Where Legends Begin",
+                home_btn: "Home",
+                nav_menu: "Navigation Menu",
+                nav_home: "Home",
+                sub_players: "Players",
+                sub_coaches: "Coaches & Analysts",
+                sub_parents: "Parents",
+                nav_legends: "POTM",
+                nav_gallery: "Gallery",
+                nav_about: "Who We Are",
+                nav_news: "News",
+                nav_contact: "Contact Us",
+                hero_badge: "Professional Analysis & Development System",
+                hero_title: "Where Legends Begin",
+                hero_desc: "We build future football stars through state-of-the-art tactical analysis systems.",
+                explore_btn: "Explore Players",
+                gallery_btn: "Photo Gallery",
+                training_playground: "Training Playground",
+                potm_crown_title: "Player of the Month (POTM)",
+                potw_crown_title: "Player of the Week",
+                show_stars: "Show Stars",
+                potm_main_title: "POTM (Player of the Month)",
+                potm_main_subtitle: "Approved club legends & stars list for each month",
+                news_section_header: "Club News",
+                news_section_subheader: "Follow all official club updates and announcements",
+                who_we_are_title: "Who We Are",
+                about_title_1: "Our journey",
+                about_title_2: "Our vision",
+                about_title_3: "The next chapter",
+                about_part_1: "Maven Hub Club was founded in July 2024 at Rio Football Pitch with a clear vision.",
+                about_georgia_highlight: "Through our partnership with a football club in Georgia, we open wide horizons.",
+                about_part_2: "Our scouts continuously monitor players' performance.",
+                about_desc_2: "At Maven Hub, our mission goes beyond traditional training.",
+                about_desc_3: "Our journey extends beyond training pitches.",
+                contact_text: "Follow us across social media platforms or visit us.",
+                visitor_label: "Visitor",
+                login_menu_btn: "Login",
+                login_player: "Player",
+                login_parent: "Parent",
+                login_coach: "Coach / Analyst",
+                coaches_section_title: "Coaching Staff & Performance Analyst",
+                players_cat_title: "Player Categories",
+                cat_1: "Born 2010 - 2011 - 2012",
+                cat_1_desc: "Elite age group & advanced tactics development",
+                cat_2: "Born 2013 - 2014",
+                cat_2_desc: "Building core skills & team play art",
+                cat_3: "Born 2015 - 2016",
+                cat_3_desc: "Buds & first steps toward professionalism",
+                back_btn: "Back to Categories",
+                players_list_title: "Players List",
+                parent_login_tab: "Login",
+                parent_reg_tab: "Register",
+                parent_login_title: "Parent Login",
+                parent_reg_title: "Create Parent Account",
+                parent_reg_hint: "* Enter details, upload avatar, and phone to send approval via WhatsApp.",
+                parent_full_name: "Parent Full Name",
+                parent_phone_label: "Phone Number",
+                son_name_label: "Son Player Name",
+                password_label: "Password",
+                remember_me: "Remember me",
+                forgot_pass_link: "Forgot Password?",
+                new_pass_label: "Choose a new password",
+                parent_login_submit: "Login",
+                parent_whatsapp_submit: "Send Join Request via WhatsApp Free",
+                parent_portal: "Player Son Tracking Portal",
+                logout_btn: "Logout",
+                parent_eval_title: "Parent Evaluation Standards (Commitment & Attendance)",
+                parent_warnings_title: "Warnings Record from Coaching Staff",
+                gallery_title: "Gallery & Memories",
+                coach_1_name: "Coach/ Khalil Emara",
+                coach_1_role: "Founder of Maven Hub Club & Goalkeepers Coach",
+                coach_2_name: "Coach/ Abdelrahman Khalil",
+                coach_2_role: "Fitness & Speed Coach",
+                coach_3_name: "Coach/ Amir Ahmed",
+                coach_3_role: "Skills & Buds Coach",
+                analyst_name: "Analyst/ Mohamed Medany",
+                analyst_role: "Performance Analyst",
+                parent_avatar_label: "Your Avatar"
+            },
+            ka: {
+                loading_phrase: "ვამაყობთ, რომ ჩვენი მოგზაურობის ნაწილი ხართ",
+                header_ticker: " Professional Football Analytics & Training Club • Where Legends Begin",
+                home_btn: "მთავარი",
+                nav_menu: "ნავიგაცია",
+                nav_home: "მთავარი",
+                sub_players: "მოთამაშეები",
+                sub_coaches: "მწვრთნელები",
+                sub_parents: "მშობლები",
+                nav_legends: "POTM",
+                nav_gallery: "გალერეა",
+                nav_about: "Who We Are",
+                nav_news: "News",
+                nav_contact: "კონტაქტი",
+                hero_badge: "პროფესიონალური ანალიზის სისტემა",
+                hero_title: "Where Legends Begin",
+                hero_desc: "ჩვენ ვქმნით ფეხბურთის მომავალ ვარსკვლავებს.",
+                explore_btn: "მოთამაშეები",
+                gallery_btn: "გალერეა",
+                training_playground: "Training Playground",
+                potm_crown_title: "თვის საუკეთესო მოთამაშე",
+                potw_crown_title: "კვირის საუკეთესო მოთამაშე",
+                show_stars: "ვარსკვლავები",
+                potm_main_title: "POTM",
+                potm_main_subtitle: "კლუბის ლეგენდები",
+                news_section_header: "News",
+                news_section_subheader: "კლუბის სიახლეები",
+                who_we_are_title: "Who We Are",
+                about_title_1: "Our journey",
+                about_title_2: "Our vision",
+                about_title_3: "The next chapter",
+                about_part_1: "Maven Hub Club დაარსდა 2024 წლის ივლისში.",
+                about_georgia_highlight: "საქართველოს კლუბთან პარტნიორობით.",
+                about_part_2: "ჩვენი სკაუტები მუდმივად აკვირდებიან მოთამაშეებს.",
+                about_desc_2: "Maven Hub-ში ჩვენი მისიაა შევქმნათ სრულყოფილი ფეხბურთელი.",
+                about_desc_3: "ჩვენი მოგზაურობა სცილდება საწვრთნელ მოედნებს.",
+                contact_text: "მოგვყევით სოციალურ ქსელებში.",
+                visitor_label: "სტუმარი",
+                login_menu_btn: "შესვლა",
+                login_player: "მოთამაშე",
+                login_parent: "მშობელი",
+                login_coach: "მწვრთნელი",
+                coaches_section_title: "სამწვრთნელო შტაბი",
+                players_cat_title: "კატეგორიები",
+                cat_1: "დაბადებული 2010 - 2011 - 2012",
+                cat_1_desc: "ელიტარული ასაკობრივი ჯგუფი",
+                cat_2: "დაბადებული 2013 - 2014",
+                cat_2_desc: "ძირითადი უნარები",
+                cat_3: "დაბადებული 2015 - 2016",
+                cat_3_desc: "პირველი ნაბიჯები",
+                back_btn: "უკან",
+                players_list_title: "მოთამაშეთა სია",
+                parent_login_tab: "შესვლა",
+                parent_reg_tab: "რეგისტრაცია",
+                parent_login_title: "შესვლა",
+                parent_reg_title: "რეგისტრაცია",
+                parent_reg_hint: "* შეიყვანეთ მონაცემები.",
+                parent_full_name: "მშობლის სახელი",
+                parent_phone_label: "ტელეფონი",
+                son_name_label: "მოთამაშის სახელი",
+                password_label: "პაროლი",
+                remember_me: "დამახსოვრება",
+                forgot_pass_link: "დაგავიწყდათ?",
+                new_pass_label: "ახალი პაროლი",
+                parent_login_submit: "შესვლა",
+                parent_whatsapp_submit: "WhatsApp",
+                parent_portal: "პორტალი",
+                logout_btn: "გასვლა",
+                parent_eval_title: "შეფასება",
+                parent_warnings_title: "გაფრთხილებები",
+                gallery_title: "გალერეა",
+                coach_1_name: "მწვრთნელი/ ხალილ ემარა",
+                coach_1_role: "Maven Hub-ის დამფუძნებელი და მეკარეების მწვრთნელი",
+                coach_2_name: "მწვრთნელი/ აბდელრაჰმან ხალილი",
+                coach_2_role: "ფიზ. მომზადების მწვრთნელი",
+                coach_3_name: "მწვრთნელი/ ამირ აჰმედი",
+                coach_3_role: "ტექნიკის მწვრთნელი",
+                analyst_name: "ანალიტიკოსი/ მოჰამედ მედანი",
+                analyst_role: "ანალიტიკოსი",
+                parent_avatar_label: "ავატარი"
+            }
+        };
+
+        const coachesBios = {
+            ar: {
+                khalil: {
+                    name: "كابتن/ خليل عمارة",
+                    role: "مؤسس نادي Maven Hub ومدرب الحراس",
+                    desc: "مؤسس نادي ميفن هاب و مدرب مواليد 97، حراس مرمى في حرس الحدود وسموحة سابقاً. درب أكتر من تمانية أكاديميات على مدار تمانية سنين ولديه خبرة إدارية واسعة. درب كمدير فني لفريق المنتزه 2007، وكان لاعب سابق في ناشئين بيراميدز وفي جورجيا والامارات، وحاصل على شهادات تغذية معتمدة من European Academy Training Platform."
+                },
+                amir: {
+                    name: "كابتن/ أمير أحمد",
+                    role: "مدرب المهارات والبراعم",
+                    desc: "مدرب ناشئ وواعد من مواليد 2007 وله خبرة سنتين في تدريب الأكاديميات، وطالب بكلية التربية الرياضية جامعة الإسكندرية حالياً."
+                },
+                abdelrahman: {
+                    name: "كابتن/ عبد الرحمن خليل",
+                    role: "مدرب الأحمال والسرعات",
+                    desc: "مدرب مواليد 2000 وله خبرة أكتر من ست سنين في تدريب الأكاديميات، وخريج كلية التربية الرياضية جامعة الإسكندرية."
+                },
+                medany: {
+                    name: "محلل الأداء/ محمد مدني",
+                    role: "محلل الأداء الكروي",
+                    desc: "محلل أداء تكتيكي وبدني، متخصص في قراءة المباريات، دراسة الخصوم، وتطوير إحصائيات اللاعبين عبر أحدث الأنظمة التقنية."
+                }
+            },
+            en: {
+                khalil: {
+                    name: "Coach/ Khalil Emara",
+                    role: "Founder of Maven Hub Club & Goalkeepers Coach",
+                    desc: "Founder of Maven Hub and coach of '97 born, former goalkeeper at Haras El Hodoud and Smouha. Coached across more than 8 academies for 8 years with extensive management experience. Head coach of El Montaza 2007 team, former youth player at Pyramids FC, Georgia, and UAE, holding nutrition certificates from European Academy Training Platform."
+                },
+                amir: {
+                    name: "Coach/ Amir Ahmed",
+                    role: "Skills & Buds Coach",
+                    desc: "Young and promising coach born in 2007 with 2 years of academy coaching experience, currently a student at the Faculty of Physical Education, Alexandria University."
+                },
+                abdelrahman: {
+                    name: "Coach/ Abdelrahman Khalil",
+                    role: "Fitness & Speed Coach",
+                    desc: "Coach born in 2000 with over 6 years of academy coaching experience, graduate of the Faculty of Physical Education, Alexandria University."
+                },
+                medany: {
+                    name: "Analyst/ Mohamed Medany",
+                    role: "Performance Analyst",
+                    desc: "Tactical and physical performance analyst specialized in match analysis, opponent scouting, and player stats development."
+                }
+            },
+            ka: {
+                khalil: {
+                    name: "მწვრთნელი/ ხალილ ემარა",
+                    role: "Maven Hub-ის დამფუძნებელი და მეკარეების მწვრთნელი",
+                    desc: "Maven Hub-ის დამფუძნებელი."
+                },
+                amir: {
+                    name: "მწვრთნელი/ ამირ აჰმედი",
+                    role: "ტექნიკის მწვრთნელი",
+                    desc: "ახალგაზრდა და პერსპექტიული მწვრთნელი."
+                },
+                abdelrahman: {
+                    name: "მწვრთნელი/ აბდელრაჰმან ხალილი",
+                    role: "ფიზ. მომზადების მწვრთნელი",
+                    desc: "მწვრთნელი 6 წელზე მეტი გამოცდილებით."
+                },
+                medany: {
+                    name: "ანალიტიკოსი/ მოჰამედ მედანი",
+                    role: "ანალიტიკოსი",
+                    desc: "ტაქტიკური ანალიტიკოსი."
+                }
+            }
+        };
+
+        let academyLegendsData = [
+            { monthLabel: "نوفمبر (November)", nameAr: "", nameEn: "", nameKa: "", img: "" },
+            { monthLabel: "ديسمبر (December)", nameAr: "", nameEn: "", nameKa: "", img: "" },
+            { monthLabel: "يناير (January)", nameAr: "", nameEn: "", nameKa: "", img: "" },
+            { monthLabel: "فبراير (February)", nameAr: "", nameEn: "", nameKa: "", img: "" },
+            { monthLabel: "مارس (March)", nameAr: "", nameEn: "", nameKa: "", img: "" },
+            { monthLabel: "أبريل (April)", nameAr: "", nameEn: "", nameKa: "", img: "" },
+            { monthLabel: "مايو (May)", nameAr: "", nameEn: "", nameKa: "", img: "" },
+            { monthLabel: "يونيو (June)", nameAr: "", nameEn: "", nameKa: "", img: "" }
+        ];
+
+        let playerOfTheMonth = { name: "", img: "" };
+        let playerOfTheWeek = { name: "", img: "" };
+
+        let playersData = {
+            '2010-2012': [],
+            '2013-2014': [],
+            '2015-2016': []
+        };
+
+        let artisticGalleryImages = [
+            { id: 1, url: "https://i.ibb.co/Kxtrs2fB/571130373-122145397838897937-8287073912211216502-n.jpg", span: "slot-1" },
+            { id: 2, url: "https://i.ibb.co/nMcPdkVM/571298517-122145397982897937-1422789647226507421-n.jpg", span: "slot-2" },
+            { id: 3, url: "https://i.ibb.co/jktyrmMX/543521129-122137955502897937-8173491443653136263-n.jpg", span: "slot-3" },
+            { id: 4, url: "https://i.ibb.co/FL7hZvr6/571360690-122145397718897937-8087716033927012128-n.jpg", span: "slot-2" },
+            { id: 5, url: "https://i.ibb.co/YBSDXz9Z/544790912-122137955688897937-5264359672051010372-n.jpg", span: "slot-5" },
+            { id: 6, url: "https://i.ibb.co/rG1yPWSY/627149590-122149673970897937-1759600100726710603-n.jpg", span: "slot-6" },
+            { id: 7, url: "https://i.ibb.co/whmQXnhQ/649501789-122152862804897937-7750849642595088651-n.jpg", span: "slot-7" },
+            { id: 8, url: "https://i.ibb.co/PZBsGGBV/806473736-122159011704897937-2516480806441584693-n.jpg", span: "slot-8" },
+            { id: 9, url: "https://i.ibb.co/yFZhSX5L/807385761-122159011536897937-6799042578500171261-n.jpg", span: "slot-9" },
+            { id: 10, url: "https://i.ibb.co/fGCRtkYk/858814271-122161109918897937-7769913165021237978-n.jpg", span: "slot-10" }
+        ];
+
+        let parentsAccounts = {}; 
+        let pendingParentRequests = []; 
+        let pendingForgotRequests = []; 
+        let systemNotifications = []; 
+        let coachNotebookEntries = []; 
+        let newsArticles = [
+            { id: 1, title: "مرحباً بكم في الموقع الرسمي لنادي Maven Hub", content: "انطلق نظامنا الاحترافي الجديد لمتابعة اللاعبين وتحليلات الأداء البدني والتكتيكي.", img: "", date: "2026/10/25" }
+        ];
+
+        let isStaffLoggedIn = false;
+        let loggedInStaffKey = '';
+        let loggedInStaffName = '';
+        let loggedInUserType = null;
+        let currentLoggedInPlayer = null;
+        let currentLoggedInParentObj = null;
+        let currentGroupKey = '';
+        let currentActivePlayerForPhoto = null;
+        let targetCoachForDirectMsg = null;
+        let currentGallerySlotId = null;
+        let activeCoachKeyForAvatar = null;
+        let activeCoachKeyForBio = '';
+
+        let cropSourceImage = null;
+        let cropTargetType = '';
+        let cropCanvasObj, cropCtxObj;
+        let cropBox = { x: 20, y: 20, size: 160 };
+        let isDraggingCrop = false;
+        let dragStartX = 0, dragStartY = 0;
+
+        const staffCredentials = {
+            "khalil": { pass: "khalil12341234", name: "كابتن/ خليل عمارة", img: "" },
+            "abdelrahman": { pass: "abdelrahman12341234", name: "كابتن/ عبد الرحمن خليل", img: "" },
+            "amir": { pass: "amir12341234", name: "كابتن/ أمير أحمد", img: "" },
+            "medany": { pass: "medany12341234", name: "محلل الأداء/ محمد مدني", img: "" }
+        };
+
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.getElementById('loading-screen').classList.add('fade-out'); }, 1400);
+            renderArtisticGallery();
+            renderAcademyLegends();
+            updatePotmUI();
+            updatePotwUI();
+            updateNotificationsUI();
+            renderCoachesImages();
+            renderCoachNotebookList();
+            renderNewsTickers();
+            renderNewsFullList();
+
+            const savedCoachKey = localStorage.getItem('maven_saved_coach_key');
+            if(savedCoachKey && staffCredentials[savedCoachKey]) {
+                isStaffLoggedIn = true;
+                loggedInStaffKey = savedCoachKey;
+                loggedInStaffName = staffCredentials[savedCoachKey].name;
+                loggedInUserType = 'staff';
+                updateHeaderUserAvatarUI();
+            }
+        });
+
+        function renderCoachesImages() {
+            for(let key in staffCredentials) {
+                const imgEl = document.getElementById(`coachImg_${key}`);
+                if(imgEl) { imgEl.src = staffCredentials[key].img || ''; }
+            }
+        }
+
+        function triggerHeaderAvatarUpload() {
+            if(!isStaffLoggedIn || !loggedInStaffKey) {
+                openLoginModal('coach');
+                return;
+            }
+            activeCoachKeyForAvatar = loggedInStaffKey;
+            document.getElementById('coach-avatar-upload-input').click();
+        }
+
+        function toggleStaffDropdown() {
+            document.getElementById('staffDropdownMenu').classList.toggle('active');
+        }
+
+        function openCoachDashboardTab(tabName) {
+            document.getElementById('staffDropdownMenu').classList.remove('active');
+            openCoachDashboard();
+            switchCoachTab(tabName);
+        }
+
+        function previewCropImage(event, targetType) {
+            const file = event.target.files[0];
+            if(!file) return;
+            cropTargetType = targetType;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cropSourceImage = new Image();
+                cropSourceImage.onload = function() {
+                    openCropModal();
+                };
+                cropSourceImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function openCropModal() {
+            document.getElementById('crop-modal').classList.add('active');
+            cropCanvasObj = document.getElementById('cropCanvas');
+            cropCtxObj = cropCanvasObj.getContext('2d');
+            
+            let maxW = 320;
+            let scale = Math.min(1, maxW / cropSourceImage.width);
+            cropCanvasObj.width = cropSourceImage.width * scale;
+            cropCanvasObj.height = cropSourceImage.height * scale;
+            
+            cropBox = { x: 10, y: 10, size: Math.min(cropCanvasObj.width, cropCanvasObj.height) * 0.7 };
+            drawCropCanvas();
+
+            cropCanvasObj.onmousedown = startCropDrag;
+            cropCanvasObj.onmousemove = moveCropDrag;
+            cropCanvasObj.onmouseup = endCropDrag;
+        }
+
+        function closeCropModal() {
+            document.getElementById('crop-modal').classList.remove('active');
+        }
+
+        function drawCropCanvas() {
+            cropCtxObj.clearRect(0, 0, cropCanvasObj.width, cropCanvasObj.height);
+            cropCtxObj.drawImage(cropSourceImage, 0, 0, cropCanvasObj.width, cropCanvasObj.height);
+            
+            cropCtxObj.fillStyle = 'rgba(0,0,0,0.6)';
+            cropCtxObj.fillRect(0, 0, cropCanvasObj.width, cropCanvasObj.height);
+            
+            cropCtxObj.save();
+            cropCtxObj.beginPath();
+            cropCtxObj.arc(cropBox.x + cropBox.size/2, cropBox.y + cropBox.size/2, cropBox.size/2, 0, Math.PI * 2);
+            cropCtxObj.clip();
+            cropCtxObj.drawImage(cropSourceImage, 0, 0, cropCanvasObj.width, cropCanvasObj.height);
+            cropCtxObj.restore();
+
+            cropCtxObj.beginPath();
+            cropCtxObj.arc(cropBox.x + cropBox.size/2, cropBox.y + cropBox.size/2, cropBox.size/2, 0, Math.PI * 2);
+            cropCtxObj.strokeStyle = '#3b82f6';
+            cropCtxObj.lineWidth = 3;
+            cropCtxObj.stroke();
+        }
+
+        function startCropDrag(e) {
+            isDraggingCrop = true;
+            dragStartX = e.offsetX - cropBox.x;
+            dragStartY = e.offsetY - cropBox.y;
+        }
+        function moveCropDrag(e) {
+            if(!isDraggingCrop) return;
+            cropBox.x = Math.max(0, Math.min(cropCanvasObj.width - cropBox.size, e.offsetX - dragStartX));
+            cropBox.y = Math.max(0, Math.min(cropCanvasObj.height - cropBox.size, e.offsetY - dragStartY));
+            drawCropCanvas();
+        }
+        function endCropDrag() { isDraggingCrop = false; }
+
+        function executeCropAndSave() {
+            let tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 300;
+            tempCanvas.height = 300;
+            let tempCtx = tempCanvas.getContext('2d');
+            
+            let scale = cropSourceImage.width / cropCanvasObj.width;
+            tempCtx.drawImage(
+                cropSourceImage,
+                cropBox.x * scale, cropBox.y * scale, cropBox.size * scale, cropBox.size * scale,
+                0, 0, 300, 300
+            );
+            
+            let croppedDataUrl = tempCanvas.toDataURL('image/jpeg', 0.9);
+            closeCropModal();
+
+            if(cropTargetType === 'player' && currentActivePlayerForPhoto) {
+                currentActivePlayerForPhoto.img = croppedDataUrl;
+                document.getElementById('modal-player-avatar').src = croppedDataUrl;
+                alert('تم قص وحفظ الصورة الشخصية للاعب بنجاح!');
+                if(currentGroupKey) renderPlayersCards(currentGroupKey);
+            } else if(cropTargetType === 'coach' && activeCoachKeyForAvatar) {
+                staffCredentials[activeCoachKeyForAvatar].img = croppedDataUrl;
+                renderCoachesImages();
+                updateHeaderUserAvatarUI();
+                alert('تم قص وحفظ صورتك الشخصية كمدرب بنجاح!');
+            } else if(cropTargetType === 'parent') {
+                document.getElementById('parent-avatar').src = croppedDataUrl;
+                if(currentLoggedInParentObj) currentLoggedInParentObj.avatar = croppedDataUrl;
+                alert('تم قص وحفظ صورة ولي الأمر بنجاح!');
+            } else if(cropTargetType === 'gallery' && currentGallerySlotId) {
+                let found = artisticGalleryImages.find(img => img.id === currentGallerySlotId);
+                if(found) {
+                    found.url = croppedDataUrl;
+                    renderArtisticGallery();
+                    alert('تم إضافة الصورة المقصوصة للمعرض بنجاح!');
+                }
+            } else if(cropTargetType === 'potm') {
+                playerOfTheMonth.img = croppedDataUrl;
+                updatePotmUI();
+                alert('تم تحديث صورة لاعب الشهر بنجاح!');
+            } else if(cropTargetType === 'potw') {
+                playerOfTheWeek.img = croppedDataUrl;
+                updatePotwUI();
+                alert('تم تحديث صورة لاعب الأسبوع بنجاح!');
+            } else if(cropTargetType === 'legend') {
+                const monthIdx = document.getElementById('admin-legend-month-select').value;
+                academyLegendsData[monthIdx].img = croppedDataUrl;
+                renderAcademyLegends();
+                alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
+            } else if(cropTargetType === 'news') {
+                window.tempNewsCroppedImg = croppedDataUrl;
+                alert('تم اقتصاص صورة الخبر بنجاح!');
+            } else if(cropTargetType === 'newPlayer') {
+                window.tempNewPlayerCroppedImg = croppedDataUrl;
+                alert('تم اقتصاص صورة اللاعب الجديد بنجاح!');
+            }
+        }
+
+        function addNewCoachNote() {
+            const input = document.getElementById('coachNewNoteInput');
+            const text = input.value.trim();
+            if(!text) { alert('اكتب نص الملاحظة أولاً'); return; }
+            const now = new Date();
+            coachNotebookEntries.unshift({
+                text: text,
+                dateTime: `${now.toLocaleDateString('ar-EG')} - ${now.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}`,
+                author: loggedInStaffName || 'مشرف النادي'
+            });
+            input.value = '';
+            renderCoachNotebookList();
+            alert('تم حفظ الملاحظة بنجاح وتوثيقها بالتاريخ والوقت!');
+        }
+
+        function renderCoachNotebookList() {
+            const container = document.getElementById('coachNotebookListContainer');
+            if(!container) return;
+            if(coachNotebookEntries.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem; text-align:center;">لا توجد ملاحظات مسجلة حالياً.</p>`;
+                return;
+            }
+            container.innerHTML = '';
+            coachNotebookEntries.forEach((note) => {
+                container.innerHTML += `
+                    <div style="background:var(--card-bg); border:1px solid var(--accent); border-radius:10px; padding:12px 15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-size:0.8rem; color:var(--accent);">
+                            <span><i class="fa-solid fa-user-pen"></i> ${note.author}</span>
+                            <span><i class="fa-solid fa-clock"></i> ${note.dateTime}</span>
+                        </div>
+                        <div style="color:var(--text); font-size:1rem; line-height:1.5;">${note.text}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function addNewNewsArticle() {
+            const title = document.getElementById('admin-news-title').value.trim();
+            const content = document.getElementById('admin-news-content').value.trim();
+            const imgUrl = window.tempNewsCroppedImg || '';
+            if(!title || !content) { alert('أدخل عنوان ومحتوى الخبر'); return; }
+
+            const now = new Date();
+            newsArticles.unshift({
+                id: Date.now(),
+                title: title,
+                content: content,
+                img: imgUrl,
+                date: now.toLocaleDateString('ar-EG')
+            });
+            document.getElementById('admin-news-title').value = '';
+            document.getElementById('admin-news-content').value = '';
+            window.tempNewsCroppedImg = '';
+            renderNewsTickers();
+            renderNewsFullList();
+            alert('تم نشر الخبر بنجاح في الواجهة!');
+        }
+
+        function renderNewsTickers() {
+            const container = document.getElementById('homeNewsTickerContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            if(newsArticles.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">لا توجد أخبار جديدة حالياً.</p>`;
+                return;
+            }
+            newsArticles.forEach(news => {
+                let imgTag = news.img ? `<img src="${news.img}" style="width:100%; max-height:250px; object-fit:cover; border-radius:12px; margin-bottom:12px; border:2px solid var(--accent);">` : '';
+                container.innerHTML += `
+                    <div class="news-neon-strip" onclick="this.classList.toggle('expanded')">
+                        <div class="news-strip-header">
+                            <span><i class="fa-solid fa-bolt" style="color:var(--accent); margin-left:8px;"></i> ${news.title}</span>
+                            <span style="font-size:0.8rem; color:var(--text-muted);">${news.date} <i class="fa-solid fa-chevron-down" style="margin-right:5px;"></i></span>
+                        </div>
+                        <div class="news-strip-body">
+                            ${imgTag}
+                            <p>${news.content}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderNewsFullList() {
+            const container = document.getElementById('newsSectionFullList');
+            if(!container) return;
+            container.innerHTML = '';
+            newsArticles.forEach(news => {
+                let imgTag = news.img ? `<img src="${news.img}" style="width:100%; max-height:300px; object-fit:cover; border-radius:12px; margin-bottom:15px; border:2px solid var(--accent);">` : '';
+                container.innerHTML += `
+                    <div style="background:var(--card-bg); backdrop-filter:blur(14px); border:2px solid var(--accent); border-radius:18px; padding:25px; box-shadow:0 0 30px var(--accent-glow);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:0.85rem; color:var(--accent);">
+                            <span><i class="fa-solid fa-calendar"></i> ${news.date}</span>
+                            <span>إعلان رسمي</span>
+                        </div>
+                        <h3 style="color:var(--text); font-size:1.4rem; margin-bottom:12px; text-shadow:0 0 10px var(--accent-glow);">${news.title}</h3>
+                        ${imgTag}
+                        <p style="color:var(--text-muted); line-height:1.8; font-size:1.05rem;">${news.content}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fa-solid fa-sun';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-moon';
+            }
+        }
+
+        function changeLanguage(lang) {
+            document.documentElement.setAttribute('dir', lang === 'en' || lang === 'ka' ? 'ltr' : 'rtl');
+            document.documentElement.setAttribute('lang', lang);
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            renderAcademyLegends();
+            updateHeaderUserAvatarUI();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function toggleSubmenu(id) { document.getElementById(id).classList.toggle('active'); }
+        function switchSection(sectionId) {
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const isActive = item.classList.contains('active');
+            document.querySelectorAll('.accordion-item').forEach(acc => acc.classList.remove('active'));
+            if (!isActive) { item.classList.add('active'); }
+        }
+
+        function togglePreviewMode() { document.body.classList.toggle('preview-mode'); }
+        function toggleLoginMenu() { document.getElementById('loginMenuBox').classList.toggle('active'); }
+
+        function openLoginModal(type) {
+            document.getElementById('loginMenuBox').classList.remove('active');
+            const body = document.getElementById('authModalBody');
+            if(type === 'player') {
+                body.innerHTML = `
+                    <h3 style="text-align:center; margin-bottom:15px; color:var(--accent);">تسجيل دخول اللاعب</h3>
+                    <div class="form-group"><label>اسم اللاعب</label><input type="text" id="auth-p-name" class="eval-input" placeholder="اسمك"></div>
+                    <div class="form-group"><label>كلمة المرور</label><input type="password" id="auth-p-pass" class="eval-input" placeholder="كلمة المرور"></div>
+                    <div style="text-align:left; margin-bottom:15px;"><a href="#" onclick="openForgotPasswordModal('player')" style="color:var(--accent); font-size:0.85rem; text-decoration:none;">نسيت كلمة المرور؟</a></div>
+                    <button class="btn-primary-custom" style="width:100%;" onclick="submitPlayerAuthLogin()">دخول اللاعب</button>
+                `;
+            } else if(type === 'parent') {
+                switchSection('parents-sec');
+                closeAuthModal();
+                return;
+            } else if(type === 'coach') {
+                body.innerHTML = `
+                    <h3 style="text-align:center; margin-bottom:15px; color:var(--accent);">تسجيل دخول المدرب / محلل الأداء</h3>
+                    <div class="form-group"><label>اسم المستخدم (مثال: khalil)</label><input type="text" id="auth-c-user" class="eval-input" placeholder="أدخل اسم المستخدم"></div>
+                    <div class="form-group"><label>كلمة المرور</label><input type="password" id="auth-c-pass" class="eval-input" placeholder="كلمة المرور"></div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin: 15px 0;">
+                        <input type="checkbox" id="coach-remember-me" style="width:auto; cursor:pointer;">
+                        <label for="coach-remember-me" style="margin:0; cursor:pointer; font-weight:700;">تذكرني (Remember Me)</label>
+                    </div>
+                    <button class="btn-primary-custom" style="width:100%; margin-top:5px;" onclick="submitCoachAuthLogin()">دخول للوحة التحكم</button>
+                `;
+            }
+            document.getElementById('auth-modal').classList.add('active');
+        }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.remove('active'); }
+
+        function toggleNotificationDropdown() { document.getElementById('notificationDropdown').classList.toggle('active'); }
+
+        function addSystemNotification(msg, recipientRole) {
+            systemNotifications.unshift({ msg, time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}), recipient: recipientRole });
+            updateNotificationsUI();
+        }
+
+        function updateNotificationsUI() {
+            const badge = document.getElementById('notifBadge');
+            const list = document.getElementById('notificationList');
+            badge.innerText = systemNotifications.length;
+            if(systemNotifications.length === 0) {
+                list.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem; text-align:center;" data-translate="no_notifications">لا توجد إشعارات جديدة حالياً.</p>`;
+                return;
+            }
+            list.innerHTML = '';
+            systemNotifications.forEach((n) => {
+                list.innerHTML += `
+                    <div class="notif-item">
+                        <div style="font-weight:700; color:var(--accent); margin-bottom:3px;">إشعار نادي Maven Hub</div>
+                        <div>${n.msg}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; text-align:left;">${n.time}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function openForgotPasswordModal(role) {
+            closeAuthModal();
+            document.getElementById('forgot-pass-modal').classList.add('active');
+        }
+        function closeForgotPasswordModal() { document.getElementById('forgot-pass-modal').classList.remove('active'); }
+
+        function submitForgotPasswordRequest() {
+            const name = document.getElementById('forgotInputName').value.trim();
+            if(!name) { alert('أدخل الاسم من فضلك'); return; }
+            pendingForgotRequests.push({ name, time: new Date().toLocaleString() });
+            addSystemNotification(`طلب استعادة كلمة المرور مقدم من: ${name}.`, 'coach');
+            alert('تم إرسال طلب استعادة كلمة المرور للمدربين بنجاح.');
+            closeForgotPasswordModal();
+        }
+
+        function parentRegisterWhatsApp() {
+            const sonName = document.getElementById('parent-reg-sonname').value.trim();
+            const fullName = document.getElementById('parent-reg-fullname').value.trim();
+            const phone = document.getElementById('parent-reg-phone').value.trim();
+            const pass = document.getElementById('parent-reg-pass').value.trim();
+
+            if(!sonName || !fullName || !phone || !pass) { alert('يرجى إكمال جميع الحانات المطلوبة'); return; }
+
+            let foundPlayer = null;
+            for(let g in playersData) {
+                const match = playersData[g].find(p => p.name.toLowerCase() === sonName.toLowerCase());
+                if(match) foundPlayer = match;
+            }
+            if(!foundPlayer) {
+                alert('خطأ: اسم الابن اللاعب غير مسجل بالنادي.');
+                return;
+            }
+
+            const avatarUrl = document.getElementById('parent-avatar').src || '';
+            pendingParentRequests.push({
+                parentName: fullName,
+                sonName: foundPlayer.name,
+                phone: phone,
+                pass: pass,
+                avatar: avatarUrl,
+                sonObj: foundPlayer
+            });
+            addSystemNotification(`طلب حساب ولي أمر جديد لـ (${fullName}) خاص بالابن (${foundPlayer.name}).`, 'coach');
+            
+            const waMessage = encodeURIComponent(`مرحباً إدارة نادي Maven Hub، أود طلب تفعيل حساب ولي الأمر.\nاسم ولي الأمر: ${fullName}\nاسم الابن اللاعب: ${foundPlayer.name}\nرقم الهاتف: ${phone}`);
+            window.open(`https://wa.me/201009955294?text=${waMessage}`, '_blank');
+
+            alert('تم إرسال طلب انضمامك وجاري توجيهك لواتساب النادي لإتمام التفعيل مع المدربين.');
+            switchParentTab('login');
+        }
+
+        function parentLogin() {
+            const nameInput = document.getElementById('parent-login-name');
+            const passInput = document.getElementById('parent-login-pass');
+            const name = nameInput.value.trim().toLowerCase();
+            const pass = passInput.value.trim();
+
+            if(!parentsAccounts[name] || parentsAccounts[name].pass !== pass) {
+                alert('خطأ في اسم الابن أو كلمة المرور، أو أن حسابك لم يعتمده المدرب بعد.');
+                return;
+            }
+
+            let parentDataObj = parentsAccounts[name];
+            let foundPlayer = parentDataObj.sonObj;
+
+            loggedInUserType = 'parent';
+            currentLoggedInParentObj = { name: parentDataObj.parentName, son: foundPlayer, avatar: parentDataObj.avatar };
+            updateHeaderUserAvatarUI();
+
+            document.getElementById('parent-auth-box').style.display = 'none';
+            document.getElementById('parent-dashboard').style.display = 'block';
+            document.getElementById('welcome-parent-name').innerText = 'ولي الأمر / ' + parentDataObj.parentName;
+            document.getElementById('parent-avatar').src = parentDataObj.avatar || '';
+
+            const warningBox = document.getElementById('parent-warning-box');
+            const warningsList = document.getElementById('parent-warnings-list');
+            if(foundPlayer.warnings && foundPlayer.warnings.length > 0) {
+                warningBox.style.display = 'block';
+                warningsList.innerHTML = '';
+                foundPlayer.warnings.forEach(w => {
+                    warningsList.innerHTML += `
+                        <div style="background:rgba(239, 68, 68, 0.1); border:1px solid #ef4444; border-radius:8px; padding:10px 12px;">
+                            <div style="font-size:0.75rem; color:#fca5a5; margin-bottom:3px;"><i class="fa-solid fa-clock"></i> ${w.date}</div>
+                            <div style="color:var(--text); font-size:1rem;">${w.text}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                warningBox.style.display = 'none';
+            }
+
+            const sonCardContainer = document.getElementById('son-card-container');
+            sonCardContainer.innerHTML = `
+                <div class="player-card" onclick="triggerParentSonFlipAndDetails(${foundPlayer.id})">
+                    <img src="${foundPlayer.img}" alt="${foundPlayer.name}">
+                    <h3 style="color:var(--text);">${foundPlayer.name} (الابن)</h3>
+                    <p style="color:var(--accent); font-weight:bold; margin:5px 0;">${foundPlayer.pos}</p>
+                    <p style="font-size:0.95rem; color:var(--accent); margin-top:5px;">انقر لعرض الاستمارة التفصيلية الكاملة</p>
+                </div>
+                <div class="player-card">
+                    <h4 style="color:var(--text);">إجمالي الحصص</h4>
+                    <p style="font-size: 1.8rem; font-weight:bold; color:var(--accent); margin-top:10px;">8 حصص</p>
+                </div>
+                <div class="player-card">
+                    <h4 style="color:var(--text);">حالة الاشتراك</h4>
+                    <p style="font-size: 1.5rem; font-weight:bold; color: ${foundPlayer.status === 'Paid' ? '#22c55e' : '#ef4444'}; margin-top:10px;">${foundPlayer.status}</p>
+                </div>
+            `;
+            renderParentCompactSchedule(foundPlayer);
+
+            let attendedCount = (foundPlayer.schedule || []).filter(s => s.attended).length;
+            document.getElementById('parent-son-evaluation-view').innerHTML = `
+                <p style="margin-bottom:10px; color:var(--text);"><b>1. الالتزام بالمواعيد:</b> ${foundPlayer.eval.commitment} / 5</p>
+                <p style="margin-bottom:10px; color:var(--text);"><b>2. احترام المدرب:</b> ${foundPlayer.eval.respect} / 5</p>
+                <p style="margin-bottom:10px; color:var(--text);"><b>3. الشغف للتطور:</b> ${foundPlayer.eval.passion} / 5</p>
+                <p style="margin-bottom:10px; color:var(--text);"><b>سجل حضور الحصص:</b> تم حضور <span style="color:#22c55e; font-weight:bold;">${attendedCount}</span> حصة من أصل 8 حصص.</p>
+                <p style="margin-top:15px; color:var(--accent);"><b>القرار النهائي:</b> ${foundPlayer.eval.finalDecision}</p>
+            `;
+        }
+
+        function triggerParentAvatarUpload() { document.getElementById('parent-avatar-upload-input').click(); }
+
+        function submitPlayerAuthLogin() {
+            const name = document.getElementById('auth-p-name').value.trim();
+            const pass = document.getElementById('auth-p-pass').value.trim();
+            let foundPlayer = null;
+            for(let g in playersData) {
+                const match = playersData[g].find(p => p.name.toLowerCase() === name.toLowerCase() && p.pass === pass);
+                if(match) foundPlayer = match;
+            }
+            if(foundPlayer) {
+                loggedInUserType = 'player';
+                currentLoggedInPlayer = foundPlayer;
+                updateHeaderUserAvatarUI();
+                closeAuthModal();
+                renderPlayerDetailsModal(foundPlayer, true, false);
+            } else {
+                alert('خطأ في اسم اللاعب أو كلمة المرور.');
+            }
+        }
+
+        function submitCoachAuthLogin() {
+            const user = document.getElementById('auth-c-user').value.trim().toLowerCase();
+            const pass = document.getElementById('auth-c-pass').value.trim();
+            const rememberMe = document.getElementById('coach-remember-me').checked;
+
+            if(staffCredentials[user] && staffCredentials[user].pass === pass) {
+                isStaffLoggedIn = true;
+                loggedInStaffKey = user;
+                loggedInStaffName = staffCredentials[user].name;
+                loggedInUserType = 'staff';
+                
+                if(rememberMe) {
+                    localStorage.setItem('maven_saved_coach_key', user);
+                } else {
+                    localStorage.removeItem('maven_saved_coach_key');
+                }
+
+                updateHeaderUserAvatarUI();
+                closeAuthModal();
+                openCoachDashboard();
+                alert('تم تسجيل الدخول بنجاح كـ ' + loggedInStaffName);
+            } else {
+                alert('اسم المستخدم أو كلمة المرور غير صحيحة.');
+            }
+        }
+
+        function updateHeaderUserAvatarUI() {
+            const avatarArea = document.getElementById('headerUserAvatarArea');
+            const userImg = document.getElementById('headerUserImg');
+            const userName = document.getElementById('headerUserName');
+            const loginBtn = document.getElementById('unifiedLoginBtn');
+
+            if (loggedInUserType === 'player' && currentLoggedInPlayer) {
+                avatarArea.style.display = 'flex';
+                userImg.src = currentLoggedInPlayer.img;
+                userName.innerText = currentLoggedInPlayer.name;
+                loginBtn.style.display = 'none';
+            } else if (loggedInUserType === 'parent' && currentLoggedInParentObj) {
+                avatarArea.style.display = 'flex';
+                userImg.src = currentLoggedInParentObj.avatar;
+                userName.innerText = 'ولي أمر: ' + currentLoggedInParentObj.name;
+                loginBtn.style.display = 'none';
+            } else if (loggedInUserType === 'staff') {
+                avatarArea.style.display = 'flex';
+                userImg.src = staffCredentials[loggedInStaffKey]?.img || '';
+                userName.innerText = loggedInStaffName;
+                loginBtn.style.display = 'none';
+            } else {
+                avatarArea.style.display = 'none';
+                loginBtn.style.display = 'block';
+            }
+        }
+
+        function globalLogout() {
+            loggedInUserType = null;
+            isStaffLoggedIn = false;
+            loggedInStaffKey = '';
+            loggedInStaffName = '';
+            currentLoggedInPlayer = null;
+            currentLoggedInParentObj = null;
+            localStorage.removeItem('maven_saved_coach_key');
+            updateHeaderUserAvatarUI();
+            closePlayerModal();
+            document.getElementById('parent-dashboard').style.display = 'none';
+            document.getElementById('parent-auth-box').style.display = 'block';
+            document.getElementById('staffDropdownMenu').classList.remove('active');
+            alert('تم تسجيل الخروج بنجاح.');
+            switchSection('home-section');
+        }
+
+        function openPlayersGroup(groupKey) {
+            currentGroupKey = groupKey;
+            document.getElementById('group-title-label').innerText = 'اللاعبون - مواليد ' + groupKey;
+            renderPlayersCards(groupKey);
+            switchSection('players-list-view');
+        }
+
+        function renderPlayersCards(groupKey) {
+            const container = document.getElementById('players-cards-container');
+            container.innerHTML = '';
+            if(playersData[groupKey].length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align:center; padding:50px; background:var(--card-bg); border-radius:20px; border:2px dashed var(--accent);">
+                        <i class="fa-solid fa-users-slash fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+                        <h3 style="color:var(--text); margin-bottom:10px;">لا توجد ملفات لاعبين حالياً في هذه الفئة</h3>
+                    </div>
+                `;
+                return;
+            }
+            playersData[groupKey].forEach(player => {
+                container.innerHTML += `
+                    <div class="player-card" onclick="triggerCinematicFlipAndProfile(${player.id})">
+                        <img src="${player.img}" alt="${player.name}">
+                        <h3 style="color:var(--text);">${player.name}</h3>
+                        <p style="color:var(--accent); font-weight:bold; margin:5px 0;">${player.pos}</p>
+                        <p style="color:var(--text-muted);">${player.birth}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function triggerCinematicFlipAndProfile(playerId) {
+            let player = null;
+            for (let g in playersData) {
+                const found = playersData[g].find(p => p.id === playerId);
+                if (found) player = found;
+            }
+            if(!player) return;
+
+            document.getElementById('flipCardFront').innerHTML = `
+                <img src="${player.img}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--accent); margin-bottom:12px; background:#112233;">
+                <h3 style="color:var(--text);">${player.name}</h3>
+                <p style="color:var(--accent); font-weight:bold; font-size:0.95rem; margin-top:5px;">${player.pos}</p>
+            `;
+
+            const overlay = document.getElementById('flipOverlay');
+            const container = document.getElementById('flippingCardContainer');
+            overlay.classList.add('active');
+            setTimeout(() => { container.classList.add('flip'); }, 100);
+
+            setTimeout(() => {
+                let isOwner = (loggedInUserType === 'player' && currentLoggedInPlayer && currentLoggedInPlayer.id === player.id);
+                let isCoach = isStaffLoggedIn;
+                renderPlayerDetailsModal(player, isOwner || isCoach, true);
+                container.classList.remove('flip');
+                setTimeout(() => { overlay.classList.remove('active'); }, 600);
+            }, 1400);
+        }
+
+        function triggerCoachFlipAndBio(coachKey) {
+            let bioData = coachesBios.ar[coachKey] || coachesBios.ar.khalil;
+            let imgUrl = staffCredentials[coachKey]?.img || '';
+            activeCoachKeyForBio = coachKey;
+
+            document.getElementById('flipCardFront').innerHTML = `
+                <img src="${imgUrl}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid var(--accent); margin-bottom:12px; background:#112233;">
+                <h3 style="color:var(--text);">${bioData.name}</h3>
+                <p style="color:var(--accent); font-weight:bold; font-size:0.95rem; margin-top:5px;">${bioData.role}</p>
+            `;
+            const overlay = document.getElementById('flipOverlay');
+            const container = document.getElementById('flippingCardContainer');
+            overlay.classList.add('active');
+            setTimeout(() => { container.classList.add('flip'); }, 100);
+
+            setTimeout(() => {
+                openCoachBio(coachKey);
+                container.classList.remove('flip');
+                setTimeout(() => { overlay.classList.remove('active'); }, 600);
+            }, 1400);
+        }
+
+        function closePlayerModal() { document.getElementById('player-modal').classList.remove('active'); }
+
+        function generateAutomaticSchedule(playerSessionsCount = 8) {
+            let sessions = [];
+            let currentDate = new Date();
+            let dayOfWeek = currentDate.getDay();
+            let daysUntilNextSunday = (0 - dayOfWeek + 7) % 7;
+            if (daysUntilNextSunday === 0) daysUntilNextSunday = 7;
+            currentDate.setDate(currentDate.getDate() + daysUntilNextSunday);
+            for(let i = 0; i < playerSessionsCount; i++) {
+                let dayName = currentDate.getDay() === 0 ? "الأحد" : "الخميس";
+                let dateStr = currentDate.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+                sessions.push({ day: dayName, date: dateStr, attended: false });
+                if(currentDate.getDay() === 0) currentDate.setDate(currentDate.getDate() + 4);
+                else currentDate.setDate(currentDate.getDate() + 3);
+            }
+            return sessions;
+        }
+
+        function checkAndResetScheduleIfCompleted(player) {
+            if(!player.schedule || player.schedule.length === 0) return;
+            let allAttended = player.schedule.every(s => s.attended);
+            if(allAttended) {
+                player.schedule = generateAutomaticSchedule(8);
+                player.monthCycle = (player.monthCycle || 1) + 1;
+            }
+        }
+
+        function toggleBubbleAttendance(playerId, sessionIdx) {
+            if(!isStaffLoggedIn) { alert('للمدربين فقط'); return; }
+            let player = null;
+            for (let g in playersData) {
+                const found = playersData[g].find(p => p.id === playerId);
+                if (found) player = found;
+            }
+            if(!player) return;
+            if(!player.schedule) player.schedule = generateAutomaticSchedule(8);
+            
+            player.schedule[sessionIdx].attended = !player.schedule[sessionIdx].attended;
+            checkAndResetScheduleIfCompleted(player);
+            renderPlayerDetailsModal(player, true, true);
+        }
+
+        function renderParentCompactSchedule(player) {
+            if(!player.schedule) player.schedule = generateAutomaticSchedule(8);
+            let attendedCount = player.schedule.filter(s => s.attended).length;
+            document.getElementById('parent-attendance-ratio-label').innerText = `تم حضور ${attendedCount} من 8 حصص (الدورة ${player.monthCycle || 1})`;
+            document.getElementById('parent-schedule-title-label').innerText = `سجل الحصص التدريبية (الدورة الشهرية رقم ${player.monthCycle || 1})`;
+            
+            let compactHtml = `<div class="bubble-sheet-container" style="padding:5px 0;">`;
+            player.schedule.forEach((s) => {
+                let attendedClass = s.attended ? 'attended' : '';
+                let statusIcon = s.attended ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-clock"></i>';
+                compactHtml += `
+                    <div class="bubble-item ${attendedClass}" style="min-width:70px; padding:6px 4px;">
+                        <div class="bubble-day" style="font-size:0.7rem;">${s.day}</div>
+                        <div class="bubble-date" style="font-size:0.8rem;">${s.date}</div>
+                        <div class="bubble-status-icon" style="font-size:0.85rem;">${statusIcon}</div>
+                    </div>
+                `;
+            });
+            compactHtml += `</div>`;
+            document.getElementById('parent-compact-bubble-container').innerHTML = compactHtml;
+        }
+
+        function renderPlayerDetailsModal(player, hasFullAccess, isVisitorView) {
+            currentActivePlayerForPhoto = player;
+            const modalBody = document.getElementById('player-modal-body');
+            if(!player.schedule) player.schedule = generateAutomaticSchedule(8);
+            
+            let canStaffEdit = (isStaffLoggedIn && hasFullAccess);
+            let photoTitleAttr = canStaffEdit ? 'onclick="triggerPhotoUpload()" title="انقر لتغيير الصورة"' : '';
+            let photoCursorStyle = canStaffEdit ? 'cursor:pointer;' : 'cursor:default;';
+
+            let bubbleHtml = `<div class="bubble-sheet-container">`;
+            player.schedule.forEach((s, idx) => {
+                let attendedClass = s.attended ? 'attended' : '';
+                let statusIcon = s.attended ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-clock"></i>';
+                let clickAction = canStaffEdit ? `onclick="toggleBubbleAttendance(${player.id}, ${idx})"` : '';
+                bubbleHtml += `
+                    <div class="bubble-item ${attendedClass}" ${clickAction}>
+                        <div class="bubble-day">${s.day}</div>
+                        <div class="bubble-date">${s.date}</div>
+                        <div class="bubble-status-icon">${statusIcon}</div>
+                    </div>
+                `;
+            });
+            bubbleHtml += `</div>`;
+
+            let editStaffControls = canStaffEdit ? `
+                <div style="background:var(--card-bg); backdrop-filter:blur(10px); border:2px dashed var(--accent); border-radius:12px; padding:20px; margin-bottom:25px; text-align:right;">
+                    <h4 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-user-pen"></i> استمارة التقييم الاحترافية وتعديل اللاعب</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
+                        <div class="form-group" style="margin:0;"><label>الاسم</label><input type="text" id="edit-p-name" class="eval-input" value="${player.name}"></div>
+                        <div class="form-group" style="margin:0;"><label>تاريخ الميلاد والسن</label><input type="text" id="edit-p-birth" class="eval-input" value="${player.birth}"></div>
+                        <div class="form-group" style="margin:0;"><label>القدم المفضلة</label><input type="text" id="edit-p-foot" class="eval-input" value="${player.preferredFoot || 'يمنى'}"></div>
+                        <div class="form-group" style="margin:0;"><label>الطول والوزن</label><input type="text" id="edit-p-hw" class="eval-input" value="${player.heightWeight || '150 سم / 45 كجم'}"></div>
+                        <div class="form-group" style="margin:0;"><label>المركز الأساسي</label><input type="text" id="edit-p-pos" class="eval-input" value="${player.pos}"></div>
+                        <div class="form-group" style="margin:0;"><label>المركز البديل</label><input type="text" id="edit-p-altpos" class="eval-input" value="${player.altPos || 'جناح أيمن'}"></div>
+                        <div class="form-group" style="margin:0;"><label>حالة الاشتراك</label><select id="edit-p-status" class="eval-input"><option value="Paid" ${player.status=='Paid'?'selected':''}>Paid</option><option value="Unpaid" ${player.status=='Unpaid'?'selected':''}>Unpaid</option></select></div>
+                    </div>
+
+                    <div style="background:rgba(59,130,246,0.1); padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid var(--accent);">
+                        <label style="color:var(--accent); font-weight:bold; margin-bottom:8px; display:block;"><i class="fa-solid fa-triangle-exclamation"></i> إضافة إنذار جديد لولي الأمر (تراكمي بالتاريخ)</label>
+                        <input type="text" id="new-warning-input" class="eval-input" placeholder="اكتب نص الإنذار الجديد هنا..." style="margin-bottom:8px;">
+                        <button class="btn-primary-custom" style="padding:6px 15px; font-size:0.85rem;" onclick="addPlayerWarning(${player.id})">إرسال الإنذار وتوثيقه</button>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h5 style="color:#fbbf24; margin:0;">التقييمات الرقمية (من 1 إلى 5):</h5>
+                        <button class="ctrl-btn" style="background:#dc2626; border-color:#dc2626; color:#fff; font-size:0.8rem; padding:4px 10px;" onclick="resetPlayerStats(${player.id})"><i class="fa-solid fa-rotate-left"></i> زرار Reset (تصفير التقييمات)</button>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+                        ${['commitment','respect','passion','tackling','positioning','interceptions','clearing','explosive','ballspeed','recovery','stamina','onevone','dribbletac','smartsf','shield','shotchoice','shotacc','weakfoot','finishing','breakingpass','firsttouch','scanning','pressingtrig'].map(k => `
+                            <div class="form-group">
+                                <label style="font-size:0.8rem;">${k}</label>
+                                <select id="edit-${k}" class="eval-input">
+                                    <option value="-" ${player.eval[k] === '-' ? 'selected' : ''}>- من 5</option>
+                                    ${[1,2,3,4,5].map(n => `<option value="${n}" ${player.eval[k] == n ? 'selected' : ''}>${n}</option>`).join('')}
+                                </select>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="form-group" style="margin-top:10px;"><label>القرار النهائي والتوصيات</label><input type="text" id="edit-decision" class="eval-input" value="${player.eval.finalDecision}"></div>
+                    <button class="btn-primary-custom" style="width:100%; margin-top:15px;" onclick="savePlayerEdits(${player.id})">حفظ الاستمارة الشاملة</button>
+                </div>
+            ` : '';
+
+            let html = `
+                <div style="text-align:center; margin-bottom:20px;">
+                    <img id="modal-player-avatar" src="${player.img}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--accent); background:#112233; ${photoCursorStyle}" ${photoTitleAttr}>
+                    <h2 style="color:var(--text);">${player.name}</h2>
+                    <p style="color:var(--accent); font-weight:bold;">${player.pos} | ${player.birth}</p>
+            `;
+
+            if(hasFullAccess) {
+                html += `
+                    <p style="margin-top:5px; font-size:0.95rem; color:var(--text);">الاشتراك: <span style="font-weight:bold; color:${player.status === 'Paid' ? '#22c55e' : '#ef4444'};">${player.status}</span></p>
+                    <div style="margin-top:20px; text-align:right; background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px;">
+                        <h4 style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-calendar-days"></i> سجل الحصص التدريبية (8 حصص)</h4>
+                        ${bubbleHtml}
+                    </div>
+                </div>
+                ${editStaffControls}
+                <div class="eval-sheet">
+                `;
+            } else {
+                html += `
+                    <p style="margin-top:10px; color:var(--text-muted); font-size:0.9rem;">(بروفايل زميل - عرض البيانات الأساسية)</p>
+                </div>
+                <div class="eval-sheet">
+                `;
+            }
+
+            let formatVal = (v) => v === '-' ? '- من 5' : (v + ' / 5');
+
+            let sections = [];
+            if(hasFullAccess) {
+                sections = [
+                    { title: 'أولاً: البيانات الأساسية للاعب', fields: [{label: 'الاسم', val: player.name}, {label: 'تاريخ الميلاد والسن', val: player.birth}, {label: 'القدم المفضلة', val: player.preferredFoot || 'يمنى'}, {label: 'الطول والوزن', val: player.heightWeight || '150 سم / 45 كجم'}, {label: 'المركز الأساسي', val: player.pos}, {label: 'المركز البديل', val: player.altPos || 'جناح أيمن'}] },
+                    { title: 'ثانياً: الجانب السلوكي والالتزام', fields: [{label: 'الالتزام بالمواعيد', val: formatVal(player.eval.commitment)}, {label: 'احترام المدرب والزملاء', val: formatVal(player.eval.respect)}, {label: 'الشغف للتطور', val: formatVal(player.eval.passion)}] },
+                    { title: 'ثالثاً: النقاط الدفاعية', fields: [{label: 'الضغط والافكاك (Tackling)', val: formatVal(player.eval.tackling)}, {label: 'التمركز الدفاعي (Positioning)', val: formatVal(player.eval.positioning)}, {label: 'قراءة اللعب (Interceptions)', val: formatVal(player.eval.interceptions)}, {label: 'السلامة في التشتيت (Clearing)', val: formatVal(player.eval.clearing)}] },
+                    { title: 'رابعاً: السرعة والجانب البدني', fields: [{label: 'السرعة الانفجارية', val: formatVal(player.eval.explosive)}, {label: 'السرعة بالكرة', val: formatVal(player.eval.ballspeed)}, {label: 'سرعة الارتداد (Recovery)', val: formatVal(player.eval.recovery)}, {label: 'التحمل السريع', val: formatVal(player.eval.stamina)}] },
+                    { title: 'خامساً: المراوغة واللعب الفردي', fields: [{label: 'نجاح المواجهات (1v1)', val: formatVal(player.eval.onevone)}, {label: 'التوظيف التكتيكي', val: formatVal(player.eval.dribbletac)}, {label: 'كسب الأخطاء الذكية', val: formatVal(player.eval.smartsf)}, {label: 'حماية الكرة (Shielding)', val: formatVal(player.eval.shield)}] },
+                    { title: 'سادساً: التسديد وإنهاء الهجمات', fields: [{label: 'جودة اختيار التسديد', val: formatVal(player.eval.shotchoice)}, {label: 'دقة وقوة التسديد', val: formatVal(player.eval.shotacc)}, {label: 'استخدام القدم الضعيفة', val: formatVal(player.eval.weakfoot)}, {label: 'الإنهاء في الانفرادات', val: formatVal(player.eval.finishing)}] },
+                    { title: 'سابعاً: التمرير والوعي التكتيكي', fields: [{label: 'التمريرات الكاسرة', val: formatVal(player.eval.breakingpass)}, {label: 'كفاءة اللمسة الأولى', val: formatVal(player.eval.firsttouch)}, {label: 'مسح الملعب (Scanning)', val: formatVal(player.eval.scanning)}, {label: 'محفزات الضغط', val: formatVal(player.eval.pressingtrig)}] },
+                    { title: 'ثامناً: الخلاصة والتوصيات النهائية للجهاز الفني', fields: [{label: 'حضور الدورة الشهرية', val: `الدورة رقم ${player.monthCycle || 1}`}, {label: 'القرار النهائي', val: player.eval.finalDecision}] }
+                ];
+            } else {
+                sections = [
+                    { title: 'البيانات الأساسية للاعب', fields: [
+                        {label: 'الاسم', val: player.name},
+                        {label: 'السن وتاريخ الميلاد', val: player.birth},
+                        {label: 'المركز الأساسي', val: player.pos},
+                        {label: 'المركز البديل', val: player.altPos || 'جناح أيمن'},
+                        {label: 'الطول والوزن', val: player.heightWeight || '150 سم / 45 كجم'},
+                        {label: 'القدم المفضلة', val: player.preferredFoot || 'يمنى'}
+                    ]}
+                ];
+            }
+
+            sections.forEach(sec => {
+                html += `<div class="eval-section"><h4>${sec.title}</h4>`;
+                sec.fields.forEach(f => {
+                    html += `<div class="eval-row"><span>${f.label}:</span><span style="font-weight:bold; color:var(--accent);">${f.val}</span></div>`;
+                });
+                html += `</div>`;
+            });
+            html += `</div>`;
+            modalBody.innerHTML = html;
+            document.getElementById('player-modal').classList.add('active');
+        }
+
+        function addPlayerWarning(playerId) {
+            let player = null;
+            for (let g in playersData) {
+                const found = playersData[g].find(p => p.id === playerId);
+                if (found) player = found;
+            }
+            if(!player) return;
+            const text = document.getElementById('new-warning-input').value.trim();
+            if(!text) { alert('اكتب نص الإنذار أولاً'); return; }
+
+            const now = new Date();
+            const dateStr = `${now.toLocaleDateString('ar-EG')} - ${now.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}`;
+            
+            if(!player.warnings) player.warnings = [];
+            player.warnings.push({ text: text, date: dateStr });
+            document.getElementById('new-warning-input').value = '';
+            alert('تم إرسال الإنذار وتوثيقه تاريخياً بنجاح!');
+            renderPlayerDetailsModal(player, true, false);
+        }
+
+        function resetPlayerStats(playerId) {
+            let player = null;
+            for (let g in playersData) {
+                const found = playersData[g].find(p => p.id === playerId);
+                if (found) player = found;
+            }
+            if(!player) return;
+            ['commitment','respect','passion','tackling','positioning','interceptions','clearing','explosive','ballspeed','recovery','stamina','onevone','dribbletac','smartsf','shield','shotchoice','shotacc','weakfoot','finishing','breakingpass','firsttouch','scanning','pressingtrig'].forEach(k => {
+                player.eval[k] = '-';
+            });
+            alert('تم عمل Reset وإعادة تعيين الإحصائيات لـ (- من 5) بنجاح!');
+            renderPlayerDetailsModal(player, true, false);
+        }
+
+        function savePlayerEdits(playerId) {
+            let player = null;
+            for (let g in playersData) {
+                const found = playersData[g].find(p => p.id === playerId);
+                if (found) player = found;
+            }
+            if(!player) return;
+            player.name = document.getElementById('edit-p-name').value.trim();
+            player.birth = document.getElementById('edit-p-birth').value.trim();
+            player.preferredFoot = document.getElementById('edit-p-foot').value.trim();
+            player.heightWeight = document.getElementById('edit-p-hw').value.trim();
+            player.pos = document.getElementById('edit-p-pos').value.trim();
+            player.altPos = document.getElementById('edit-p-altpos').value.trim();
+            player.status = document.getElementById('edit-p-status').value;
+            
+            ['commitment','respect','passion','tackling','positioning','interceptions','clearing','explosive','ballspeed','recovery','stamina','onevone','dribbletac','smartsf','shield','shotchoice','shotacc','weakfoot','finishing','breakingpass','firsttouch','scanning','pressingtrig'].forEach(k => {
+                let val = document.getElementById(`edit-${k}`).value;
+                player.eval[k] = val === '-' ? '-' : parseInt(val);
+            });
+            player.eval.finalDecision = document.getElementById('edit-decision').value.trim();
+
+            alert('تم تحديث استمارة التقييم الاحترافية بنجاح!');
+            renderPlayerDetailsModal(player, true, false);
+            if(currentGroupKey) renderPlayersCards(currentGroupKey);
+        }
+
+        function triggerPhotoUpload() { document.getElementById('photo-upload-input').click(); }
+
+        function switchParentTab(tab) {
+            if(tab === 'login') {
+                document.getElementById('parent-login-form').style.display = 'block';
+                document.getElementById('parent-register-form').style.display = 'none';
+                document.getElementById('tab-login-btn').style.borderColor = 'var(--accent)';
+                document.getElementById('tab-reg-btn').style.borderColor = 'var(--border)';
+            } else {
+                document.getElementById('parent-login-form').style.display = 'none';
+                document.getElementById('parent-register-form').style.display = 'block';
+                document.getElementById('tab-login-btn').style.borderColor = 'var(--border)';
+                document.getElementById('tab-reg-btn').style.borderColor = 'var(--accent)';
+            }
+        }
+
+        function triggerParentSonFlipAndDetails(playerId) {
+            let foundPlayer = null;
+            for (let g in playersData) {
+                const match = playersData[g].find(p => p.id === playerId);
+                if (match) foundPlayer = match;
+            }
+            if(!foundPlayer) return;
+            renderPlayerDetailsModal(foundPlayer, true, false);
+        }
+
+        function openCoachDashboard() {
+            if(!isStaffLoggedIn) { openLoginModal('coach'); return; }
+            document.getElementById('staffDropdownMenu').classList.remove('active');
+            renderCoachDashboardData();
+            document.getElementById('coach-dashboard-modal').classList.add('active');
+        }
+        function closeCoachDashboard() { document.getElementById('coach-dashboard-modal').classList.remove('active'); }
+
+        function switchCoachTab(tab) {
+            document.getElementById('coachTabMgmtContent').style.display = tab === 'mgmt' ? 'block' : 'none';
+            document.getElementById('coachTabAcademyContent').style.display = tab === 'academy' ? 'block' : 'none';
+            document.getElementById('coachTabNotesContent').style.display = tab === 'notes' ? 'block' : 'none';
+            document.getElementById('coachTabNewsContent').style.display = tab === 'news' ? 'block' : 'none';
+
+            document.getElementById('tabMgmt').style.borderColor = tab === 'mgmt' ? 'var(--accent)' : 'var(--border)';
+            document.getElementById('tabAcademy').style.borderColor = tab === 'academy' ? 'var(--accent)' : 'var(--border)';
+            document.getElementById('tabNotes').style.borderColor = tab === 'notes' ? 'var(--accent)' : 'var(--border)';
+            document.getElementById('tabNews').style.borderColor = tab === 'news' ? 'var(--accent)' : 'var(--border)';
+        }
+
+        function renderCoachDashboardData() {
+            const reqContainer = document.getElementById('parentRequestsContainer');
+            if(pendingParentRequests.length === 0) {
+                reqContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">لا توجد طلبات معلقة حالياً.</p>`;
+            } else {
+                reqContainer.innerHTML = '';
+                pendingParentRequests.forEach((req, idx) => {
+                    reqContainer.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); padding:10px; border-radius:8px; margin-bottom:8px;">
+                            <div> ولي الأمر: <b>${req.parentName}</b> | الابن: <b>${req.sonName}</b></div>
+                            <button class="btn-primary-custom" style="padding:5px 15px; font-size:0.85rem;" onclick="approveParentRequest(${idx})">موافقة وتفعيل</button>
+                        </div>
+                    `;
+                });
+            }
+
+            const dbView = document.getElementById('academyGlobalDatabaseView');
+            dbView.innerHTML = '';
+            for(let g in playersData) {
+                playersData[g].forEach(p => {
+                    dbView.innerHTML += `
+                        <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:15px; align-items:center;">
+                                <img src="${p.img}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); background:#112233;">
+                                <div><h4 style="color:var(--text);">${p.name} (${g})</h4><p style="color:var(--text-muted); font-size:0.85rem;">المركز: ${p.pos}</p></div>
+                            </div>
+                            <button class="ctrl-btn" onclick="triggerCinematicFlipAndProfile(${p.id})">تعديل الاستمارة الاحترافية</button>
+                        </div>
+                    `;
+                });
+            }
+            renderCoachNotebookList();
+        }
+
+        function approveParentRequest(idx) {
+            const req = pendingParentRequests[idx];
+            parentsAccounts[req.sonName.toLowerCase()] = { parentName: req.parentName, pass: req.pass, avatar: req.avatar, sonObj: req.sonObj };
+            pendingParentRequests.splice(idx, 1);
+            addSystemNotification(`تمت الموافقة على حساب ولي الأمر لـ (${req.parentName}).`, 'parent');
+            alert('تم اعتماد ولي الأمر بنجاح!');
+            renderCoachDashboardData();
+        }
+
+        function updatePotmSettingsDevice() {
+            const name = document.getElementById('admin-potm-name').value.trim();
+            if(name) playerOfTheMonth.name = name;
+            updatePotmUI();
+            alert('تم تحديث لاعب الشهر بنجاح!');
+        }
+
+        function updatePotmUI() {
+            document.getElementById('homePotmImg').src = playerOfTheMonth.img;
+            document.getElementById('homePotmName').innerText = playerOfTheMonth.name || '--';
+        }
+
+        function updatePotwSettingsDevice() {
+            const name = document.getElementById('admin-potw-name').value.trim();
+            if(name) playerOfTheWeek.name = name;
+            updatePotwUI();
+            alert('تم تحديث لاعب الأسبوع (فضي) بنجاح!');
+        }
+
+        function updatePotwUI() {
+            document.getElementById('homePotwImg').src = playerOfTheWeek.img;
+            document.getElementById('homePotwName').innerText = playerOfTheWeek.name || '--';
+        }
+
+        function loadLegendMonthData() {
+            const monthIdx = document.getElementById('admin-legend-month-select').value;
+            const legend = academyLegendsData[monthIdx];
+            if(legend) document.getElementById('admin-legend-name').value = legend.nameAr;
+        }
+
+        function saveAcademyLegendEditDevice() {
+            const monthIdx = document.getElementById('admin-legend-month-select').value;
+            const newName = document.getElementById('admin-legend-name').value.trim();
+            if(academyLegendsData[monthIdx]) {
+                if(newName) {
+                    academyLegendsData[monthIdx].nameAr = newName;
+                    academyLegendsData[monthIdx].nameEn = newName;
+                    academyLegendsData[monthIdx].nameKa = newName;
+                }
+                renderAcademyLegends();
+                alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
+            }
+        }
+
+        function renderAcademyLegends() {
+            const grid = document.getElementById('academy-legends-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            academyLegendsData.forEach((legend) => {
+                let displayName = legend.nameAr || 'غير محدد بعد';
+                grid.innerHTML += `
+                    <div class="player-card" style="border: 2px solid var(--accent); position:relative;">
+                        <span style="position:absolute; top:12px; left:12px; background:rgba(59,130,246,0.2); border:1px solid var(--accent); color:var(--accent); font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:bold;">${legend.monthLabel}</span>
+                        <div class="royal-ring-frame" style="margin: 15px auto 10px auto;">
+                            <img src="${legend.img}" alt="${displayName}">
+                        </div>
+                        <h3 style="color:var(--text);">${displayName}</h3>
+                        <p style="color:var(--accent); font-weight:bold; margin-top:5px;">أسطورة POTM</p>
+                    </div>
+                `;
+            });
+        }
+
+        function addNewPlayerByStaffDevice() {
+            const name = document.getElementById('new-p-name').value.trim();
+            const pass = document.getElementById('new-p-pass').value.trim();
+            const group = document.getElementById('new-p-group').value;
+            const imgUrl = window.tempNewPlayerCroppedImg || '';
+            if(!name || !pass) { alert('أدخل اسم وباسورد اللاعب'); return; }
+
+            const newPlayerObj = {
+                id: Date.now(),
+                name: name,
+                pass: pass,
+                birth: '2012 / 14 سنة',
+                preferredFoot: 'يمنى',
+                heightWeight: '150 سم / 45 كجم',
+                pos: 'خط وسط',
+                altPos: 'جناح أيمن',
+                img: imgUrl,
+                sessions: 8,
+                status: 'Paid',
+                warnings: [],
+                monthCycle: 1,
+                schedule: generateAutomaticSchedule(8),
+                eval: { commitment: '-', respect: '-', passion: '-', tackling: '-', positioning: '-', interceptions: '-', clearing: '-', explosive: '-', ballspeed: '-', recovery: '-', stamina: '-', onevone: '-', dribbletac: '-', smartsf: '-', shield: '-', shotchoice: '-', shotacc: '-', weakfoot: '-', finishing: '-', breakingpass: '-', firsttouch: '-', scanning: '-', pressingtrig: '-', finalDecision: 'تحت المتابعة' }
+            };
+            playersData[group].push(newPlayerObj);
+            window.tempNewPlayerCroppedImg = '';
+            alert('تم إنشاء بروفايل اللاعب بنجاح!');
+            closeCoachDashboard();
+            if(currentGroupKey === group) renderPlayersCards(group);
+        }
+
+        function openCoachBio(coachKey) {
+            const currentLang = document.documentElement.getAttribute('lang') || 'ar';
+            let bioData = coachesBios[currentLang]?.[coachKey] || coachesBios.ar[coachKey];
+            let imgUrl = staffCredentials[coachKey]?.img || '';
+
+            document.getElementById('coach-bio-name').innerText = bioData.name;
+            document.getElementById('coach-bio-role').innerText = bioData.role;
+            document.getElementById('coach-bio-desc').innerText = bioData.desc;
+            document.getElementById('coach-bio-img').src = imgUrl;
+
+            targetCoachForDirectMsg = bioData.name;
+            if(loggedInUserType === 'player' || loggedInUserType === 'parent') {
+                document.getElementById('coach-messaging-box').style.display = 'block';
+            } else {
+                document.getElementById('coach-messaging-box').style.display = 'none';
+            }
+            document.getElementById('coach-bio-modal').classList.add('active');
+        }
+        function closeCoachBio() { document.getElementById('coach-bio-modal').classList.remove('active'); }
+
+        function sendDirectMessageToCoach() {
+            const msg = document.getElementById('directCoachMsgInput').value.trim();
+            if(!msg) { alert('اكتب الرسالة أولاً'); return; }
+            let senderName = loggedInUserType === 'player' ? currentLoggedInPlayer.name : currentLoggedInParentObj.name;
+            let senderTypeLabel = loggedInUserType === 'player' ? 'اللاعب' : 'ولي أمر اللاعب';
+            addSystemNotification(`رسالة جديدة للمدرب (${targetCoachForDirectMsg}) من ${senderTypeLabel}: (${senderName}). النص: ${msg}`, 'coach');
+            alert('تم إرسال رسالتك للمدرب كإشعار فوري بنجاح!');
+            document.getElementById('directCoachMsgInput').value = '';
+            closeCoachBio();
+        }
+
+        function renderArtisticGallery() {
+            const galleryContainer = document.getElementById('artistic-gallery-container');
+            if(!galleryContainer) return;
+            galleryContainer.innerHTML = '';
+            artisticGalleryImages.forEach((item) => {
+                galleryContainer.innerHTML += `
+                    <div class="art-slot ${item.span}" onclick="triggerGallerySlotUpload(${item.id})" title="انقر لتكبير الصورة أو تعديلها">
+                        <img id="gallery-img-${item.id}" src="${item.url}" alt="Gallery Slot ${item.id}">
+                    </div>
+                `;
+            });
+        }
+
+        function triggerGallerySlotUpload(slotId) {
+            let found = artisticGalleryImages.find(img => img.id === slotId);
+            if(isStaffLoggedIn && loggedInStaffKey === 'medany') {
+                currentGallerySlotId = slotId;
+                document.getElementById('gallery-slot-upload-input').click();
+            } else {
+                if(found && found.url) {
+                    openLightbox(found.url);
+                } else {
+                    alert('هذه الخانة فارغة حالياً.');
+                }
+            }
+        }
+
+        function openLightbox(imgUrl) {
+            document.getElementById('lightbox-img').src = imgUrl;
+            document.getElementById('lightbox-modal').classList.add('active');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
