@@ -498,7 +498,7 @@
   @media (max-width: 768px) {
         header {
             padding: 8px 10px !important;
-            flex-wrap: wrap !important; /* السماح بتنظيم الأزرار على سطرين لو احتجنا */
+            flex-wrap: wrap !important;
             justify-content: center !important;
             gap: 8px !important;
         }
@@ -508,7 +508,6 @@
         .header-center-ticker {
             display: none !important;
         }
-        /* تصغير حجم أزرار الهيدر عشان تظهر جنب بعضها بشكل شيك ومنظم */
         .header-controls {
             gap: 6px !important;
             flex-wrap: wrap;
@@ -638,7 +637,6 @@
             <li><a href="#" onclick="switchSection('contact-sec')" data-translate="nav_contact">Contact Us (اتصل بنا)</a></li>
         </ul>
     </div>
-
     <div class="main-container">
 
         <div id="home-section" class="section-view active">
@@ -1677,7 +1675,6 @@
             input.value = '';
             renderCoachNotebookList();
             
-            // حفظ تلقائي في فايربيز
             if(window.saveMyData) {
                 window.saveMyData("coach_notes", noteObj);
             }
@@ -1725,7 +1722,6 @@
             renderNewsTickers();
             renderNewsFullList();
             
-            // حفظ تلقائي في فايربيز
             if(window.saveMyData) {
                 window.saveMyData("club_news", newsObj);
             }
@@ -1929,7 +1925,6 @@
             pendingParentRequests.push(requestObj);
             addSystemNotification(`طلب حساب ولي أمر جديد لـ (${fullName}) خاص بالابن (${foundPlayer.name}).`, 'coach');
             
-            // حفظ تلقائي للطلب في فايربيز
             if(window.saveMyData) {
                 window.saveMyData("parent_requests", requestObj);
             }
@@ -2223,7 +2218,6 @@
             player.schedule[sessionIdx].attended = !player.schedule[sessionIdx].attended;
             checkAndResetScheduleIfCompleted(player);
             
-            // حفظ الحضور سحابياً
             if(window.saveMyData) {
                 window.saveMyData("players_data", player);
             }
@@ -2399,7 +2393,6 @@
             player.warnings.push({ text: text, date: dateStr });
             document.getElementById('new-warning-input').value = '';
             
-            // حفظ سحابي للاعب مع التنبيه
             if(window.saveMyData) {
                 window.saveMyData("players_data", player);
             }
@@ -2442,7 +2435,6 @@
             });
             player.eval.finalDecision = document.getElementById('edit-decision').value.trim();
 
-            // حفظ الاستمارة بالكامل في فايربيز تلقائياً
             if(window.saveMyData) {
                 window.saveMyData("players_data", player);
             }
@@ -2538,7 +2530,6 @@
             pendingParentRequests.splice(idx, 1);
             addSystemNotification(`تمت الموافقة على حساب ولي الأمر لـ (${req.parentName}).`, 'parent');
             
-            // حفظ الموافقة في فايربيز
             if(window.saveMyData) {
                 window.saveMyData("approved_parents", { parentName: req.parentName, sonName: req.sonName });
             }
@@ -2648,7 +2639,6 @@
             playersData[group].push(newPlayerObj);
             window.tempNewPlayerCroppedImg = '';
 
-            // حفظ اللاعب الجديد في فايربيز سحابياً
             if(window.saveMyData) {
                 window.saveMyData("players_data", newPlayerObj);
             }
@@ -2728,7 +2718,8 @@
             document.getElementById('lightbox-modal').classList.remove('active');
         }
     </script>
-<!-- كود فايربيز الشامل لربط وحفظ كافة بيانات النادي (اللاعبين، POTM، POTW، الملاحظات، الأخبار، وطلبات أولياء الأمور) -->
+    
+    <!-- كود فايربيز الشامل والمحدث -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
       import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -2746,7 +2737,6 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // دالة الحفظ السحابي العامة لكل الأقسام
       window.saveMyData = async function(collectionName, dataObject) {
           try {
               await addDoc(collection(db, collectionName), {
@@ -2759,10 +2749,8 @@
           }
       };
 
-      // دالة جلب كافة بيانات السحابة وتحديث الواجهة تلقائياً عند فتح الموقع أو عمل Refresh
       window.loadAllCloudData = async function() {
           try {
-              // 1. جلب اللاعبين وتحديثهم
               const playersSnap = await getDocs(collection(db, "players_data"));
               playersSnap.forEach((doc) => {
                   let cloudPlayer = doc.data();
@@ -2774,7 +2762,6 @@
                   }
               });
 
-              // 2. جلب لاعب الشهر (POTM)
               const potmSnap = await getDocs(collection(db, "club_potm"));
               potmSnap.forEach((doc) => {
                   let data = doc.data();
@@ -2782,7 +2769,6 @@
               });
               if(typeof updatePotmUI === 'function') updatePotmUI();
 
-              // 3. جلب لاعب الأسبوع (POTW)
               const potwSnap = await getDocs(collection(db, "club_potw"));
               potwSnap.forEach((doc) => {
                   let data = doc.data();
@@ -2790,7 +2776,6 @@
               });
               if(typeof updatePotwUI === 'function') updatePotwUI();
 
-              // 4. جلب الملاحظات التدريبية للمدربين
               const notesSnap = await getDocs(collection(db, "coach_notes"));
               notesSnap.forEach((doc) => {
                   let data = doc.data();
@@ -2798,7 +2783,6 @@
               });
               if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
 
-              // 5. جلب أخبار النادي (News)
               const newsSnap = await getDocs(collection(db, "club_news"));
               newsSnap.forEach((doc) => {
                   let data = doc.data();
