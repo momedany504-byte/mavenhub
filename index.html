@@ -2629,6 +2629,30 @@
                 alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
             }
         }
+        async function uploadImageToImgBB(imageFile) {
+  const apiKey = "92571b1fad2c35de16a0529d46f3a15a"; // حط هنا الـ API Key اللي اخدته من موقع ImgBB
+  const formData = new FormData();
+  formData.append("image", imageFile);
+
+  try {
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      method: "POST",
+      body: formData
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      console.log("تم رفع الصورة بنجاح:", data.data.url);
+      return data.data.url; // ده الرابط المباشر للصورة اللي هتسيفه في الـ Firestore
+    } else {
+      throw new Error("فشل رفع الصورة على ImgBB");
+    }
+  } catch (error) {
+    console.error("خطأ في الرفع:", error);
+    alert("حدث خطأ أثناء رفع الصورة، حاول مرة أخرى.");
+    return null;
+  }
+}
 
         function renderAcademyLegends() {
             const grid = document.getElementById('academy-legends-grid');
