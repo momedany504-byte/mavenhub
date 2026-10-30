@@ -2742,10 +2742,10 @@
             document.getElementById('lightbox-modal').classList.remove('active');
         }
     </script>
-    <!-- كود فايربيز النهائي الشامل لتثبيت وحفظ كافة البيانات والصور سحابياً بدون أي ضياع -->
+ <!-- كود فايربيز الشامل والمحدث لدعم الحفظ وتثبيت الصور والحذف السحابي النهائي -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      import { getFirestore, collection, addDoc, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyClxz9mtvmFU_IdE3VFDAIbkhpPpnjtrwY",
@@ -2759,6 +2759,17 @@
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
+
+      // (إضافة جديدة) دالة الحذف السحابي الفوري من فايربيز
+      window.deleteCloudPlayerDoc = async function(playerId) {
+          try {
+              await deleteDoc(doc(db, "players_data", String(playerId)));
+              console.log(`تم حذف اللاعب ذو الـ ID: ${playerId} من السحابة بنجاح!`);
+          } catch (e) {
+              console.error("خطأ أثناء الحذف السحابي من فايربيز: ", e);
+              throw e;
+          }
+      };
 
       // دالة الحفظ السحابي الذكي (تثبيت العناصر وصورها عبر الـ ID أو الإضافة العامة)
       window.saveMyData = async function(collectionName, dataObject) {
