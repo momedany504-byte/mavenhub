@@ -2307,8 +2307,10 @@
                     </div>
                     
                     <div class="form-group" style="margin-top:10px;"><label>القرار النهائي والتوصيات</label><input type="text" id="edit-decision" class="eval-input" value="${player.eval.finalDecision}"></div>
-                    <button class="btn-primary-custom" style="width:100%; margin-top:15px;" onclick="savePlayerEdits(${player.id})">حفظ الاستمارة الشاملة</button>
-                </div>
+                 <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn-primary-custom" style="flex: 2;" onclick="savePlayerEdits(${player.id})">حفظ الاستمارة الشاملة</button>
+                        <button class="btn-primary-custom" style="flex: 1; background: #dc2626; border-color: #dc2626;" onclick="deletePlayerFromDatabase(${player.id})"><i class="fa-solid fa-trash"></i> حذف اللاعب</button>
+                    </div>
             ` : '';
 
             let html = `
@@ -2442,6 +2444,28 @@
             alert('تم تحديث استمارة التقييم الاحترافية وحفظها سحابياً بنجاح!');
             renderPlayerDetailsModal(player, true, false);
             if(currentGroupKey) renderPlayersCards(currentGroupKey);
+        }
+        async function deletePlayerFromDatabase(playerId) {
+            if(!isStaffLoggedIn) { alert('للمدربين فقط'); return; }
+            if(confirm('هل أنت متأكد من حذف هذا اللاعب نهائياً من سجلات النادي وقاعدة البيانات السحابية؟')) {
+                try {
+                    // حذف اللاعب سحابياً من فايربيز
+                    await window.deleteCloudPlayerDoc(playerId);
+                    
+                    // حذفه من مصفوفة البيانات المحلية في الصفحة
+                    for(let g in playersData) {
+                        playersData[g] = playersData[g].filter(p => p.id !== playerId);
+                    }
+                    
+                    alert('تم حذف اللاعب نهائياً من السحابة بنجاح!');
+                    closePlayerModal();
+                    if(typeof closeCoachDashboard === 'function') closeCoachDashboard();
+                    if(currentGroupKey) renderPlayersCards(currentGroupKey);
+                } catch (e) {
+                    console.error("خطأ أثناء الحذف السحابي: ", e);
+                    alert('حدث خطأ أثناء محاولة الحذف.');
+                }
+            }
         }
 
         function triggerPhotoUpload() { document.getElementById('photo-upload-input').click(); }
@@ -2718,11 +2742,10 @@
             document.getElementById('lightbox-modal').classList.remove('active');
         }
     </script>
-    
-    <!-- كود فايربيز الشامل والمحدث -->
+    <!-- كود فايربيز النهائي الشامل لتثبيت وحفظ كافة البيانات والصور سحابياً بدون أي ضياع -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyClxz9mtvmFU_IdE3VFDAIbkhpPpnjtrwY",
@@ -2737,72 +2760,90 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      // دالة الحفظ السحابي الذكي (تثبيت العناصر وصورها عبر الـ ID أو الإضافة العامة)
       window.saveMyData = async function(collectionName, dataObject) {
           try {
-              await addDoc(collection(db, collectionName), {
-                  ...dataObject,
-                  timestamp: new Date().toISOString()
-              });
-              console.log(`تم الحفظ في كوليكشن (${collectionName}) بنجاح!`);
+              if(dataObject.id) {
+                  await setDoc(doc(db, collectionName, String(dataObject.id)), {
+                      ...dataObject,
+                      timestamp: new Date().toISOString()
+                  });
+              } else {
+                  await addDoc(collection(db, collectionName), {
+                      ...dataObject,
+                      timestamp: new Date().toISOString()
+                  });
+              }
+              console.log(`تم حفظ وثيقة (${collectionName}) وتثبيت صورتها بنجاح سحابياً!`);
           } catch (e) {
               console.error("خطأ في الحفظ السحابي: ", e);
           }
       };
 
+      // دالة جلب كافة البيانات والصور واسترجاعها فوراً عند أي Refresh للموقع
       window.loadAllCloudData = async function() {
           try {
+              // 1. جلب اللاعبين وصورهم
               const playersSnap = await getDocs(collection(db, "players_data"));
-              playersSnap.forEach((doc) => {
-                  let cloudPlayer = doc.data();
+              playersSnap.forEach((docSnap) => {
+                  let cloudPlayer = docSnap.data();
                   for(let g in playersData) {
-                      let exists = playersData[g].find(p => p.id === cloudPlayer.id || p.name === cloudPlayer.name);
-                      if(!exists && cloudPlayer.pos) {
+                      let index = playersData[g].findIndex(p => p.id === cloudPlayer.id || p.name === cloudPlayer.name);
+                      if(index !== -1) {
+                          playersData[g][index] = { ...playersData[g][index], ...cloudPlayer };
+                      } else if(cloudPlayer.pos) {
                           playersData[g].push(cloudPlayer);
                       }
                   }
               });
 
+              // 2. جلب لاعب الشهر (POTM) وصورته
               const potmSnap = await getDocs(collection(db, "club_potm"));
-              potmSnap.forEach((doc) => {
-                  let data = doc.data();
+              potmSnap.forEach((docSnap) => {
+                  let data = docSnap.data();
                   if(data && data.name) playerOfTheMonth = data;
               });
               if(typeof updatePotmUI === 'function') updatePotmUI();
 
+              // 3. جلب لاعب الأسبوع (POTW) وصورته
               const potwSnap = await getDocs(collection(db, "club_potw"));
-              potwSnap.forEach((doc) => {
-                  let data = doc.data();
+              potwSnap.forEach((docSnap) => {
+                  let data = docSnap.data();
                   if(data && data.name) playerOfTheWeek = data;
               });
               if(typeof updatePotwUI === 'function') updatePotwUI();
 
+              // 4. جلب الملاحظات التدريبية
               const notesSnap = await getDocs(collection(db, "coach_notes"));
-              notesSnap.forEach((doc) => {
-                  let data = doc.data();
-                  if(data && data.text) coachNotebookEntries.push(data);
+              notesSnap.forEach((docSnap) => {
+                  let data = docSnap.data();
+                  if(data && data.text && !coachNotebookEntries.some(n => n.text === data.text)) {
+                      coachNotebookEntries.push(data);
+                  }
               });
               if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
 
+              // 5. جلب الأخبار وصورها
               const newsSnap = await getDocs(collection(db, "club_news"));
-              newsSnap.forEach((doc) => {
-                  let data = doc.data();
+              newsSnap.forEach((docSnap) => {
+                  let data = docSnap.data();
                   if(data && data.title && !newsArticles.some(n => n.title === data.title)) {
-                      newsArticles.push(data);
+                      newsArticles.unshift(data);
                   }
               });
               if(typeof renderNewsTickers === 'function') renderNewsTickers();
               if(typeof renderNewsFullList === 'function') renderNewsFullList();
 
-              console.log("تم مزامنة وتحميل كافة بيانات السحابة بنجاح تام!");
+              console.log("تم تحميل واستعادة كافة الصور والبيانات من السحابة بنجاح تام!");
           } catch (e) {
-              console.log("جارٍ تهيئة البيانات...", e);
+              console.log("جارٍ تهيئة البيانات السحابية...", e);
           }
       };
 
       window.addEventListener('load', () => {
           setTimeout(() => {
               if(window.loadAllCloudData) window.loadAllCloudData();
-          }, 1000);
+          }, 800);
       });
     </script>
 </body>
