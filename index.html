@@ -1483,14 +1483,17 @@
             "medany": { pass: "medany12341234", name: "محلل الأداء/ محمد مدني", img: "" }
         };
 
-  window.addEventListener('load', async () => {
-    // 1. شاشة التحميل تختفي غصباً عنها بعد 1.4 ثانية عشان الموقع يفتح قدام المستخدم فوراً
-    setTimeout(() => { document.getElementById('loading-screen').classList.add('fade-out'); }, 1400);
+window.addEventListener('load', async () => {
+    // 1. شاشة التحميل تختفي غصباً عنها بعد 1.4 ثانية لضمان فتح الموقع فوراً
+    setTimeout(() => { 
+        const loadingScreen = document.getElementById('loading-screen');
+        if(loadingScreen) loadingScreen.classList.add('fade-out'); 
+    }, 1400);
     
-    // 2. بنطلب البيانات من سابابيز في الخلفية بدون ما نوقف فتح الموقع
+    // 2. جلب البيانات السحابية في الخلفية
     fetchAllCloudData(); 
     
-    // باقي الدوال لتشغيل الواجهة:
+    // باقي دوال العرض:
     renderArtisticGallery();
     renderAcademyLegends();
     updatePotmUI();
@@ -1508,7 +1511,6 @@
         updateHeaderUserAvatarUI();
     }
 });
-
         function renderCoachesImages() {
             for(let key in staffCredentials) {
                 const imgEl = document.getElementById(`coachImg_${key}`);
