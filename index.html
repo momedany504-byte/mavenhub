@@ -2742,120 +2742,64 @@
             document.getElementById('lightbox-modal').classList.remove('active');
         }
     </script>
- <!-- كود فايربيز الشامل والمحدث لدعم الحفظ وتثبيت الصور والحذف السحابي النهائي -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getFirestore, collection, addDoc, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyClxz9mtvmFU_IdE3VFDAIbkhpPpnjtrwY",
+    // إعدادات فايربيز الخاصة بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyClxz9mtmFU_IDe3VFDAIbkhpPpnjtrwY",
         authDomain: "mavenhub-c622a.firebaseapp.com",
         projectId: "mavenhub-c622a",
         storageBucket: "mavenhub-c622a.appspot.com",
-        messagingSenderId: "660667699408",
-        appId: "1:660667699408:web:baf3421fd8ddbcdb2bced5",
-        measurementId: "G-3N0003DNWH"
-      };
+        messagingSenderId: "...",
+        appId: "..."
+    };
 
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      // (إضافة جديدة) دالة الحذف السحابي الفوري من فايربيز
-      window.deleteCloudPlayerDoc = async function(playerId) {
-          try {
-              await deleteDoc(doc(db, "players_data", String(playerId)));
-              console.log(`تم حذف اللاعب ذو الـ ID: ${playerId} من السحابة بنجاح!`);
-          } catch (e) {
-              console.error("خطأ أثناء الحذف السحابي من فايربيز: ", e);
-              throw e;
-          }
-      };
+    // دالة الحذف السحابي المرتبطة بقاعدة البيانات
+    window.deleteCloudPlayerDoc = async function(playerId) {
+        try {
+            await deleteDoc(doc(db, "players_data", String(playerId)));
+            console.log("تم حذف اللاعب من السحابة بنجاح");
+        } catch (e) {
+            console.error("خطأ في حذف اللاعب سحابياً: ", e);
+        }
+    };
 
-      // دالة الحفظ السحابي الذكي (تثبيت العناصر وصورها عبر الـ ID أو الإضافة العامة)
-      window.saveMyData = async function(collectionName, dataObject) {
-          try {
-              if(dataObject.id) {
-                  await setDoc(doc(db, collectionName, String(dataObject.id)), {
-                      ...dataObject,
-                      timestamp: new Date().toISOString()
-                  });
-              } else {
-                  await addDoc(collection(db, collectionName), {
-                      ...dataObject,
-                      timestamp: new Date().toISOString()
-                  });
-              }
-              console.log(`تم حفظ وثيقة (${collectionName}) وتثبيت صورتها بنجاح سحابياً!`);
-          } catch (e) {
-              console.error("خطأ في الحفظ السحابي: ", e);
-          }
-      };
+    // استدعاء البيانات وتحديث الواجهة عند تحميل الصفحة
+    window.loadAllCloudData = async function() {
+        try {
+            const playersSnap = await getDocs(collection(db, "players_data"));
+            playersSnap.forEach((docSnap) => {
+                let cloudPlayer = docSnap.data();
+                for(let g in playersData) {
+                    let index = playersData[g].findIndex(p => p.id === cloudPlayer.id);
+                    if(index !== -1) {
+                        playersData[g][index] = { ...playersData[g][index], ...cloudPlayer };
+                    } else if(cloudPlayer.pos) {
+                        playersData[g].push(cloudPlayer);
+                    }
+                }
+            });
+            
+            if(typeof currentGroupKey !== 'undefined' && currentGroupKey) {
+                renderPlayersCards(currentGroupKey);
+            }
+            if(typeof updatePotmUI === 'function') updatePotmUI();
+            if(typeof updatePotwUI === 'function') updatePotwUI();
+            
+        } catch (e) {
+            console.log("جارٍ تهيئة البيانات السحابية...", e);
+        }
+    };
 
-      // دالة جلب كافة البيانات والصور واسترجاعها فوراً عند أي Refresh للموقع
-      window.loadAllCloudData = async function() {
-          try {
-              // 1. جلب اللاعبين وصورهم
-              const playersSnap = await getDocs(collection(db, "players_data"));
-              playersSnap.forEach((docSnap) => {
-                  let cloudPlayer = docSnap.data();
-                  for(let g in playersData) {
-                      let index = playersData[g].findIndex(p => p.id === cloudPlayer.id || p.name === cloudPlayer.name);
-                      if(index !== -1) {
-                          playersData[g][index] = { ...playersData[g][index], ...cloudPlayer };
-                      } else if(cloudPlayer.pos) {
-                          playersData[g].push(cloudPlayer);
-                      }
-                  }
-              });
-
-              // 2. جلب لاعب الشهر (POTM) وصورته
-              const potmSnap = await getDocs(collection(db, "club_potm"));
-              potmSnap.forEach((docSnap) => {
-                  let data = docSnap.data();
-                  if(data && data.name) playerOfTheMonth = data;
-              });
-              if(typeof updatePotmUI === 'function') updatePotmUI();
-
-              // 3. جلب لاعب الأسبوع (POTW) وصورته
-              const potwSnap = await getDocs(collection(db, "club_potw"));
-              potwSnap.forEach((docSnap) => {
-                  let data = docSnap.data();
-                  if(data && data.name) playerOfTheWeek = data;
-              });
-              if(typeof updatePotwUI === 'function') updatePotwUI();
-
-              // 4. جلب الملاحظات التدريبية
-              const notesSnap = await getDocs(collection(db, "coach_notes"));
-              notesSnap.forEach((docSnap) => {
-                  let data = docSnap.data();
-                  if(data && data.text && !coachNotebookEntries.some(n => n.text === data.text)) {
-                      coachNotebookEntries.push(data);
-                  }
-              });
-              if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
-
-              // 5. جلب الأخبار وصورها
-              const newsSnap = await getDocs(collection(db, "club_news"));
-              newsSnap.forEach((docSnap) => {
-                  let data = docSnap.data();
-                  if(data && data.title && !newsArticles.some(n => n.title === data.title)) {
-                      newsArticles.unshift(data);
-                  }
-              });
-              if(typeof renderNewsTickers === 'function') renderNewsTickers();
-              if(typeof renderNewsFullList === 'function') renderNewsFullList();
-
-              console.log("تم تحميل واستعادة كافة الصور والبيانات من السحابة بنجاح تام!");
-          } catch (e) {
-              console.log("جارٍ تهيئة البيانات السحابية...", e);
-          }
-      };
-
-      window.addEventListener('load', () => {
-          setTimeout(() => {
-              if(window.loadAllCloudData) window.loadAllCloudData();
-          }, 800);
-      });
-    </script>
+    // تشغيل جلب البيانات تلقائياً بمجرد فتح الصفحة
+    window.addEventListener('DOMContentLoaded', () => {
+        if(typeof loadAllCloudData === 'function') loadAllCloudData();
+    });
+</script>
 </body>
 </html>
