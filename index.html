@@ -1484,16 +1484,22 @@
         };
 
 window.addEventListener('load', async () => {
-    // 1. شاشة التحميل تختفي غصباً عنها بعد 1.4 ثانية لضمان فتح الموقع فوراً
-    setTimeout(() => { 
-        const loadingScreen = document.getElementById('loading-screen');
-        if(loadingScreen) loadingScreen.classList.add('fade-out'); 
-    }, 1400);
+    // 1. إخفاء شاشة التحميل إجبارياً بعد 1.5 ثانية (عشان تفتح الموقع فوراً)
+    const loadingScreen = document.getElementById('loading-screen');
+    if(loadingScreen) {
+        setTimeout(() => {
+            loadingScreen.classList.add('fade-out');
+        }, 1500);
+    }
     
-    // 2. جلب البيانات السحابية في الخلفية
-    fetchAllCloudData(); 
+    // 2. محاولة جلب البيانات السحابية في الخلفية بأمان
+    try {
+        await fetchAllCloudData();
+    } catch (e) {
+        console.log("العمل وضع أوفلاين/مؤقت:", e);
+    }
     
-    // باقي دوال العرض:
+    // تشغيل باقي واجهات الموقع
     renderArtisticGallery();
     renderAcademyLegends();
     updatePotmUI();
