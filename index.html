@@ -2783,7 +2783,7 @@
         }
     </script>
 
-    <script type="module">
+   <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
@@ -2801,6 +2801,7 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        // دالة حفظ البيانات والوسائط في الكอลيكشن المناسب
         window.saveMyDataWithImage = async function(collectionName, dataObj, base64Image) {
             try {
                 let docId = dataObj.id ? String(dataObj.id) : doc(collection(db, collectionName)).id;
@@ -2813,16 +2814,17 @@
                 }
 
                 await setDoc(doc(db, collectionName, docId), dataObj, { merge: true });
-                console.log(`تم حفظ البيانات والصورة في ${collectionName} بنجاح!`);
+                console.log(`تم حفظ البيانات بنجاح في الكอลيكشن: [${collectionName}]`);
             } catch (e) {
-                console.error("خطأ أثناء الحفظ السحابي:", e);
+                console.error(`خطأ أثناء الحفظ في الكอลيكشن ${collectionName}:`, e);
             }
         };
 
+        // دالة حذف المستندات والوسائط المرتبطة من الكوليكشن
         window.deleteItemWithMedia = async function(collectionName, itemId, imageUrl) {
             try {
                 await deleteDoc(doc(db, collectionName, String(itemId)));
-                console.log(`تم حذف العنصر ${itemId} من ${collectionName}`);
+                console.log(`تم حذف العنصر ${itemId} من الكอลيكشن ${collectionName}`);
 
                 if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com")) {
                     const imageRef = ref(storage, imageUrl);
@@ -2833,12 +2835,14 @@
                     await loadAllCloudData();
                 }
             } catch (e) {
-                console.error("خطأ أثناء عملية الحذف:", e);
+                console.error("خطأ أثناء عملية الحذف السحابي:", e);
             }
         };
 
+        // دالة جزامنة وتحميل كافة البيانات من كوليكشنات الفايربيز عند فتح الموقع
         window.loadAllCloudData = async function() {
             try {
+                // 1. تحميل اللاعبين
                 const playersSnap = await getDocs(collection(db, "players_data"));
                 playersSnap.forEach((docSnap) => {
                     let cloudPlayer = docSnap.data();
@@ -2852,18 +2856,21 @@
                     }
                 });
 
+                // 2. تحميل الأخبار
                 const newsSnap = await getDocs(collection(db, "club_news"));
                 newsSnap.forEach((docSnap) => {
                     let newsItem = docSnap.data();
                     if(!newsArticles.some(n => n.id === newsItem.id)) newsArticles.push(newsItem);
                 });
 
+                // 3. تحميل ملاحظات المدربين
                 const notesSnap = await getDocs(collection(db, "coach_notes"));
                 notesSnap.forEach((docSnap) => {
                     let noteItem = docSnap.data();
                     if(!coachNotebookEntries.some(n => n.text === noteItem.text)) coachNotebookEntries.push(noteItem);
                 });
 
+                // 4. تحميل إعدادات النادي (POTM & POTW)
                 const configSnap = await getDocs(collection(db, "club_config"));
                 configSnap.forEach((docSnap) => {
                     let conf = docSnap.data();
@@ -2871,6 +2878,7 @@
                     if(conf.id === "potw") playerOfTheWeek = { name: conf.name, img: conf.img };
                 });
 
+                // 5. تحميل أساطير POTM الشهرية
                 const legendsSnap = await getDocs(collection(db, "club_legends"));
                 legendsSnap.forEach((docSnap) => {
                     let leg = docSnap.data();
@@ -2880,6 +2888,7 @@
                     }
                 });
 
+                // تحديث واجهات العرض بعد اكتمال التحميل
                 if(typeof currentGroupKey !== 'undefined' && currentGroupKey && typeof renderPlayersCards === 'function') {
                     renderPlayersCards(currentGroupKey);
                 }
@@ -2890,9 +2899,9 @@
                 if(typeof renderNewsFullList === 'function') renderNewsFullList();
                 if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
 
-                console.log("تم استرجاع كافة بيانات السحابة والوسائط بنجاح!");
+                console.log("تم مزامنة واسترجاع كافة بيانات الكوليكشنات السحابية بنجاح!");
             } catch (e) {
-                console.log("جارٍ تهيئة البيانات السحابية...", e);
+                console.log("جارٍ تهيئة الكوليكشنات السحابية الجديدة...", e);
             }
         };
 
