@@ -1531,20 +1531,21 @@
         }
 
         function previewCropImage(event, targetType) {
-            const file = event.target.files[0];
-            if(!file) return;
-            cropTargetType = targetType;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                cropSourceImage = new Image();
-                cropSourceImage.onload = function() {
-                    openCropModal();
-                };
-                cropSourceImage.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-            event.target.value = '';
-        }
+    const file = event.target.files[0];
+    if(!file) return;
+    cropTargetType = targetType;
+
+    // ضغط الصورة أولاً قبل فتح شاشة القص لتوفير الذاكرة والسرعة
+    compressImage(file, 800, 0.75, function(compressedDataUrl) {
+        cropSourceImage = new Image();
+        cropSourceImage.onload = function() {
+            openCropModal();
+        };
+        cropSourceImage.src = compressedDataUrl;
+    });
+
+    event.target.value = '';
+}
 
         function openCropModal() {
             document.getElementById('crop-modal').classList.add('active');
@@ -2445,29 +2446,33 @@
             renderPlayerDetailsModal(player, true, false);
             if(currentGroupKey) renderPlayersCards(currentGroupKey);
         }
-        async function deletePlayerFromDatabase(playerId) {
-            if(!isStaffLoggedIn) { alert('للمدربين فقط'); return; }
-            if(confirm('هل أنت متأكد من حذف هذا اللاعب نهائياً من سجلات النادي وقاعدة البيانات السحابية؟')) {
-                try {
-                    // حذف اللاعب سحابياً من فايربيز
-                    await window.deleteCloudPlayerDoc(playerId);
-                    
-                    // حذفه من مصفوفة البيانات المحلية في الصفحة
-                    for(let g in playersData) {
-                        playersData[g] = playersData[g].filter(p => p.id !== playerId);
-                    }
-                    
-                    alert('تم حذف اللاعب نهائياً من السحابة بنجاح!');
-                    closePlayerModal();
-                    if(typeof closeCoachDashboard === 'function') closeCoachDashboard();
-                    if(currentGroupKey) renderPlayersCards(currentGroupKey);
-                } catch (e) {
-                    console.error("خطأ أثناء الحذف السحابي: ", e);
-                    alert('حدث خطأ أثناء محاولة الحذف.');
-                }
+       async function deletePlayerFromDatabase(playerId) {
+    if(!isStaffLoggedIn) { alert('للمدربين فقط'); return; }
+    if(confirm('هل أنت متأكد من حذف هذا اللاعب نهائياً من سجلات النادي وقاعدة البيانات السحابية؟')) {
+        try {
+            // استخدام دالة الحذف السحابي المتاحة في السكربت الموديول
+            if(window.deleteItemWithMedia) {
+                await window.deleteItemWithMedia("players_data", playerId, '');
+            } else {
+                // بديل مباشر لو حابب تحذف من جدول اللاعبين
+                await deleteDoc(doc(db, "players_data", String(playerId)));
             }
+            
+            // حذفه من مصفوفة البيانات المحلية في الصفحة
+            for(let g in playersData) {
+                playersData[g] = playersData[g].filter(p => p.id !== playerId);
+            }
+            
+            alert('تم حذف اللاعب نهائياً من السحابة بنجاح!');
+            closePlayerModal();
+            if(typeof closeCoachDashboard === 'function') closeCoachDashboard();
+            if(currentGroupKey) renderPlayersCards(currentGroupKey);
+        } catch (e) {
+            console.error("خطأ أثناء الحذف السحابي: ", e);
+            alert('حدث خطأ أثناء محاولة الحذف.');
         }
-
+    }
+}
         function triggerPhotoUpload() { document.getElementById('photo-upload-input').click(); }
 
         function switchParentTab(tab) {
@@ -2741,12 +2746,39 @@
         function closeLightbox() {
             document.getElementById('lightbox-modal').classList.remove('active');
         }
+        function compressImage(file, maxWidth = 800, quality = 0.7, callback) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // تحويل الصورة المضغط إلى Base64 بصيغة JPEG وبالجودة المحددة (0.7 يعني 70%)
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+            callback(compressedDataUrl);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
     </script>
    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-    // إعدادات فايربيز الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyClxz9mtmFU_IDe3VFDAIbkhpPpnjtrwY",
         authDomain: "mavenhub-c622a.firebaseapp.com",
@@ -2758,45 +2790,95 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
-    // دالة الحذف السحابي المرتبطة بقاعدة البيانات
-    window.deleteCloudPlayerDoc = async function(playerId) {
+    // 1. دالة رفع الصورة للـ Storage وحفظ البيانات في الـ Firestore
+    window.saveMyDataWithImage = async function(collectionName, dataObj, base64Image) {
         try {
-            await deleteDoc(doc(db, "players_data", String(playerId)));
-            console.log("تم حذف اللاعب من السحابة بنجاح");
+            let docId = dataObj.id ? String(dataObj.id) : doc(collection(db, collectionName)).id;
+            dataObj.id = docId;
+
+            // لو فيه صورة جديدة مقصوصة (Base64)، ارفعها للـ Storage الأول
+            if (base64Image && base64Image.startsWith("data:image")) {
+                const storageRef = ref(storage, `${collectionName}/${docId}_${Date.now()}.jpg`);
+                await uploadString(storageRef, base64Image, 'data_url');
+                dataObj.img = await getDownloadURL(storageRef); // هات الرابط الحقيقي المباشر للصورة
+            }
+
+            // احفظ المستند بالكامل في Firestore
+            await setDoc(doc(db, collectionName, docId), dataObj, { merge: true });
+            console.log(`تم حفظ البيانات والصورة في ${collectionName} بنجاح!`);
         } catch (e) {
-            console.error("خطأ في حذف اللاعب سحابياً: ", e);
+            console.error("خطأ أثناء الحفظ السحابي:", e);
         }
     };
 
-    // استدعاء البيانات وتحديث الواجهة عند تحميل الصفحة
+    // 2. دالة الحذف الشاملة (تحذف المستند وتُنظف الصورة من الـ Storage)
+    window.deleteItemWithMedia = async function(collectionName, itemId, imageUrl) {
+        try {
+            await deleteDoc(doc(db, collectionName, String(itemId)));
+            console.log(`تم حذف العنصر ${itemId} من ${collectionName}`);
+
+            // حذف الصورة من الـ Storage لو كانت تابعة لـ Firebase
+            if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com")) {
+                const imageRef = ref(storage, imageUrl);
+                await deleteObject(imageRef);
+                console.log("تم حذف ملف الصورة من التخزين السحابي بنجاح");
+            }
+
+            if(typeof loadAllCloudData === 'function') {
+                await loadAllCloudData();
+            }
+        } catch (e) {
+            console.error("خطأ أثناء عملية الحذف:", e);
+        }
+    };
+
+    // 3. جلب كافة البيانات عند فتح الموقع
     window.loadAllCloudData = async function() {
         try {
             const playersSnap = await getDocs(collection(db, "players_data"));
             playersSnap.forEach((docSnap) => {
                 let cloudPlayer = docSnap.data();
                 for(let g in playersData) {
-                    let index = playersData[g].findIndex(p => p.id === cloudPlayer.id);
+                    let index = playersData[g].findIndex(p => p.id === cloudPlayer.id || String(p.id) === String(cloudPlayer.id));
                     if(index !== -1) {
                         playersData[g][index] = { ...playersData[g][index], ...cloudPlayer };
-                    } else if(cloudPlayer.pos) {
+                    } else if(cloudPlayer.pos || cloudPlayer.name) {
                         playersData[g].push(cloudPlayer);
                     }
                 }
             });
-            
-            if(typeof currentGroupKey !== 'undefined' && currentGroupKey) {
+
+            // جلب الأخبار والملاحظات
+            const newsSnap = await getDocs(collection(db, "club_news"));
+            newsSnap.forEach((docSnap) => {
+                let newsItem = docSnap.data();
+                if(!newsArticles.some(n => n.id === newsItem.id)) newsArticles.push(newsItem);
+            });
+
+            const notesSnap = await getDocs(collection(db, "coach_notes"));
+            notesSnap.forEach((docSnap) => {
+                let noteItem = docSnap.data();
+                if(!coachNotebookEntries.some(n => n.text === noteItem.text)) coachNotebookEntries.push(noteItem);
+            });
+
+            // تحديث واجهة المستخدم
+            if(typeof currentGroupKey !== 'undefined' && currentGroupKey && typeof renderPlayersCards === 'function') {
                 renderPlayersCards(currentGroupKey);
             }
             if(typeof updatePotmUI === 'function') updatePotmUI();
             if(typeof updatePotwUI === 'function') updatePotwUI();
-            
+            if(typeof renderNewsTickers === 'function') renderNewsTickers();
+            if(typeof renderNewsFullList === 'function') renderNewsFullList();
+            if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
+
+            console.log("تم استرجاع كافة بيانات السحابة والوسائط بنجاح!");
         } catch (e) {
             console.log("جارٍ تهيئة البيانات السحابية...", e);
         }
     };
 
-    // تشغيل جلب البيانات تلقائياً بمجرد فتح الصفحة
     window.addEventListener('DOMContentLoaded', () => {
         if(typeof loadAllCloudData === 'function') loadAllCloudData();
     });
