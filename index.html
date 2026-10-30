@@ -495,7 +495,7 @@
         .social-links { display: flex; justify-content: center; gap: 20px; margin: 20px 0; font-size: 1.5rem; }
         .social-links a { color: var(--text); background: var(--card-bg); border: 2px solid var(--accent); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); box-shadow: 0 0 15px var(--accent-glow); }
         .social-links a:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 0 25px var(--accent-glow); }
-  @media (max-width: 768px) {
+    @media (max-width: 768px) {
         header {
             padding: 8px 10px !important;
             flex-wrap: wrap !important;
@@ -1096,7 +1096,6 @@
         </div>
         <p style="color:var(--text-muted); font-size:0.95rem;">جميع الحقوق محفوظة © 2026 Maven Hub</p>
     </footer>
-
     <script>
         const translations = {
             ar: {
@@ -1531,21 +1530,20 @@
         }
 
         function previewCropImage(event, targetType) {
-    const file = event.target.files[0];
-    if(!file) return;
-    cropTargetType = targetType;
+            const file = event.target.files[0];
+            if(!file) return;
+            cropTargetType = targetType;
 
-    // ضغط الصورة أولاً قبل فتح شاشة القص لتوفير الذاكرة والسرعة
-    compressImage(file, 800, 0.75, function(compressedDataUrl) {
-        cropSourceImage = new Image();
-        cropSourceImage.onload = function() {
-            openCropModal();
-        };
-        cropSourceImage.src = compressedDataUrl;
-    });
+            compressImage(file, 800, 0.75, function(compressedDataUrl) {
+                cropSourceImage = new Image();
+                cropSourceImage.onload = function() {
+                    openCropModal();
+                };
+                cropSourceImage.src = compressedDataUrl;
+            });
 
-    event.target.value = '';
-}
+            event.target.value = '';
+        }
 
         function openCropModal() {
             document.getElementById('crop-modal').classList.add('active');
@@ -1622,7 +1620,10 @@
             if(cropTargetType === 'player' && currentActivePlayerForPhoto) {
                 currentActivePlayerForPhoto.img = croppedDataUrl;
                 document.getElementById('modal-player-avatar').src = croppedDataUrl;
-                alert('تم قص وحفظ الصورة الشخصية للاعب بنجاح!');
+                if(window.saveMyDataWithImage) {
+                    window.saveMyDataWithImage("players_data", currentActivePlayerForPhoto, croppedDataUrl);
+                }
+                alert('تم قص وحفظ الصورة الشخصية للاعب بنجاح وسحابياً!');
                 if(currentGroupKey) renderPlayersCards(currentGroupKey);
             } else if(cropTargetType === 'coach' && activeCoachKeyForAvatar) {
                 staffCredentials[activeCoachKeyForAvatar].img = croppedDataUrl;
@@ -1643,16 +1644,25 @@
             } else if(cropTargetType === 'potm') {
                 playerOfTheMonth.img = croppedDataUrl;
                 updatePotmUI();
-                alert('تم تحديث صورة لاعب الشهر بنجاح!');
+                if(window.saveMyDataWithImage) {
+                    window.saveMyDataWithImage("club_config", { id: "potm", ...playerOfTheMonth }, croppedDataUrl);
+                }
+                alert('تم تحديث صورة وسحابة لاعب الشهر بنجاح!');
             } else if(cropTargetType === 'potw') {
                 playerOfTheWeek.img = croppedDataUrl;
                 updatePotwUI();
-                alert('تم تحديث صورة لاعب الأسبوع بنجاح!');
+                if(window.saveMyDataWithImage) {
+                    window.saveMyDataWithImage("club_config", { id: "potw", ...playerOfTheWeek }, croppedDataUrl);
+                }
+                alert('تم تحديث صورة وسحابة لاعب الأسبوع بنجاح!');
             } else if(cropTargetType === 'legend') {
                 const monthIdx = document.getElementById('admin-legend-month-select').value;
                 academyLegendsData[monthIdx].img = croppedDataUrl;
                 renderAcademyLegends();
-                alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
+                if(window.saveMyDataWithImage) {
+                    window.saveMyDataWithImage("club_legends", { id: "legend_" + monthIdx, ...academyLegendsData[monthIdx] }, croppedDataUrl);
+                }
+                alert('تم حفظ بطاقة POTM الشهرية وسحابياً بنجاح!');
             } else if(cropTargetType === 'news') {
                 window.tempNewsCroppedImg = croppedDataUrl;
                 alert('تم اقتصاص صورة الخبر بنجاح!');
@@ -1668,6 +1678,7 @@
             if(!text) { alert('اكتب نص الملاحظة أولاً'); return; }
             const now = new Date();
             let noteObj = {
+                id: Date.now(),
                 text: text,
                 dateTime: `${now.toLocaleDateString('ar-EG')} - ${now.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}`,
                 author: loggedInStaffName || 'مشرف النادي'
@@ -1676,8 +1687,8 @@
             input.value = '';
             renderCoachNotebookList();
             
-            if(window.saveMyData) {
-                window.saveMyData("coach_notes", noteObj);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("coach_notes", noteObj, null);
             }
         }
 
@@ -1723,8 +1734,8 @@
             renderNewsTickers();
             renderNewsFullList();
             
-            if(window.saveMyData) {
-                window.saveMyData("club_news", newsObj);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("club_news", newsObj, imgUrl);
             }
             alert('تم نشر الخبر بنجاح في الواجهة وحفظه سحابياً!');
         }
@@ -1926,8 +1937,8 @@
             pendingParentRequests.push(requestObj);
             addSystemNotification(`طلب حساب ولي أمر جديد لـ (${fullName}) خاص بالابن (${foundPlayer.name}).`, 'coach');
             
-            if(window.saveMyData) {
-                window.saveMyData("parent_requests", requestObj);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("parent_requests", requestObj, avatarUrl);
             }
 
             const waMessage = encodeURIComponent(`مرحباً إدارة نادي Maven Hub، أود طلب تفعيل حساب ولي الأمر.\nاسم ولي الأمر: ${fullName}\nاسم الابن اللاعب: ${foundPlayer.name}\nرقم الهاتف: ${phone}`);
@@ -2219,8 +2230,8 @@
             player.schedule[sessionIdx].attended = !player.schedule[sessionIdx].attended;
             checkAndResetScheduleIfCompleted(player);
             
-            if(window.saveMyData) {
-                window.saveMyData("players_data", player);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("players_data", player, null);
             }
             renderPlayerDetailsModal(player, true, true);
         }
@@ -2396,8 +2407,8 @@
             player.warnings.push({ text: text, date: dateStr });
             document.getElementById('new-warning-input').value = '';
             
-            if(window.saveMyData) {
-                window.saveMyData("players_data", player);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("players_data", player, null);
             }
             alert('تم إرسال الإنذار وتوثيقه سحابياً بنجاح!');
             renderPlayerDetailsModal(player, true, false);
@@ -2438,41 +2449,38 @@
             });
             player.eval.finalDecision = document.getElementById('edit-decision').value.trim();
 
-            if(window.saveMyData) {
-                window.saveMyData("players_data", player);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("players_data", player, null);
             }
 
             alert('تم تحديث استمارة التقييم الاحترافية وحفظها سحابياً بنجاح!');
             renderPlayerDetailsModal(player, true, false);
             if(currentGroupKey) renderPlayersCards(currentGroupKey);
         }
-       async function deletePlayerFromDatabase(playerId) {
-    if(!isStaffLoggedIn) { alert('للمدربين فقط'); return; }
-    if(confirm('هل أنت متأكد من حذف هذا اللاعب نهائياً من سجلات النادي وقاعدة البيانات السحابية؟')) {
-        try {
-            // استخدام دالة الحذف السحابي المتاحة في السكربت الموديول
-            if(window.deleteItemWithMedia) {
-                await window.deleteItemWithMedia("players_data", playerId, '');
-            } else {
-                // بديل مباشر لو حابب تحذف من جدول اللاعبين
-                await deleteDoc(doc(db, "players_data", String(playerId)));
+
+        async function deletePlayerFromDatabase(playerId) {
+            if(!isStaffLoggedIn) { alert('للمدربين فقط'); return; }
+            if(confirm('هل أنت متأكد من حذف هذا اللاعب نهائياً من سجلات النادي وقاعدة البيانات السحابية؟')) {
+                try {
+                    if(window.deleteItemWithMedia) {
+                        await window.deleteItemWithMedia("players_data", playerId, '');
+                    }
+                    
+                    for(let g in playersData) {
+                        playersData[g] = playersData[g].filter(p => p.id !== playerId);
+                    }
+                    
+                    alert('تم حذف اللاعب نهائياً من السحابة بنجاح!');
+                    closePlayerModal();
+                    if(typeof closeCoachDashboard === 'function') closeCoachDashboard();
+                    if(currentGroupKey) renderPlayersCards(currentGroupKey);
+                } catch (e) {
+                    console.error("خطأ أثناء الحذف السحابي: ", e);
+                    alert('حدث خطأ أثناء محاولة الحذف.');
+                }
             }
-            
-            // حذفه من مصفوفة البيانات المحلية في الصفحة
-            for(let g in playersData) {
-                playersData[g] = playersData[g].filter(p => p.id !== playerId);
-            }
-            
-            alert('تم حذف اللاعب نهائياً من السحابة بنجاح!');
-            closePlayerModal();
-            if(typeof closeCoachDashboard === 'function') closeCoachDashboard();
-            if(currentGroupKey) renderPlayersCards(currentGroupKey);
-        } catch (e) {
-            console.error("خطأ أثناء الحذف السحابي: ", e);
-            alert('حدث خطأ أثناء محاولة الحذف.');
         }
-    }
-}
+
         function triggerPhotoUpload() { document.getElementById('photo-upload-input').click(); }
 
         function switchParentTab(tab) {
@@ -2559,8 +2567,8 @@
             pendingParentRequests.splice(idx, 1);
             addSystemNotification(`تمت الموافقة على حساب ولي الأمر لـ (${req.parentName}).`, 'parent');
             
-            if(window.saveMyData) {
-                window.saveMyData("approved_parents", { parentName: req.parentName, sonName: req.sonName });
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("approved_parents", { id: "parent_" + req.sonName, parentName: req.parentName, sonName: req.sonName }, null);
             }
             alert('تم اعتماد ولي الأمر بنجاح!');
             renderCoachDashboardData();
@@ -2571,8 +2579,8 @@
             if(name) playerOfTheMonth.name = name;
             updatePotmUI();
             
-            if(window.saveMyData) {
-                window.saveMyData("club_potm", playerOfTheMonth);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("club_config", { id: "potm", ...playerOfTheMonth }, playerOfTheMonth.img);
             }
             alert('تم تحديث لاعب الشهر بنجاح!');
         }
@@ -2587,8 +2595,8 @@
             if(name) playerOfTheWeek.name = name;
             updatePotwUI();
             
-            if(window.saveMyData) {
-                window.saveMyData("club_potw", playerOfTheWeek);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("club_config", { id: "potw", ...playerOfTheWeek }, playerOfTheWeek.img);
             }
             alert('تم تحديث لاعب الأسبوع (فضي) بنجاح!');
         }
@@ -2615,8 +2623,8 @@
                 }
                 renderAcademyLegends();
                 
-                if(window.saveMyData) {
-                    window.saveMyData("academy_legends", academyLegendsData[monthIdx]);
+                if(window.saveMyDataWithImage) {
+                    window.saveMyDataWithImage("club_legends", { id: "legend_" + monthIdx, ...academyLegendsData[monthIdx] }, academyLegendsData[monthIdx].img);
                 }
                 alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
             }
@@ -2668,8 +2676,8 @@
             playersData[group].push(newPlayerObj);
             window.tempNewPlayerCroppedImg = '';
 
-            if(window.saveMyData) {
-                window.saveMyData("players_data", newPlayerObj);
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("players_data", newPlayerObj, imgUrl);
             }
 
             alert('تم إنشاء بروفايل اللاعب وحفظه سحابياً بنجاح!');
@@ -2704,8 +2712,8 @@
             let senderTypeLabel = loggedInUserType === 'player' ? 'اللاعب' : 'ولي أمر اللاعب';
             addSystemNotification(`رسالة جديدة للمدرب (${targetCoachForDirectMsg}) من ${senderTypeLabel}: (${senderName}). النص: ${msg}`, 'coach');
             
-            if(window.saveMyData) {
-                window.saveMyData("coach_messages", { to: targetCoachForDirectMsg, from: senderName, message: msg });
+            if(window.saveMyDataWithImage) {
+                window.saveMyDataWithImage("coach_messages", { id: "msg_" + Date.now(), to: targetCoachForDirectMsg, from: senderName, message: msg }, null);
             }
             alert('تم إرسال رسالتك للمدرب وحفظها سحابياً بنجاح!');
             document.getElementById('directCoachMsgInput').value = '';
@@ -2746,142 +2754,151 @@
         function closeLightbox() {
             document.getElementById('lightbox-modal').classList.remove('active');
         }
+
         function compressImage(file, maxWidth = 800, quality = 0.7, callback) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            let width = img.width;
-            let height = img.height;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
 
-            if (width > maxWidth) {
-                height = Math.round((height * maxWidth) / width);
-                width = maxWidth;
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            // تحويل الصورة المضغط إلى Base64 بصيغة JPEG وبالجودة المحددة (0.7 يعني 70%)
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-            callback(compressedDataUrl);
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-    </script>
-   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyClxz9mtmFU_IDe3VFDAIbkhpPpnjtrwY",
-        authDomain: "mavenhub-c622a.firebaseapp.com",
-        projectId: "mavenhub-c622a",
-        storageBucket: "mavenhub-c622a.appspot.com",
-        messagingSenderId: "...",
-        appId: "..."
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    // 1. دالة رفع الصورة للـ Storage وحفظ البيانات في الـ Firestore
-    window.saveMyDataWithImage = async function(collectionName, dataObj, base64Image) {
-        try {
-            let docId = dataObj.id ? String(dataObj.id) : doc(collection(db, collectionName)).id;
-            dataObj.id = docId;
-
-            // لو فيه صورة جديدة مقصوصة (Base64)، ارفعها للـ Storage الأول
-            if (base64Image && base64Image.startsWith("data:image")) {
-                const storageRef = ref(storage, `${collectionName}/${docId}_${Date.now()}.jpg`);
-                await uploadString(storageRef, base64Image, 'data_url');
-                dataObj.img = await getDownloadURL(storageRef); // هات الرابط الحقيقي المباشر للصورة
-            }
-
-            // احفظ المستند بالكامل في Firestore
-            await setDoc(doc(db, collectionName, docId), dataObj, { merge: true });
-            console.log(`تم حفظ البيانات والصورة في ${collectionName} بنجاح!`);
-        } catch (e) {
-            console.error("خطأ أثناء الحفظ السحابي:", e);
-        }
-    };
-
-    // 2. دالة الحذف الشاملة (تحذف المستند وتُنظف الصورة من الـ Storage)
-    window.deleteItemWithMedia = async function(collectionName, itemId, imageUrl) {
-        try {
-            await deleteDoc(doc(db, collectionName, String(itemId)));
-            console.log(`تم حذف العنصر ${itemId} من ${collectionName}`);
-
-            // حذف الصورة من الـ Storage لو كانت تابعة لـ Firebase
-            if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com")) {
-                const imageRef = ref(storage, imageUrl);
-                await deleteObject(imageRef);
-                console.log("تم حذف ملف الصورة من التخزين السحابي بنجاح");
-            }
-
-            if(typeof loadAllCloudData === 'function') {
-                await loadAllCloudData();
-            }
-        } catch (e) {
-            console.error("خطأ أثناء عملية الحذف:", e);
-        }
-    };
-
-    // 3. جلب كافة البيانات عند فتح الموقع
-    window.loadAllCloudData = async function() {
-        try {
-            const playersSnap = await getDocs(collection(db, "players_data"));
-            playersSnap.forEach((docSnap) => {
-                let cloudPlayer = docSnap.data();
-                for(let g in playersData) {
-                    let index = playersData[g].findIndex(p => p.id === cloudPlayer.id || String(p.id) === String(cloudPlayer.id));
-                    if(index !== -1) {
-                        playersData[g][index] = { ...playersData[g][index], ...cloudPlayer };
-                    } else if(cloudPlayer.pos || cloudPlayer.name) {
-                        playersData[g].push(cloudPlayer);
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
                     }
-                }
-            });
 
-            // جلب الأخبار والملاحظات
-            const newsSnap = await getDocs(collection(db, "club_news"));
-            newsSnap.forEach((docSnap) => {
-                let newsItem = docSnap.data();
-                if(!newsArticles.some(n => n.id === newsItem.id)) newsArticles.push(newsItem);
-            });
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
 
-            const notesSnap = await getDocs(collection(db, "coach_notes"));
-            notesSnap.forEach((docSnap) => {
-                let noteItem = docSnap.data();
-                if(!coachNotebookEntries.some(n => n.text === noteItem.text)) coachNotebookEntries.push(noteItem);
-            });
-
-            // تحديث واجهة المستخدم
-            if(typeof currentGroupKey !== 'undefined' && currentGroupKey && typeof renderPlayersCards === 'function') {
-                renderPlayersCards(currentGroupKey);
-            }
-            if(typeof updatePotmUI === 'function') updatePotmUI();
-            if(typeof updatePotwUI === 'function') updatePotwUI();
-            if(typeof renderNewsTickers === 'function') renderNewsTickers();
-            if(typeof renderNewsFullList === 'function') renderNewsFullList();
-            if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
-
-            console.log("تم استرجاع كافة بيانات السحابة والوسائط بنجاح!");
-        } catch (e) {
-            console.log("جارٍ تهيئة البيانات السحابية...", e);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    callback(compressedDataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
-    };
+    </script>
 
-    window.addEventListener('DOMContentLoaded', () => {
-        if(typeof loadAllCloudData === 'function') loadAllCloudData();
-    });
-</script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyClxz9mtmFU_IDe3VFDAIbkhpPpnjtrwY",
+            authDomain: "mavenhub-c622a.firebaseapp.com",
+            projectId: "mavenhub-c622a",
+            storageBucket: "mavenhub-c622a.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        window.saveMyDataWithImage = async function(collectionName, dataObj, base64Image) {
+            try {
+                let docId = dataObj.id ? String(dataObj.id) : doc(collection(db, collectionName)).id;
+                dataObj.id = docId;
+
+                if (base64Image && base64Image.startsWith("data:image")) {
+                    const storageRef = ref(storage, `${collectionName}/${docId}_${Date.now()}.jpg`);
+                    await uploadString(storageRef, base64Image, 'data_url');
+                    dataObj.img = await getDownloadURL(storageRef);
+                }
+
+                await setDoc(doc(db, collectionName, docId), dataObj, { merge: true });
+                console.log(`تم حفظ البيانات والصورة في ${collectionName} بنجاح!`);
+            } catch (e) {
+                console.error("خطأ أثناء الحفظ السحابي:", e);
+            }
+        };
+
+        window.deleteItemWithMedia = async function(collectionName, itemId, imageUrl) {
+            try {
+                await deleteDoc(doc(db, collectionName, String(itemId)));
+                console.log(`تم حذف العنصر ${itemId} من ${collectionName}`);
+
+                if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com")) {
+                    const imageRef = ref(storage, imageUrl);
+                    await deleteObject(imageRef);
+                }
+
+                if(typeof loadAllCloudData === 'function') {
+                    await loadAllCloudData();
+                }
+            } catch (e) {
+                console.error("خطأ أثناء عملية الحذف:", e);
+            }
+        };
+
+        window.loadAllCloudData = async function() {
+            try {
+                const playersSnap = await getDocs(collection(db, "players_data"));
+                playersSnap.forEach((docSnap) => {
+                    let cloudPlayer = docSnap.data();
+                    for(let g in playersData) {
+                        let index = playersData[g].findIndex(p => p.id === cloudPlayer.id || String(p.id) === String(cloudPlayer.id));
+                        if(index !== -1) {
+                            playersData[g][index] = { ...playersData[g][index], ...cloudPlayer };
+                        } else if(cloudPlayer.pos || cloudPlayer.name) {
+                            playersData[g].push(cloudPlayer);
+                        }
+                    }
+                });
+
+                const newsSnap = await getDocs(collection(db, "club_news"));
+                newsSnap.forEach((docSnap) => {
+                    let newsItem = docSnap.data();
+                    if(!newsArticles.some(n => n.id === newsItem.id)) newsArticles.push(newsItem);
+                });
+
+                const notesSnap = await getDocs(collection(db, "coach_notes"));
+                notesSnap.forEach((docSnap) => {
+                    let noteItem = docSnap.data();
+                    if(!coachNotebookEntries.some(n => n.text === noteItem.text)) coachNotebookEntries.push(noteItem);
+                });
+
+                const configSnap = await getDocs(collection(db, "club_config"));
+                configSnap.forEach((docSnap) => {
+                    let conf = docSnap.data();
+                    if(conf.id === "potm") playerOfTheMonth = { name: conf.name, img: conf.img };
+                    if(conf.id === "potw") playerOfTheWeek = { name: conf.name, img: conf.img };
+                });
+
+                const legendsSnap = await getDocs(collection(db, "club_legends"));
+                legendsSnap.forEach((docSnap) => {
+                    let leg = docSnap.data();
+                    let idx = leg.id ? leg.id.replace("legend_", "") : null;
+                    if(idx !== null && academyLegendsData[idx]) {
+                        academyLegendsData[idx] = { ...academyLegendsData[idx], ...leg };
+                    }
+                });
+
+                if(typeof currentGroupKey !== 'undefined' && currentGroupKey && typeof renderPlayersCards === 'function') {
+                    renderPlayersCards(currentGroupKey);
+                }
+                if(typeof updatePotmUI === 'function') updatePotmUI();
+                if(typeof updatePotwUI === 'function') updatePotwUI();
+                if(typeof renderAcademyLegends === 'function') renderAcademyLegends();
+                if(typeof renderNewsTickers === 'function') renderNewsTickers();
+                if(typeof renderNewsFullList === 'function') renderNewsFullList();
+                if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
+
+                console.log("تم استرجاع كافة بيانات السحابة والوسائط بنجاح!");
+            } catch (e) {
+                console.log("جارٍ تهيئة البيانات السحابية...", e);
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if(typeof loadAllCloudData === 'function') loadAllCloudData();
+        });
+    </script>
 </body>
 </html>
