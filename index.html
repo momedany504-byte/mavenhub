@@ -1483,22 +1483,23 @@
             "medany": { pass: "medany12341234", name: "محلل الأداء/ محمد مدني", img: "" }
         };
 
-window.addEventListener('load', async () => {
-    // 1. إخفاء شاشة التحميل إجبارياً بعد 1.5 ثانية (عشان تفتح الموقع فوراً)
-    const loadingScreen = document.getElementById('loading-screen');
-    if(loadingScreen) {
-        setTimeout(() => {
-            loadingScreen.classList.add('fade-out');
-        }, 1500);
-    }
-    
-    // 2. محاولة جلب البيانات السحابية في الخلفية بأمان
-    try {
-        await fetchAllCloudData();
-    } catch (e) {
+document.addEventListener("DOMContentLoaded", () => {
+    // إزالة شاشة التحميل نهائياً وبشكل فوري بعد 1.4 ثانية
+    setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.remove(); // حذف العنصر من الصفحة تماماً
+            }, 500);
+        }
+    }, 1400);
+
+    // جلب البيانات السحابية في الخلفية بأمان
+    fetchAllCloudData().catch(e => {
         console.log("العمل وضع أوفلاين/مؤقت:", e);
-    }
-    
+    });
+
     // تشغيل باقي واجهات الموقع
     renderArtisticGallery();
     renderAcademyLegends();
@@ -1509,7 +1510,7 @@ window.addEventListener('load', async () => {
     renderCoachNotebookList();
 
     const savedCoachKey = localStorage.getItem('maven_saved_coach_key');
-    if(savedCoachKey && staffCredentials[savedCoachKey]) {
+    if (savedCoachKey && staffCredentials[savedCoachKey]) {
         isStaffLoggedIn = true;
         loggedInStaffKey = savedCoachKey;
         loggedInStaffName = staffCredentials[savedCoachKey].name;
