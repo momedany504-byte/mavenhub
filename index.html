@@ -1483,24 +1483,16 @@
             "medany": { pass: "medany12341234", name: "محلل الأداء/ محمد مدني", img: "" }
         };
 
-document.addEventListener("DOMContentLoaded", () => {
-    // إزالة شاشة التحميل نهائياً وبشكل فوري بعد 1.4 ثانية
-    setTimeout(() => {
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.remove(); // حذف العنصر من الصفحة تماماً
-            }, 500);
-        }
-    }, 1400);
-
-    // جلب البيانات السحابية في الخلفية بأمان
-    fetchAllCloudData().catch(e => {
-        console.log("العمل وضع أوفلاين/مؤقت:", e);
-    });
-
-    // تشغيل باقي واجهات الموقع
+window.addEventListener('load', () => {
+    // 1. إخفاء شاشة التحميل فوراً بعد 1.5 ثانية بغض النظر عن أي اتصال سحابي
+    const loadingScreen = document.getElementById('loading-screen');
+    if(loadingScreen) {
+        setTimeout(() => {
+            loadingScreen.classList.add('fade-out');
+        }, 1500);
+    }
+    
+    // 2. تشغيل الواجهات محلياً فوراً لضمان سرعة ظهور الموقع للمستخدم
     renderArtisticGallery();
     renderAcademyLegends();
     updatePotmUI();
@@ -1510,13 +1502,16 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCoachNotebookList();
 
     const savedCoachKey = localStorage.getItem('maven_saved_coach_key');
-    if (savedCoachKey && staffCredentials[savedCoachKey]) {
+    if(savedCoachKey && staffCredentials[savedCoachKey]) {
         isStaffLoggedIn = true;
         loggedInStaffKey = savedCoachKey;
         loggedInStaffName = staffCredentials[savedCoachKey].name;
         loggedInUserType = 'staff';
         updateHeaderUserAvatarUI();
     }
+
+    // 3. جلب البيانات السحابية في الخلفية دون تعطيل الواجهة
+    fetchAllCloudData().catch(e => console.log("الوضع أوفلاين:", e));
 });
         function renderCoachesImages() {
             for(let key in staffCredentials) {
