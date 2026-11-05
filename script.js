@@ -5,7 +5,7 @@ const mysupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 async function fetchAllDataFromCloud() {
     try {
-        let { data, error } = await supabase.from('site_data').select('*');
+        let { data, error } = await mysupabase.from('site_data').select('*');
         if (error) {
             console.error('خطأ في جلب البيانات:', error);
             return;
