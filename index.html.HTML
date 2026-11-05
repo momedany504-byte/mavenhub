@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maven Hub Club | Where Legends Begin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+
+    <button class="exit-preview-btn" onclick="togglePreviewMode()"><i class="fa-solid fa-eye-slash"></i> إيقاف معاينة الخلفية</button>
+    <div class="floating-preview-eye-btn" onclick="togglePreviewMode()" title="معاينة الخلفية صافية"><i class="fa-solid fa-eye"></i></div>
+
+    <div id="loading-screen">
+       <div class="loader-logo-container">
+            <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" alt="Maven Logo">
+        </div>
+        <div class="loading-phrase" data-translate="loading_phrase">فخورين انك جزء من رحلتنا</div>
+    </div>
+
+    <div class="fullscreen-flip-overlay" id="flipOverlay">
+        <div class="flipping-card-container" id="flippingCardContainer">
+            <div class="f-card-inner">
+                <div class="f-card-front" id="flipCardFront"></div>
+                <div class="f-card-back">
+                    <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--accent); object-fit:cover; margin-bottom:15px; box-shadow:0 0 20px var(--accent-glow); background:#112233;" alt="Maven Hub">
+                    <h2 style="color:#fff;">Maven Hub</h2>
+                    <p style="color:#cbd5e1; font-size:0.95rem; margin-top:10px;">جاري تحميل الملف الشخصي...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-area" onclick="switchSection('home-section')">
+            <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" alt="Maven Logo" class="single-logo-img">
+            <h1 class="logo-title">Maven <span>Hub</span></h1>
+        </div>
+
+        <div class="header-center-ticker">
+            <div class="static-ticker-text" data-translate="header_ticker"> Professional Football Analytics & Training Club • Where Legends Begin</div>
+        </div>
+
+        <div class="header-controls">
+            <div class="notification-bell-area">
+                <div class="bell-btn" onclick="toggleNotificationDropdown()">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="bell-badge" id="notifBadge">0</span>
+                </div>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <h4 style="color:var(--accent); margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:5px;"><i class="fa-solid fa-bell"></i> <span data-translate="notif_center_title">مركز الإشعارات الفورية</span></h4>
+                    <div id="notificationList" style="display:flex; flex-direction:column; gap:8px;">
+                        <p style="color:var(--text-muted); font-size:0.9rem; text-align:center;" data-translate="no_notifications">لا توجد إشعارات جديدة حالياً.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-dropdown-container">
+                <button class="ctrl-btn" onclick="toggleLoginMenu()" id="unifiedLoginBtn" data-translate="login_menu_btn"><i class="fa-solid fa-right-to-bracket"></i> تسجيل دخول</button>
+                <div class="login-menu-box" id="loginMenuBox">
+                    <a href="#" class="login-menu-item" onclick="openLoginModal('player')" data-translate="login_player">لاعب</a>
+                    <a href="#" class="login-menu-item" onclick="openLoginModal('parent')" data-translate="login_parent">ولي أمر</a>
+                    <a href="#" class="login-menu-item" onclick="openLoginModal('coach')" data-translate="login_coach">مدرب / محلل</a>
+                </div>
+            </div>
+
+            <div class="header-user-avatar-area" id="headerUserAvatarArea">
+                <img id="headerUserImg" src="" class="header-user-img" onclick="triggerHeaderAvatarUpload()" title="انقر لتغيير صورتك عبر الـ Canvas" alt="User Avatar">
+                <span id="headerUserName" class="header-user-name" onclick="toggleStaffDropdown()" title="انقر لفتح خيارات الإدارة والملاحظات وتسجيل الخروج">زائر</span>
+                <div class="staff-dropdown-menu" id="staffDropdownMenu">
+                    <a href="#" class="staff-dropdown-item" onclick="openCoachDashboard()"><i class="fa-solid fa-gauge"></i> لوحة التحكم الكاملة</a>
+                    <a href="#" class="staff-dropdown-item" onclick="openCoachDashboardTab('notes')"><i class="fa-solid fa-book"></i> دفتر الملاحظات</a>
+                    <a href="#" class="staff-dropdown-item" onclick="globalLogout()" style="color:#ef4444; border-color:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج</a>
+                </div>
+            </div>
+
+            <button class="ctrl-btn" onclick="switchSection('home-section')" data-translate="home_btn">الرئيسية</button>
+            <select id="language-selector" class="lang-dropdown" onchange="changeLanguage(this.value)">
+                <option value="ar">عربي</option>
+                <option value="en">English</option>
+                <option value="ka">ქართული</option>
+            </select>
+            <button class="ctrl-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 data-translate="nav_menu">قائمة التنقل</h3>
+            <button class="close-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <div class="menu-dropdown-btn" onclick="toggleSubmenu('home-sub')">
+                    <span data-translate="nav_home">الرئيسية (Home)</span> <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <ul class="submenu" id="home-sub">
+                    <li><a href="#" onclick="switchSection('players-cat')" data-translate="sub_players">Players (اللاعبون)</a></li>
+                    <li><a href="#" onclick="switchSection('coaches-sec')" data-translate="sub_coaches">Coaches & Analysts</a></li>
+                    <li><a href="#" onclick="switchSection('parents-sec')" data-translate="sub_parents">Parents (أولياء الأمور)</a></li>
+                </ul>
+            </li>
+            <li><a href="#" onclick="switchSection('legends-sec')" data-translate="nav_legends">POTM</a></li>
+            <li><a href="#" onclick="switchSection('gallery-sec')" data-translate="nav_gallery">Gallery (معرض الصور)</a></li>
+            <li><a href="#" onclick="switchSection('about-sec')" data-translate="nav_about">Who We Are</a></li>
+            <li><a href="#" onclick="switchSection('news-sec')" data-translate="nav_news">News (الأخـبـار)</a></li>
+            <li><a href="#" onclick="switchSection('contact-sec')" data-translate="nav_contact">Contact Us (اتصل بنا)</a></li>
+        </ul>
+    </div>
+
+    <div class="main-container">
+
+        <div id="home-section" class="section-view active">
+            <div class="maven-hero">
+                <div class="hero-content-grid">
+                    <div class="hero-left">
+                        <span class="hero-badge-top" data-translate="hero_badge">النظام الاحترافي للتحليل والتطوير</span>
+                        <h1 data-translate="hero_title">Where Legends <span>Begin</span></h1>
+                        <p data-translate="hero_desc">نصنع نجوم المستقبل في كرة القدم عبر أحدث أنظمة التحليل التكتيكي، القياسات البدنية، والمتابعة الدقيقة لأولياء الأمور.</p>
+                        
+                        <div class="hero-action-row">
+                            <div class="hero-btns">
+                                <button class="btn-primary-custom" onclick="switchSection('players-cat')" data-translate="explore_btn">استكشف اللاعبين</button>
+                                <button class="btn-secondary-custom" onclick="switchSection('gallery-sec')" data-translate="gallery_btn">معرض الصور</button>
+                            </div>
+                            <a href="https://maps.app.goo.gl/CdPAunhMBqVfC4CV8" target="_blank" class="training-playground-box">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                                <span class="training-text-label" data-translate="training_playground">Training Playground</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-right">
+                      <div class="logos-dual-showcase">
+                        <div class="academy-logo-showcase-box">
+                            <div class="logo-frame-circle">
+                                <img src="https://i.ibb.co/M5Ss9f4B/Whats-App-Image-2026-10-25-at-12-16-11-AMtt.jpg" alt="MavenHub Logo">
+                            </div>
+                            <h4 class="brand-font-fancy" style="font-size: 1rem;">MavenHub</h4>
+                        </div>
+                        <div class="academy-logo-showcase-box">
+                            <div class="logo-frame-circle">
+                                <img src="https://i.ibb.co/QF4Bqtzw/Whats-App-Image-2026-10-25-at-12-16-11-AM.jpg" alt="Champion Logo">
+                            </div>
+                            <h4 class="brand-font-fancy" style="font-size: 1rem;">Champion</h4>
+                        </div>
+                    </div>
+
+                        <div class="potm-hero-showcase">
+                            <div class="potm-crown-header">
+                                <i class="fa-solid fa-crown"></i> <span data-translate="potm_crown_title">لاعب الشهر (POTM)</span>
+                            </div>
+                            <div class="royal-ring-frame">
+                                <img id="homePotmImg" src="" alt="Player of the Month">
+                            </div>
+                            <h3 id="homePotmName" class="potm-player-name">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-news-ticker-container" id="homeNewsTickerContainer"></div>
+
+            <div class="potw-banner-floating">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div class="silver-ring-frame">
+                        <img id="homePotwImg" src="" alt="Player of the Week">
+                    </div>
+                    <div>
+                        <div style="display:flex; align-items:center; gap:8px; color:var(--text); font-size:1.1rem; font-weight:900; margin-bottom:5px;">
+                            <i class="fa-solid fa-medal" style="color:#94a3b8;"></i> <span data-translate="potw_crown_title">لاعب الأسبوع (Player of the Week)</span>
+                        </div>
+                        <h3 id="homePotwName" style="color:var(--text); font-size:1.3rem;">--</h3>
+                    </div>
+                </div>
+                <div>
+                    <button class="ctrl-btn" onclick="switchSection('players-cat')" style="border-color:#94a3b8;"><i class="fa-solid fa-star"></i> <span data-translate="show_stars">عرض النجوم</span></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="players-cat" class="section-view">
+            <h2 style="margin-bottom: 25px; text-align: center;" data-translate="players_cat_title">فئات اللاعبين</h2>
+            <div class="grid-cards">
+                <div class="player-card" onclick="openPlayersGroup('2010-2012')">
+                    <i class="fa-solid fa-shield-halved fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+                    <h3 data-translate="cat_1">مواليد 2010 - 2011 - 2012</h3>
+                    <p style="color:var(--text-muted); margin-top:10px;" data-translate="cat_1_desc">إعمار النخبة وتطوير التكتيكات العالية</p>
+                </div>
+                <div class="player-card" onclick="openPlayersGroup('2013-2014')">
+                    <i class="fa-solid fa-futbol fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+                    <h3 data-translate="cat_2">مواليد 2013 - 2014</h3>
+                    <p style="color:var(--text-muted); margin-top:10px;" data-translate="cat_2_desc">بناء المهارات الأساسية وفن اللعب الجماعي</p>
+                </div>
+                <div class="player-card" onclick="openPlayersGroup('2015-2016')">
+                    <i class="fa-solid fa-star fa-3x" style="color:var(--accent); margin-bottom:15px;"></i>
+                    <h3 data-translate="cat_3">مواليد 2015 - 2016</h3>
+                    <p style="color:var(--text-muted); margin-top:10px;" data-translate="cat_3_desc">البراعم والخطوات الأولى نحو الاحتراف</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="players-list-view" class="section-view">
+            <button class="ctrl-btn" style="margin-bottom:20px;" onclick="switchSection('players-cat')"><i class="fa-solid fa-arrow-right"></i> <span data-translate="back_btn">رجوع للفئات</span></button>
+            <h2 id="group-title-label" style="margin-bottom: 25px; text-align: center;" data-translate="players_list_title">قائمة اللاعبين</h2>
+            <div class="grid-cards" id="players-cards-container"></div>
+        </div>
+
+        <div id="coaches-sec" class="section-view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 data-translate="coaches_section_title">الجهاز الفني ومحلل الأداء</h2>
+            </div>
+            <div class="grid-cards">
+                <div class="player-card" onclick="triggerCoachFlipAndBio('khalil')">
+                    <img id="coachImg_khalil" src="" alt="Coach" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="coach_1_name">ك/ خليل عمارة</h3>
+                    <p style="color:var(--text-muted);" data-translate="coach_1_role">مؤسس نادي Maven Hub ومدرب الحراس</p>
+                </div>
+                <div class="player-card" onclick="triggerCoachFlipAndBio('abdelrahman')">
+                    <img id="coachImg_abdelrahman" src="" alt="Coach" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="coach_2_name">ك/ عبد الرحمن خليل</h3>
+                    <p style="color:var(--text-muted);" data-translate="coach_2_role">مدرب الأحمال والسرعات</p>
+                </div>
+                <div class="player-card" onclick="triggerCoachFlipAndBio('amir')">
+                    <img id="coachImg_amir" src="" alt="Coach" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="coach_3_name">ك/ أمير أحمد</h3>
+                    <p style="color:var(--text-muted);" data-translate="coach_3_role">مدرب المهارات والبراعم</p>
+                </div>
+                <div class="player-card" onclick="triggerCoachFlipAndBio('medany')">
+                    <img id="coachImg_medany" src="" alt="Analyst" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                    <h3 data-translate="analyst_name">محلل الأداء/ محمد مدني</h3>
+                    <p style="color:var(--accent); font-weight:bold;" data-translate="analyst_role">محلل الأداء الكروي</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="parents-sec" class="section-view">
+            <div class="form-box" id="parent-auth-box">
+                <div style="display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">
+                    <button class="ctrl-btn" onclick="switchParentTab('login')" id="tab-login-btn" style="border-color:var(--accent);" data-translate="parent_login_tab">تسجيل دخول</button>
+                    <button class="ctrl-btn" onclick="switchParentTab('register')" id="tab-reg-btn" data-translate="parent_reg_tab">إنشاء حساب جديد</button>
+                </div>
+
+                <div id="parent-login-form">
+                    <h3 style="text-align: center; margin-bottom: 15px;" data-translate="parent_login_title">تسجيل دخول ولي الأمر</h3>
+                    <div class="form-group">
+                        <label data-translate="son_name_label">اسم الابن اللاعب</label>
+                        <input type="text" id="parent-login-name" placeholder="أدخل اسم ابنك">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="password_label">كلمة المرور</label>
+                        <input type="password" id="parent-login-pass" placeholder="كلمة المرور">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="parent-remember-me" style="width:auto; cursor:pointer;">
+                            <label for="parent-remember-me" style="margin:0; cursor:pointer;" data-translate="remember_me">تذكرني</label>
+                        </div>
+                        <a href="#" onclick="openForgotPasswordModal('parent')" style="color:var(--accent); text-decoration:none; font-weight:700;" data-translate="forgot_pass_link">نسيت كلمة المرور؟</a>
+                    </div>
+                    <button class="btn-primary-custom" style="width: 100%;" onclick="parentLogin()" data-translate="parent_login_submit">دخول لحساب ولي الأمر</button>
+                </div>
+
+                <div id="parent-register-form" style="display: none;">
+                    <h3 style="text-align: center; margin-bottom: 15px;" data-translate="parent_reg_title">إنشاء حساب ولي أمر جديد</h3>
+                    <p style="font-size: 0.85rem; color:var(--text-muted); margin-bottom: 15px; text-align: center;" data-translate="parent_reg_hint">* أدخل بياناتك، ارفع صورتك، ورقم هاتفك لإرسال طلب الموافقة عبر واتساب مجاناً للمدربين.</p>
+                    
+                    <div class="form-group" style="text-align:center;">
+                        <label data-translate="parent_avatar_label">صورتك الشخصية (بروفايل ولي الأمر)</label>
+                        <input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'parent')">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="son_name_label">اسم الابن اللاعب</label>
+                        <input type="text" id="parent-reg-sonname" placeholder="مثال: عمر أحمد">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="parent_full_name">اسم ولي الأمر</label>
+                        <input type="text" id="parent-reg-fullname" placeholder="اسمك الكامل">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="parent_phone_label">رقم الهاتف (للتواصل عبر واتساب)</label>
+                        <input type="text" id="parent-reg-phone" placeholder="010XXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label data-translate="new_pass_label">اختر كلمة مرور جديدة لك</label>
+                        <input type="password" id="parent-reg-pass" placeholder="كلمة المرور">
+                    </div>
+                    <button class="btn-primary-custom" style="width: 100%; background: #25d366;" onclick="parentRegisterWhatsApp()" data-translate="parent_whatsapp_submit"><i class="fa-brands fa-whatsapp"></i> إرسال طلب الانضمام عبر واتساب مجاناً</button>
+                </div>
+            </div>
+
+            <div id="parent-dashboard" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--card-bg); backdrop-filter: blur(12px); padding: 20px; border-radius: 15px; border: 2px solid var(--accent); box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 30px var(--accent-glow);">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img id="parent-avatar" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); cursor:pointer; background:#112233;" title="انقر لتغيير صورتك الشخصية" onclick="triggerParentAvatarUpload()" alt="Parent Avatar">
+                        <div>
+                            <h3 id="welcome-parent-name" style="color:var(--text);"></h3>
+                            <p style="color:var(--text-muted); font-size:0.95rem;" data-translate="parent_portal">بوابة متابعة الابن اللاعب</p>
+                        </div>
+                    </div>
+                    <button class="ctrl-btn" onclick="globalLogout()" data-translate="logout_btn">تسجيل خروج</button>
+                </div>
+
+                <div id="parent-warning-box" style="display:none; background: rgba(239, 68, 68, 0.2); backdrop-filter: blur(10px); border: 2px solid #ef4444; border-radius: 15px; padding: 20px; margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <i class="fa-solid fa-triangle-exclamation fa-2x" style="color:#ef4444;"></i>
+                        <h3 style="color:#ef4444;" data-translate="parent_warnings_title">سجل الإنذارات والتنبيهات الموجهة من الجهاز الفني</h3>
+                    </div>
+                    <div id="parent-warnings-list" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+                </div>
+
+                <div class="grid-cards" style="margin-bottom: 30px;" id="son-card-container"></div>
+
+                <div style="background: var(--card-bg); backdrop-filter: blur(12px); border: 2px solid var(--accent); border-radius: 15px; padding: 20px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="color: var(--accent); font-size: 1.1rem;"><i class="fa-solid fa-calendar-days"></i> <span id="parent-schedule-title-label">سجل الحصص التدريبية (الشهر الحالي)</span></h3>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);" id="parent-attendance-ratio-label"></span>
+                    </div>
+                    <div id="parent-compact-bubble-container"></div>
+                </div>
+
+                <div style="background: var(--card-bg); backdrop-filter: blur(12px); border: 2px solid var(--accent); border-radius: 15px; padding: 25px;">
+                    <h3 style="margin-bottom: 15px; color: var(--accent);" data-translate="parent_eval_title">معايير تقييم ولي الأمر (الالتزام والحضور)</h3>
+                    <div id="parent-son-evaluation-view" style="color:var(--text);"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="legends-sec" class="section-view">
+            <h2 style="margin-bottom: 10px; text-align: center; color:var(--text);" data-translate="potm_main_title">POTM (لاعب الشهر)</h2>
+            <p style="text-align: center; color:var(--text-muted); margin-bottom: 30px;" data-translate="potm_main_subtitle">قائمة نجوم وأساطير النادي المعتمدة لكل شهر</p>
+            <div class="grid-cards" id="academy-legends-grid"></div>
+        </div>
+
+        <div id="gallery-sec" class="section-view">
+            <h2 style="margin-bottom: 15px; text-align: center; color:var(--text);" data-translate="gallery_title">معرض الصور والذكريات</h2>
+            <div class="gallery-artistic-grid" id="artistic-gallery-container"></div>
+        </div>
+
+        <div id="news-sec" class="section-view">
+            <h2 style="text-align: center; margin-bottom: 10px; color: var(--accent);" data-translate="news_section_header">أحدث أخبار النادي (News)</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;" data-translate="news_section_subheader">تابع كافة مستجدات وإعلانات النادي الرسمية</p>
+            <div id="newsSectionFullList" style="display:flex; flex-direction:column; gap:20px; max-width:850px; margin:0 auto;"></div>
+        </div>
+
+        <div id="about-sec" class="section-view">
+            <h2 style="text-align: center; margin-bottom: 30px; color: var(--accent);" data-translate="who_we_are_title">Who We Are</h2>
+            <div class="accordion-container">
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-translate="about_title_1">Our journey</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-body">
+                        <span data-translate="about_part_1">تأسست نادي Maven Hub في يوليو 2024 في ملعب ريو لكرة القدم، وانطلقت برؤية واضحة لتشكيل الجيل القادم من مواهب كرة القدم.</span> 
+                        <span class="georgia-highlight" data-translate="about_georgia_highlight">ومن خلال شراكتنا مع نادي لكرة القدم في جورجيا، نفتح أفقاً واسعاً وفرصاً حقيقية للاعبين لتحقيق طموحاتهم خارج الحدود.</span> 
+                        <span data-translate="about_part_2">تقوم شبكة الكشافين لدينا بمتابعة أداء اللاعبين وتطورهم باستمرار لتحديد المواهب الواعدة القادرة على السفر للخارج وبناء مسيرة احترافية ناجحة.</span>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-translate="about_title_2">Our vision</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-body" data-translate="about_desc_2">
+                        في Maven Hub، رسالتنا تتجاوز حدود التدريب التقليدي. نهدف إلى صناعة لاعب متكامل عبر تطوير مهاراته التقنية، قوته البدنية، فهمه التكتيكي، وصلابته الذهنية. نؤمن بأن النجاح الحقيقي ينبع من الانضباط، الثقة، العمل الجماعي، والعقلية الصحيحة.
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span data-translate="about_title_3">The next chapter</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-body" data-translate="about_desc_3">
+                        تمتد رحلتنا إلى ما بعد ملاعب التدريب؛ حيث يشارك نادي Maven Hub في البطولات الرسمية التي ينظمها الاتحاد المصري لكرة القدم، مما يمنح لاعبينا خبرة مباريات قياسية.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="contact-sec" class="section-view">
+            <div class="form-box">
+                <h2 style="text-align: center; margin-bottom: 20px; color:var(--text);" data-translate="nav_contact">تواصل معنا</h2>
+                <p style="text-align: center; color:var(--text-muted); margin-bottom: 20px;" data-translate="contact_text">تابعنا عبر منصات التواصل الاجتماعي أو تفضل بزيارتنا.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61576938111991&locale=ar_AR" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://wa.me/201009955294" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/_mavenhubfootball/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@_mavenhub" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <input type="file" id="photo-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'player')">
+    <input type="file" id="coach-avatar-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'coach')">
+    <input type="file" id="parent-avatar-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'parent')">
+    <input type="file" id="gallery-slot-upload-input" style="display:none;" accept="image/*" onchange="previewCropImage(event, 'gallery')">
+
+    <div class="modal" id="crop-modal">
+        <div class="modal-content" style="max-width: 450px; text-align:center;">
+            <button class="close-modal" onclick="closeCropModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--accent); margin-bottom:15px;">قص وتحديد الجزء المطلوب من الصورة</h3>
+            <div style="margin: 15px auto; overflow: hidden; max-height: 300px; display:flex; justify-content:center;">
+                <canvas id="cropCanvas" style="border: 2px solid var(--accent); border-radius: 12px; max-width: 100%; cursor: crosshair;"></canvas>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">اسحب داخل المربع لتحديد واختصار الجزء المراد حفظه.</p>
+            <button class="btn-primary-custom" style="width:100%;" onclick="executeCropAndSave()">حفظ الصورة بالقص المختار</button>
+        </div>
+    </div>
+
+    <div class="modal" id="player-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closePlayerModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="player-modal-body"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="lightbox-modal">
+        <div class="modal-content" style="max-width: 600px; text-align: center; padding: 20px;">
+            <button class="close-modal" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightbox-img" src="" style="width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; border: 2px solid var(--accent); margin-top: 15px;" alt="Lightbox Image">
+        </div>
+    </div>
+
+    <div class="modal" id="coach-bio-modal">
+        <div class="modal-content" style="max-width: 520px; text-align: center;">
+            <button class="close-modal" onclick="closeCoachBio()"><i class="fa-solid fa-xmark"></i></button>
+            <img id="coach-bio-img" src="" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 15px; background:#112233;" alt="Coach Bio">
+            <h2 id="coach-bio-name" style="margin-bottom: 5px; color:var(--text);"></h2>
+            <p id="coach-bio-role" style="color: var(--accent); font-weight: bold; margin-bottom: 15px;"></p>
+            <p id="coach-bio-desc" style="color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; text-align: justify; font-size: 0.98rem; padding: 0 10px;"></p>
+
+            <div id="coach-messaging-box" style="display:none; border-top:2px solid var(--accent); padding-top:15px; text-align:right;">
+                <h5 style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-paper-plane"></i> <span>إرسال رسالة / استفسار للمدرب</span></h5>
+                <textarea id="directCoachMsgInput" class="eval-input" placeholder="اكتب رسالتك هنا..." rows="3"></textarea>
+                <button class="btn-primary-custom" style="width:100%; margin-top:10px; font-size:0.9rem;" onclick="sendDirectMessageToCoach()">إرسال الرسالة فوراً</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="auth-modal">
+        <div class="modal-content" style="max-width: 480px;">
+            <button class="close-modal" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="authModalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="forgot-pass-modal">
+        <div class="modal-content" style="max-width: 450px; text-align:center;">
+            <button class="close-modal" onclick="closeForgotPasswordModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--accent); margin-bottom:15px;">استعادة كلمة المرور</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">أدخل اسمك أو اسم ابنك، وسيتم إرسال إشعار فوري للمدربين.</p>
+            <div class="form-group" style="text-align:right;">
+                <label>اسم المستخدم / اسم الابن اللاعب</label>
+                <input type="text" id="forgotInputName" class="eval-input" placeholder="أدخل الاسم">
+            </div>
+            <button class="btn-primary-custom" style="width:100%; margin-top:10px;" onclick="submitForgotPasswordRequest()">إرسال طلب استعادة للمدربين</button>
+        </div>
+    </div>
+
+    <div class="modal" id="coach-dashboard-modal">
+        <div class="modal-content" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
+            <button class="close-modal" onclick="closeCoachDashboard()"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--accent); padding-bottom:15px; margin-bottom:20px;">
+                <h2 id="coachDashboardTitle" style="color:var(--accent);">لوحة إدارة المدرب الاحترافية</h2>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="ctrl-btn" onclick="switchCoachTab('mgmt')" id="tabMgmt" style="border-color:var(--accent);">إدارة اللاعبين والطلبات</button>
+                    <button class="ctrl-btn" onclick="switchCoachTab('academy')" id="tabAcademy">بيانات النادي</button>
+                    <button class="ctrl-btn" onclick="switchCoachTab('notes')" id="tabNotes">دفتر الملاحظات</button>
+                    <button class="ctrl-btn" onclick="switchCoachTab('news')" id="tabNews">الأخبار (News)</button>
+                </div>
+            </div>
+
+            <div id="coachTabMgmtContent">
+                <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px; margin-bottom:20px;">
+                    <h4 style="color:#fbbf24; margin-bottom:12px;"><i class="fa-solid fa-user-check"></i> <span>طلبات انضمام أولياء الأمور الجديدة</span></h4>
+                    <div id="parentRequestsContainer">
+                        <p style="color:var(--text-muted);">لا توجد طلبات معلقة حالياً.</p>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                    <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px;">
+                        <h5 style="color:#fbbf24; margin-bottom:10px;"><i class="fa-solid fa-crown"></i> <span>تعديل "لاعب الشهر" (POTM)</span></h5>
+                        <div class="form-group"><label>الاسم</label><input type="text" id="admin-potm-name" class="eval-input" value=""></div>
+                        <div class="form-group"><label>الصورة (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'potm')"></div>
+                        <button class="btn-primary-custom" style="width:100%; font-size:0.9rem; padding:8px;" onclick="updatePotmSettingsDevice()">تحديث لاعب الشهر</button>
+                    </div>
+
+                    <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px;">
+                        <h5 style="color:#94a3b8; margin-bottom:10px;"><i class="fa-solid fa-medal"></i> <span>تعديل "لاعب الأسبوع" (سيلفر فضي)</span></h5>
+                        <div class="form-group"><label>الاسم</label><input type="text" id="admin-potw-name" class="eval-input" value=""></div>
+                        <div class="form-group"><label>الصورة (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'potw')"></div>
+                        <button class="btn-primary-custom" style="width:100%; font-size:0.9rem; padding:8px; background:#64748b;" onclick="updatePotwSettingsDevice()">تحديث لاعب الأسبوع</button>
+                    </div>
+                </div>
+
+                <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px; margin-bottom:20px;">
+                    <h5 style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-star"></i> <span>أساطير POTM (مع تحديد الشهر لكل بطاقة)</span></h5>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="form-group">
+                            <label>اختر الشهر للأرشيف</label>
+                            <select id="admin-legend-month-select" class="eval-input" onchange="loadLegendMonthData()">
+                                <option value="0">نوفمبر (November)</option><option value="1">ديسمبر (December)</option><option value="2">يناير (January)</option>
+                                <option value="3">فبراير (February)</option><option value="4">مارس (March)</option><option value="5">أبريل (April)</option>
+                                <option value="6">مايو (May)</option><option value="7">يونيو (June)</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>اسم اللاعب النجم</label><input type="text" id="admin-legend-name" class="eval-input"></div>
+                    </div>
+                    <div class="form-group"><label>صورة النجم (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'legend')"></div>
+                    <button class="btn-primary-custom" style="width:100%; font-size:0.9rem; padding:8px;" onclick="saveAcademyLegendEditDevice()">حفظ بطاقة POTM الشهرية</button>
+                </div>
+
+                <div style="background:var(--card-bg); border:2px solid var(--accent); border-radius:12px; padding:15px;">
+                    <h5 style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-user-plus"></i> <span>إضافة لاعب جديد للنادي</span></h5>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                        <div class="form-group"><label>اسم اللاعب</label><input type="text" id="new-p-name" class="eval-input"></div>
+                        <div class="form-group"><label>كلمة مرور اللاعب الخاصة</label><input type="text" id="new-p-pass" class="eval-input"></div>
+                        <div class="form-group"><label>الفئة العمرية</label>
+                            <select id="new-p-group" class="eval-input">
+                                <option value="2010-2012">2010 - 2011 - 2012</option>
+                                <option value="2013-2014">2013 - 2014</option>
+                                <option value="2015-2016">2015 - 2016</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>صورة اللاعب (من الجهاز)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'newPlayer')"></div>
+                    </div>
+                    <button class="btn-primary-custom" style="width:100%; margin-top:10px;" onclick="addNewPlayerByStaffDevice()">حفظ وإنشاء بروفايل اللاعب</button>
+                </div>
+            </div>
+
+            <div id="coachTabAcademyContent" style="display:none;">
+                <h3 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-database"></i> <span>بيانات النادي الشاملة</span></h3>
+                <div id="academyGlobalDatabaseView" style="display:flex; flex-direction:column; gap:15px;"></div>
+            </div>
+
+            <div id="coachTabNotesContent" style="display:none;">
+                <h3 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-book"></i> <span>دفتر ملاحظات المدرب التلقائي (بالتاريخ والوقت)</span></h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <textarea id="coachNewNoteInput" class="eval-input" placeholder="اكتب ملاحظتك التكتيكية الجديدة هنا..." rows="3" style="margin:0;"></textarea>
+                    <button class="btn-primary-custom" style="padding: 0 25px;" onclick="addNewCoachNote()">إضافة ملاحظة</button>
+                </div>
+                <div id="coachNotebookListContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+
+            <div id="coachTabNewsContent" style="display:none;">
+                <h3 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-newspaper"></i> <span>إضافة ونشر أخبار النادي (News)</span></h3>
+                <div class="form-group"><label>عنوان الخبر</label><input type="text" id="admin-news-title" class="eval-input" placeholder="مثال: انطلاق معسكر النخبة الصيفي..."></div>
+                <div class="form-group"><label>محتوى الخبر التفصيلي</label><textarea id="admin-news-content" class="eval-input" rows="4" placeholder="اكتب نص الخبر..."></textarea></div>
+                <div class="form-group"><label>صورة الخبر (اختياري)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'news')"></div>
+                <button class="btn-primary-custom" style="width:100%;" onclick="addNewNewsArticle()">نشر الخبر فوراً في الواجهة</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <h3 style="color:var(--text);">Maven Hub • Where Legends Begin</h3>
+        <div class="social-links">
+            <a href="https://www.facebook.com/profile.php?id=61576938111991&locale=ar_AR" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://wa.me/201009955294" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/_mavenhubfootball/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@_mavenhub" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.95rem;">جميع الحقوق محفوظة © 2026 Maven Hub</p>
+    </footer>
+
+    <!-- تحميل مكتبة Supabase أولاً -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- تحميل ملف السكريبت الخاص بك مرة واحدة فقط -->
+    <script src="script.js"></script>
+</body>
