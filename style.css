@@ -569,3 +569,13 @@ body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
         opacity: 1 !important;
     }
 }
+.notification-bell-area {
+    display: none !important;
+}
+
+/* إظهار زر الإشعارات فقط عندما يكون المستخدم مسجلاً دخولاً */
+body:not(.logged-out) .notification-bell-area,
+#headerUserAvatarArea[style*="display: flex"] ~ .notification-bell-area,
+.header-user-avatar-area[style*="display:flex"] ~ .notification-bell-area {
+    display: inline-block !important;
+}
