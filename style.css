@@ -560,4 +560,12 @@ body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
 #headerUserAvatarArea[style*="display:flex"] {
     display: flex !important;
 }
-
+@media(max-width: 900px) {
+    /* التأكد من إظهار بروفايل المستخدم بوضوح تام عند تسجيل الدخول من الموبايل */
+    #headerUserAvatarArea[style*="display: flex"],
+    #headerUserAvatarArea.moved-to-top-logo {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
