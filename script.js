@@ -1,11 +1,59 @@
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-librari
+const firebaseConfig = {
+  apiKey: "AIzaSyD2DLWwr1fI_4wZYlEroVTGrg1QHrpF8uE",
+  authDomain: "mavenhub-72863.firebaseapp.com",
+  projectId: "mavenhub-72863",
+  storageBucket: "mavenhub-72863.firebasestorage.app",
+  messagingSenderId: "219331508714",
+  appId: "1:219331508714:web:4b40030b8b03a9ec481a93",
+  measurementId: "G-WX1MGBDSS4"
+};
 
-const SUPABASE_URL = 'https://iocxrxoygzssqzzdsyxk.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_VnLIudJ4RCOfhcCm5bJ0lQ_fnhXMkIg';
-const mysupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// تهيئة Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// دالة جلب البيانات من Cloud Firestore
+async function fetchAllDataFromCloud() {
+    try {
+        let querySnapshot = await db.collection('site_data').get();
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach(doc => {
+                let row = doc.data();
+                let key = doc.id; // أو استخدام حقل key داخل المستند
+                if (key === 'playersData' && row.value) playersData = row.value;
+                if (key === 'newsArticles' && row.value) newsArticles = row.value;
+                if (key === 'playerOfTheMonth' && row.value) playerOfTheMonth = row.value;
+                if (key === 'playerOfTheWeek' && row.value) playerOfTheWeek = row.value;
+                if (key === 'academyLegendsData' && row.value) academyLegendsData = row.value;
+                if (key === 'coachNotebookEntries' && row.value) coachNotebookEntries = row.value;
+                if (key === 'parentsAccounts' && row.value) parentsAccounts = row.value;
+            });
+        }
+    } catch (err) {
+        console.log("استمرار العمل محلياً نظراً لخطأ في الاتصال بقاعدة البيانات:", err);
+    }
+}
+
+// دالة لحفظ أو تحديث البيانات في Firestore (يمكنك استخدامها عند تعديل أي بيانات)
+async function saveDataToCloud(keyName, valueData) {
+    try {
+        await db.collection('site_data').doc(keyName).set({
+            key: keyName,
+            value: valueData
+        });
+        console.log(`تم حفظ البيانات بنجاح لـ: ${keyName}`);
+    } catch (error) {
+        console.error("خطأ في حفظ البيانات على فايربيز:", error);
+    }
+}
+
 
 async function fetchAllDataFromCloud() {
     try {
-        let { data, error } = await mysupabase.from('site_data').select('*');
+        let { data, error } = await supabase.from('site_data').select('*');
         if (error) {
             console.error('خطأ في جلب البيانات:', error);
             return;
