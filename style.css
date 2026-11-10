@@ -579,3 +579,9 @@ body:not(.logged-out) .notification-bell-area,
 .header-user-avatar-area[style*="display:flex"] ~ .notification-bell-area {
     display: inline-block !important;
 }
+/* ضبط اتجاه ظهور قائمة الإشعارات لتتجه للشمال أو تفتح بشكل مرتب ومنتظم */
+.notification-dropdown {
+    right: auto !important;
+    left: 0 !important;
+    direction: rtl !important;
+}
