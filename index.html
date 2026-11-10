@@ -556,7 +556,12 @@
                 <div class="form-group"><label>عنوان الخبر</label><input type="text" id="admin-news-title" class="eval-input" placeholder="مثال: انطلاق معسكر النخبة الصيفي..."></div>
                 <div class="form-group"><label>محتوى الخبر التفصيلي</label><textarea id="admin-news-content" class="eval-input" rows="4" placeholder="اكتب نص الخبر..."></textarea></div>
                 <div class="form-group"><label>صورة الخبر (اختياري)</label><input type="file" class="eval-input" accept="image/*" onchange="previewCropImage(event, 'news')"></div>
-                <button class="btn-primary-custom" style="width:100%;" onclick="addNewNewsArticle()">نشر الخبر فوراً في الواجهة</button>
+                <button class="btn-primary-custom" style="width:100%; margin-bottom: 20px;" onclick="addNewNewsArticle()">نشر وحفظ الخبر فوراً</button>
+                
+                <div style="border-top: 2px dashed var(--accent); padding-top: 15px;">
+                    <h4 style="color:var(--accent); margin-bottom: 12px;"><i class="fa-solid fa-list-check"></i> إدارة وحذف الأخبار الحالية</h4>
+                    <div id="coachDashboardNewsListContainer"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -579,3 +584,4 @@
     <!-- تحميل ملف السكريبت الخاص بك مرة واحدة فقط -->
     <script src="script.js"></script>
 </body>
+</html>
