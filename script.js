@@ -426,17 +426,17 @@ let playersData = {
 };
 
 let artisticGalleryImages = [
-    { id: 1, url: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80", span: "slot-1" },
-    { id: 2, url: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=600&q=80", span: "slot-2" },
-    { id: 3, url: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=600&q=80", span: "slot-3" },
-    { id: 4, url: "https://images.unsplash.com/photo-1568648175024-db27cd2547b5?auto=format&fit=crop&w=600&q=80", span: "slot-2" },
-    { id: 5, url: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=600&q=80", span: "slot-5" },
-    { id: 6, url: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=600&q=80", span: "slot-6" },
-    { id: 7, url: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80", span: "slot-7" },
-    { id: 8, url: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=600&q=80", span: "slot-8" },
-    { id: 9, url: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=600&q=80", span: "slot-9" },
-    { id: 10, url: "https://images.unsplash.com/photo-1568648175024-db27cd2547b5?auto=format&fit=crop&w=600&q=80", span: "slot-10" }
-];
+            { id: 1, url: "https://i.ibb.co/Kxtrs2fB/571130373-122145397838897937-8287073912211216502-n.jpg", span: "slot-1" },
+            { id: 2, url: "https://i.ibb.co/nMcPdkVM/571298517-122145397982897937-1422789647226507421-n.jpg", span: "slot-2" },
+            { id: 3, url: "https://i.ibb.co/jktyrmMX/543521129-122137955502897937-8173491443653136263-n.jpg", span: "slot-3" },
+            { id: 4, url: "https://i.ibb.co/FL7hZvr6/571360690-122145397718897937-8087716033927012128-n.jpg", span: "slot-2" },
+            { id: 5, url: "https://i.ibb.co/YBSDXz9Z/544790912-122137955688897937-5264359672051010372-n.jpg", span: "slot-5" },
+            { id: 6, url: "https://i.ibb.co/rG1yPWSY/627149590-122149673970897937-1759600100726710603-n.jpg", span: "slot-6" },
+            { id: 7, url: "https://i.ibb.co/whmQXnhQ/649501789-122152862804897937-7750849642595088651-n.jpg", span: "slot-7" },
+            { id: 8, url: "https://i.ibb.co/PZBsGGBV/806473736-122159011704897937-2516480806441584693-n.jpg", span: "slot-8" },
+            { id: 9, url: "https://i.ibb.co/yFZhSX5L/807385761-122159011536897937-6799042578500171261-n.jpg", span: "slot-9" },
+            { id: 10, url: "https://i.ibb.co/fGCRtkYk/858814271-122161109918897937-7769913165021237978-n.jpg", span: "slot-10" }
+        ];
 
 let parentsAccounts = {}; 
 let pendingParentRequests = []; 
