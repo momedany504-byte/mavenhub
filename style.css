@@ -612,7 +612,7 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
         white-space: nowrap !important;
     }
 }
-```[cite: 1]
+
 
 /* إظهار بروفايل المستخدم فقط عندما يتم تفعيله وتسجيل الدخول (حسب كود الـ JS) */
 body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
