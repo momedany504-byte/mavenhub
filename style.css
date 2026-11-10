@@ -480,26 +480,28 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
 .social-links a { color: var(--text); background: var(--card-bg); border: 2px solid var(--accent); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); box-shadow: 0 0 15px var(--accent-glow); }
 .social-links a:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 0 25px var(--accent-glow); }
 /* كود الموبايل الجديد */
- @media (max-width: 900px) {
-    .gallery-artistic-grid { grid-template-columns: repeat(2, 1fr); }
-    .art-slot { grid-column: span 1 !important; margin: 0 !important; }
-    .hero-content-grid { grid-template-columns: 1fr; }
-    .potm-banner-floating { flex-direction: column; text-align: center; gap: 20px; }
+@media (max-width: 768px) {
+    /* جعل الهيدر العلوي في الموبايل متناسقاً وعرض أفقياً */
+    .top-navbar, header nav, .header-container {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        padding: 8px 10px !important;
+    }
 
-    /* ضبط الهيدر والمسافات العلوية للموبايل */
-    header { padding: 10px 15px !important; }
-    .logo-title { font-size: 1.2rem !important; }
-    .maven-hero { padding: 25px 15px !important; }
-    .hero-left h1 { font-size: 2.2rem !important; }
-    .hero-action-row { flex-direction: column; align-items: stretch; gap: 12px; }
-    .hero-btns { justify-content: center; display: flex; gap: 10px; }
-    .grid-cards { grid-template-columns: 1fr; }
-}
+    /* تصغير الأزرار العلوية (تسجيل الدخول، الرئيسية، عربي) لتناسب العرض الأفقي */
+    .top-navbar button, .top-navbar a, .header-btn {
+        padding: 4px 8px !important;
+        font-size: 0.75rem !important;
+        margin: 0 2px !important;
+    }
 
-@media (max-width: 480px) {
-    .header-center-ticker { display: none; }
-    .logo-title { font-size: 1.05rem !important; }
-    .single-logo-img { width: 36px; height: 36px; }
-    .ctrl-btn { padding: 5px 10px; font-size: 0.8rem; }
-    .lang-dropdown { padding: 4px 6px; font-size: 0.8rem; }
+    /* ضبط حجم شعار Maven Hub في الموبايل بجانب الأزرار */
+    .brand-logo-container, .header-logo-area {
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+    }
 }
