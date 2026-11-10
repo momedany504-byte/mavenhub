@@ -544,3 +544,15 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
 #headerUserAvatarArea[style*="display: none"] {
     display: none !important;
 }
+@media(max-width: 900px) {
+    /* إخفاء حاوية بروفايل المستخدم/الزائر تماماً على الموبايل كوضع افتراضي */
+    #headerUserAvatarArea {
+        display: none !important;
+    }
+}
+
+/* إظهار بروفايل المستخدم فقط عندما يتم تفعيله وتسجيل الدخول (حسب كود الـ JS) */
+body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
+#headerUserAvatarArea[style*="display:flex"] {
+    display: flex !important;
+}
