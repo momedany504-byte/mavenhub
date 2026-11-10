@@ -30,7 +30,6 @@ async function fetchAllDataFromCloud() {
                 if (key === 'coachNotebookEntries' && row.value) coachNotebookEntries = row.value;
                 if (key === 'parentsAccounts' && row.value) parentsAccounts = row.value;
                 if (key === 'staffCredentials' && row.value) {
-                    // دمج صور وصلاحيات المدربين المحفوظة سحابياً
                     for(let k in row.value) {
                         if(staffCredentials[k]) {
                             staffCredentials[k].img = row.value[k].img || staffCredentials[k].img;
@@ -529,12 +528,10 @@ function openCropModal() {
     cropBox = { x: 10, y: 10, size: Math.min(cropCanvasObj.width, cropCanvasObj.height) * 0.7 };
     drawCropCanvas();
 
-    // --- أحداث الماوس (للكمبيوتر) ---
     cropCanvasObj.onmousedown = (e) => startCropDrag(e.offsetX, e.offsetY);
     cropCanvasObj.onmousemove = (e) => moveCropDrag(e.offsetX, e.offsetY);
     cropCanvasObj.onmouseup = endCropDrag;
 
-    // --- أحداث اللمس (للهاتف المحمول - موبايل) ---
     cropCanvasObj.ontouchstart = (e) => {
         if (e.touches.length === 1) {
             let touch = e.touches[0];
@@ -549,7 +546,7 @@ function openCropModal() {
             let touch = e.touches[0];
             let rect = cropCanvasObj.getBoundingClientRect();
             moveCropDrag(touch.clientX - rect.left, touch.clientY - rect.top);
-            e.preventDefault(); // يمنع تحريك الشاشة لأسفل أثناء السحب
+            e.preventDefault();
         }
     };
 
@@ -623,7 +620,6 @@ function executeCropAndSave() {
         renderCoachesImages();
         updateHeaderUserAvatarUI();
         
-        // حفظ صور المدربين سحابياً لكي تظل ثابتة بعد الـ Refresh
         let staffImgsMap = {};
         for(let k in staffCredentials) {
             staffImgsMap[k] = { img: staffCredentials[k].img };
@@ -646,10 +642,7 @@ function executeCropAndSave() {
         if(found) {
             found.url = croppedDataUrl;
             renderArtisticGallery();
-            
-            // حفظ صور المعرض سحابياً لكي تظل ثابتة ولا تختفي أبداً
             saveDataToCloud('artisticGalleryImages', artisticGalleryImages);
-            
             alert('تم إضافة الصورة المقصوصة للمعرض وحفظها في السحابة بنجاح!');
         }
     } else if(cropTargetType === 'potm') {
@@ -731,10 +724,51 @@ function addNewNewsArticle() {
     document.getElementById('admin-news-title').value = '';
     document.getElementById('admin-news-content').value = '';
     window.tempNewsCroppedImg = '';
+    
     renderNewsTickers();
     renderNewsFullList();
+    renderCoachDashboardNewsList();
+    
     saveDataToCloud('newsArticles', newsArticles);
     alert('تم نشر الخبر وحفظه في السحابة بنجاح!');
+}
+
+// دالة حذف الخبر للمدرب
+function deleteNewsArticle(newsId) {
+    if(!isStaffLoggedIn) { alert('هذا الإجراء متاح للمدربين فقط'); return; }
+    if(!confirm('هل أنت متأكد من رغبتك في حذف هذا الخبر نهائياً؟')) return;
+
+    newsArticles = newsArticles.filter(item => item.id !== newsId);
+    
+    renderNewsTickers();
+    renderNewsFullList();
+    renderCoachDashboardNewsList();
+    
+    saveDataToCloud('newsArticles', newsArticles);
+    alert('تم حذف الخبر بنجاح وتحديث السحابة!');
+}
+
+function renderCoachDashboardNewsList() {
+    const container = document.getElementById('coachDashboardNewsListContainer');
+    if(!container) return;
+    if(newsArticles.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">لا توجد أخبار منشورة حالياً.</p>`;
+        return;
+    }
+    container.innerHTML = '';
+    newsArticles.forEach(news => {
+        container.innerHTML += `
+            <div style="background:var(--card-bg); border:1px solid var(--accent); border-radius:10px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h5 style="color:var(--text); margin-bottom:3px;">${news.title}</h5>
+                    <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-calendar"></i> ${news.date}</span>
+                </div>
+                <button class="btn-primary-custom" style="background:#dc2626; border-color:#dc2626; color:#fff; padding:6px 12px; font-size:0.8rem;" onclick="deleteNewsArticle(${news.id})">
+                    <i class="fa-solid fa-trash-can"></i> حذف
+                </button>
+            </div>
+        `;
+    });
 }
 
 function renderNewsTickers() {
@@ -1061,12 +1095,10 @@ function updateHeaderUserAvatarUI() {
     const userImg = document.getElementById('headerUserImg');
     const userName = document.getElementById('headerUserName');
     const loginBtn = document.getElementById('unifiedLoginBtn');
-    const headerContainer = document.querySelector('.header-container') || document.querySelector('header');
 
     if (loggedInUserType === 'player' || loggedInUserType === 'parent' || loggedInUserType === 'staff') {
         avatarArea.style.display = 'flex';
         
-        // تحديد الصورة والاسم حسب نوع المستخدم المسجل
         if (loggedInUserType === 'player' && currentLoggedInPlayer) {
             userImg.src = currentLoggedInPlayer.img;
             userName.innerText = currentLoggedInPlayer.name;
@@ -1080,7 +1112,6 @@ function updateHeaderUserAvatarUI() {
 
         loginBtn.style.display = 'none';
 
-        // الحركة الذكية: نقل بروفايل المستخدم أوتوماتيكياً ليكون بجانب "Maven Hub" للأعلى على الموبايل
         if (window.innerWidth <= 900) {
             avatarArea.classList.add('moved-to-top-logo');
         }
@@ -1090,7 +1121,6 @@ function updateHeaderUserAvatarUI() {
         avatarArea.classList.remove('moved-to-top-logo');
     }
 }
-
 
 function globalLogout() {
     loggedInUserType = null;
@@ -1192,19 +1222,15 @@ function triggerCoachFlipAndBio(coachKey) {
 
 function closePlayerModal() { document.getElementById('player-modal').classList.remove('active'); }
 
-// دالة توليد حصص يومي الأحد والخميس تبدأ دائماً من أول يوم في الشهر الحالي (مثلاً 1 نوفمبر)
 function generateAutomaticSchedule(playerSessionsCount = 8) {
     let sessions = [];
-    
-    // ضبط تاريخ البداية ليكون يوم 1 من الشهر الحالي
     let now = new Date();
     let year = now.getFullYear();
-    let month = now.getMonth(); // الشهر الحالي
-    let startDate = new Date(year, month, 1); // يوم 1 في الشهر
+    let month = now.getMonth();
+    let startDate = new Date(year, month, 1);
     
-    // البحث عن أول يوم (أحد أو خميس) يوافق أو بعد تاريخ 1 في الشهر
     let currentDate = new Date(startDate);
-    while (currentDate.getDay() !== 0 && currentDate.getDay() !== 4) { // 0 هو الأحد، 4 هو الخميس
+    while (currentDate.getDay() !== 0 && currentDate.getDay() !== 4) {
         currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -1213,11 +1239,10 @@ function generateAutomaticSchedule(playerSessionsCount = 8) {
         let dateStr = currentDate.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
         sessions.push({ day: dayName, date: dateStr, attended: false });
         
-        // التبديل بين الأحد والخميس
         if(currentDate.getDay() === 0) {
-            currentDate.setDate(currentDate.getDate() + 4); // من الأحد للخميس (4 أيام)
+            currentDate.setDate(currentDate.getDate() + 4);
         } else {
-            currentDate.setDate(currentDate.getDate() + 3); // من الخميس للأحد (3 أيام)
+            currentDate.setDate(currentDate.getDate() + 3);
         }
     }
     return sessions;
@@ -1541,6 +1566,10 @@ function switchCoachTab(tab) {
     document.getElementById('tabAcademy').style.borderColor = tab === 'academy' ? 'var(--accent)' : 'var(--border)';
     document.getElementById('tabNotes').style.borderColor = tab === 'notes' ? 'var(--accent)' : 'var(--border)';
     document.getElementById('tabNews').style.borderColor = tab === 'news' ? 'var(--accent)' : 'var(--border)';
+
+    if(tab === 'news') {
+        renderCoachDashboardNewsList();
+    }
 }
 
 function renderCoachDashboardData() {
@@ -1751,3 +1780,4 @@ function openLightbox(imgUrl) {
 function closeLightbox() {
     document.getElementById('lightbox-modal').classList.remove('active');
 }
+
