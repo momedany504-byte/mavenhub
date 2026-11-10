@@ -195,12 +195,17 @@ header {
     font-size: 0.7rem; font-weight: 900; width: 18px; height: 18px; border-radius: 50%;
     display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg);
 }
+/* ضبط مكان وعرض قائمة الإشعارات لفتحها من جهة اليمين تحت زر الجرس تماماً على الموبايل والكمبيوتر */
+.notification-bell-area {
+    position: relative !important;
+}
+
 .notification-dropdown {
     position: absolute !important;
-    top: 120% !important;
-    right: 0 !important;      /* تبدأ من يمين زر الجرس وتتجه لداخل الشاشة */
+    top: 130% !important;
+    right: 0 !important;
     left: auto !important;
-    width: 280px !important;  /* عرض مناسب لشاشة الموبايل */
+    width: 270px !important;
     max-height: 350px !important;
     overflow-y: auto !important;
     background: var(--card-bg) !important;
@@ -211,7 +216,7 @@ header {
     display: none;
     flex-direction: column;
     padding: 15px;
-    z-index: 1500;
+    z-index: 99999 !important;
     text-align: right !important;
     direction: rtl !important;
 }
