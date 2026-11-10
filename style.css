@@ -550,9 +550,73 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
         display: none !important;
     }
 }
+@media(max-width: 900px) {
+    .gallery-artistic-grid { grid-template-columns: repeat(2, 1fr); }
+    .art-slot { grid-column: span 1 !important; margin: 0 !important; }
+    .hero-content-grid { grid-template-columns: 1fr; }
+    .potw-banner-floating { flex-direction: column; text-align: center; gap: 15px; }
+
+    /* الهيدر الافتراضي قبل تسجيل الدخول (مرتب ومنظم في سطر واحد بدون لخبطة) */
+    header, .top-navbar, .header-container {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        padding: 6px 6px !important;
+        gap: 4px !important;
+        position: relative !important;
+    }
+
+    .top-navbar button, .top-navbar a, .ctrl-btn, .lang-dropdown {
+        padding: 3px 6px !important;
+        font-size: 0.7rem !important;
+    }
+
+    .logo-title { font-size: 0.95rem !important; }
+    .single-logo-img { width: 28px; height: 28px; }
+
+    /* الحركة الذكية: عندما يتم تسجيل الدخول، نرفع البروفايل فوق بجانب شعار Maven Hub ليأخذ راحته بالكامل */
+    .user-profile-badge.moved-to-top-logo, 
+    .logged-user-container.moved-to-top-logo, 
+    .profile-dropdown-area.moved-to-top-logo, 
+    #headerUserAvatarArea.moved-to-top-logo {
+        position: absolute !important;
+        top: 6px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        max-width: 200px !important;
+        background: rgba(59, 130, 246, 0.25) !important;
+        border: 1px solid var(--accent) !important;
+        padding: 2px 10px !important;
+        border-radius: 20px !important;
+        z-index: 100 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+
+    .moved-to-top-logo img, .moved-to-top-logo .logged-user-avatar {
+        width: 24px !important;
+        height: 24px !important;
+        border-radius: 50%;
+    }
+
+    .moved-to-top-logo #headerUserName {
+        font-size: 0.75rem !important;
+        color: #fff !important;
+        font-weight: bold;
+        max-width: 140px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+}
+```[cite: 1]
 
 /* إظهار بروفايل المستخدم فقط عندما يتم تفعيله وتسجيل الدخول (حسب كود الـ JS) */
 body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
 #headerUserAvatarArea[style*="display:flex"] {
     display: flex !important;
 }
+
