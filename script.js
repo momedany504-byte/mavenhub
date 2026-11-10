@@ -1095,9 +1095,11 @@ function updateHeaderUserAvatarUI() {
     const userImg = document.getElementById('headerUserImg');
     const userName = document.getElementById('headerUserName');
     const loginBtn = document.getElementById('unifiedLoginBtn');
+    const notifBellArea = document.querySelector('.notification-bell-area');
 
     if (loggedInUserType === 'player' || loggedInUserType === 'parent' || loggedInUserType === 'staff') {
         avatarArea.style.display = 'flex';
+        if (notifBellArea) notifBellArea.style.display = 'inline-block';
         
         if (loggedInUserType === 'player' && currentLoggedInPlayer) {
             userImg.src = currentLoggedInPlayer.img;
@@ -1119,9 +1121,9 @@ function updateHeaderUserAvatarUI() {
         avatarArea.style.display = 'none';
         loginBtn.style.display = 'block';
         avatarArea.classList.remove('moved-to-top-logo');
+        if (notifBellArea) notifBellArea.style.display = 'none';
     }
 }
-
 function globalLogout() {
     loggedInUserType = null;
     isStaffLoggedIn = false;
