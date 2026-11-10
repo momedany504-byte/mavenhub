@@ -196,11 +196,29 @@ header {
     display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg);
 }
 .notification-dropdown {
-    position: absolute; top: 120%; left: 0; width: 320px; max-height: 380px; overflow-y: auto;
-    background: var(--card-bg); backdrop-filter: blur(15px); border: 2px solid var(--accent); border-radius: 16px;
-    box-shadow: 0 0 40px var(--accent-glow); display: none; flex-direction: column; padding: 15px; z-index: 1500;
+    position: absolute !important;
+    top: 120% !important;
+    right: 0 !important;      /* تبدأ من يمين زر الجرس وتتجه لداخل الشاشة */
+    left: auto !important;
+    width: 280px !important;  /* عرض مناسب لشاشة الموبايل */
+    max-height: 350px !important;
+    overflow-y: auto !important;
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(15px) !important;
+    border: 2px solid var(--accent) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 0 40px var(--accent-glow) !important;
+    display: none;
+    flex-direction: column;
+    padding: 15px;
+    z-index: 1500;
+    text-align: right !important;
+    direction: rtl !important;
 }
-.notification-dropdown.active { display: flex; }
+
+.notification-dropdown.active {
+    display: flex !important;
+}
 .notif-item {
     background: var(--card-bg); border: 1px solid var(--accent); border-radius: 10px;
     padding: 10px 12px; margin-bottom: 8px; font-size: 0.88rem; color: var(--text); line-height: 1.5;
