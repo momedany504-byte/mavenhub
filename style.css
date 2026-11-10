@@ -485,21 +485,22 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     .hero-content-grid { grid-template-columns: 1fr; }
     .potm-banner-floating { flex-direction: column; text-align: center; gap: 20px; }
 
-    /* تعديل الهيدر ليسمح بالتفاف العناصر وعدم اختفاء أي زر */
+    /* ضبط الهيدر العام للموبايل */
     header, .top-navbar, .header-container {
         display: flex !important;
         flex-direction: row !important;
         justify-content: space-between !important;
         align-items: center !important;
-        flex-wrap: wrap !important;
-        padding: 8px 10px !important;
-        gap: 8px !important;
+        padding: 6px 8px !important;
+        gap: 4px !important;
+        flex-wrap: nowrap !important; /* منع النزول لسطر جديد نهائياً */
+        overflow: hidden !important;
     }
 
-    /* تصغير حجم الأزرار والشعارات قليلاً لتتسع لها الشاشة */
+    /* توحيد حجم الأزرار في الهيدر لتناسب الشاشة */
     .top-navbar button, .top-navbar a, .header-btn, .ctrl-btn {
         padding: 4px 6px !important;
-        font-size: 0.75rem !important;
+        font-size: 0.7rem !important;
     }
 
     .maven-hero { padding: 20px 15px !important; }
@@ -508,41 +509,34 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     .hero-btns { justify-content: center; display: flex; gap: 10px; }
     .grid-cards { grid-template-columns: 1fr; }
 
-    /* ضبط حاوية بروفايل المدرب بعد تسجيل الدخول لتتناسب مع أزرار الهيدر أفقياً ومنع المساحات الزائدة */
+    /* تصغير بروفايل المستخدم / المدرب ليظهر بشكل أنيق ومضغوط جداً بدون تمدد */
     .user-profile-badge, .logged-user-container, .profile-dropdown-area, #headerUserAvatarArea {
-        display: inline-flex !important;
+        display: flex !important;
         align-items: center !important;
-        gap: 4px !important;
+        gap: 3px !important;
         padding: 2px 4px !important;
-        margin: 0 !important;
-        max-width: 130px !important;
-        vertical-align: middle !important;
+        max-width: 100px !important;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 20px;
     }
 
-    /* تصغير صورة وحجم اسم البروفايل الشخصية في الهيدر لكي لا تسبب تداخلاً أو نزول لسطر جديد */
     .user-profile-badge img, .logged-user-avatar {
-        width: 28px !important;
-        height: 28px !important;
+        width: 24px !important;
+        height: 24px !important;
+        border-radius: 50%;
     }
 
     #headerUserName {
-        font-size: 0.7rem !important;
-        max-width: 80px !important;
+        font-size: 0.65rem !important;
+        max-width: 60px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-    }
-
-    /* إلغاء الهوامش والحشو الذي يترك مساحة فارغة أعلى الهيدر */
-    header .header-container, .top-navbar {
-        margin-bottom: 0 !important;
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
     }
 }
 
 @media (max-width: 480px) {
     .header-center-ticker { display: none; }
-    .logo-title { font-size: 0.85rem !important; }
-    .single-logo-img { width: 30px; height: 30px; }
+    .logo-title { font-size: 0.75rem !important; }
+    .single-logo-img { width: 26px; height: 26px; }
 }
