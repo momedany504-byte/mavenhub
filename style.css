@@ -514,3 +514,21 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     .logo-title { font-size: 0.85rem !important; }
     .single-logo-img { width: 30px; height: 30px; }
 }
+@media (max-width: 900px) {
+    /* ضبط حاوية بروفايل المدرب بعد تسجيل الدخول لتتناسب مع أزرار الهيدر أفقياً */
+    .user-profile-badge, .logged-user-container, .profile-dropdown-area {
+        max-width: 140px !important;
+        font-size: 0.75rem !important;
+        padding: 4px 8px !important;
+        text-align: center !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* تصغير صورة البروفايل الشخصية في الهيدر لكي لا تسبب تداخلاً */
+    .user-profile-badge img, .logged-user-avatar {
+        width: 28px !important;
+        height: 28px !important;
+    }
+}
