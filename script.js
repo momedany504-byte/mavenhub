@@ -618,12 +618,16 @@ function executeCropAndSave() {
             }
         }
         alert('تم قص وحفظ صورة ولي الأمر وحفظها في السحابة بنجاح!');
-    } else if(cropTargetType === 'gallery' && currentGallerySlotId) {
+  } else if(cropTargetType === 'gallery' && currentGallerySlotId) {
         let found = artisticGalleryImages.find(img => img.id === currentGallerySlotId);
         if(found) {
             found.url = croppedDataUrl;
             renderArtisticGallery();
-            alert('تم إضافة الصورة المقصوصة للمعرض بنجاح!');
+            
+            // حفظ صور المعرض سحابياً لكي تظل ثابتة ولا تختفي أبداً
+            saveDataToCloud('artisticGalleryImages', artisticGalleryImages);
+            
+            alert('تم إضافة الصورة المقصوصة للمعرض وحفظها في السحابة بنجاح!');
         }
     } else if(cropTargetType === 'potm') {
         playerOfTheMonth.img = croppedDataUrl;
