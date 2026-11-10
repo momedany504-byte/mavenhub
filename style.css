@@ -485,44 +485,39 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     .hero-content-grid { grid-template-columns: 1fr; }
     .potw-banner-floating { flex-direction: column; text-align: center; gap: 15px; }
 
-    /* تحويل الهيدر بالكامل إلى شبكة منتظمة صفين */
+    /* إعادة الهيدر ليتموضع بمرونة تامة وبدون تكدس */
     header, .top-navbar, .header-container {
         display: flex !important;
-        flex-direction: column !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        gap: 6px !important;
-        padding: 8px 6px !important;
+        flex-wrap: wrap !important;
+        padding: 6px 4px !important;
+        gap: 4px !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    /* الصف الأول: أزرار التحكم واللغة والدارك مود */
-    .top-navbar > *:nth-child(-n+3), .header-left-cluster, .top-navbar div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 6px;
-        width: 100%;
-    }
-
-    /* تصغير الأزرار والتحكمات لتتوزع بجانب بعضها بدون تداخل */
+    /* تحسين مقاسات الأزرار والتحكمات لتناسب الشاشة بدقة */
     .top-navbar button, .top-navbar a, .ctrl-btn, .lang-dropdown {
-        padding: 4px 8px !important;
+        padding: 3px 5px !important;
         font-size: 0.7rem !important;
-        margin: 2px !important;
+        margin: 1px !important;
     }
 
-    /* ضبط حجم حاوية "زائر" أو بروفايل المستخدم لتعود لمكانها الطبيعي بجانب زر التسجيل */
+    .logo-title { font-size: 0.95rem !important; }
+    .maven-hero { padding: 25px 10px !important; }
+    .hero-left h1 { font-size: 1.8rem !important; }
+    .grid-cards { grid-template-columns: 1fr; }
+
+    /* ضبط حجم بروفايل المستخدم أو "زائر" لكي لا يتسبب في أي تداخل */
     .user-profile-badge, .logged-user-container, .profile-dropdown-area, #headerUserAvatarArea {
         display: inline-flex !important;
         align-items: center !important;
-        gap: 4px !important;
-        padding: 2px 6px !important;
-        background: rgba(59, 130, 246, 0.15);
-        border-radius: 15px;
-        max-width: 120px !important;
-        vertical-align: middle;
+        gap: 3px !important;
+        padding: 2px 4px !important;
+        max-width: 110px !important;
+        font-size: 0.65rem !important;
     }
 
     .user-profile-badge img, .logged-user-avatar {
@@ -532,7 +527,8 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     }
 
     #headerUserName {
-        font-size: 0.6rem !important;
+        font-size: 0.65rem !important;
+        max-width: 50px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
@@ -541,7 +537,6 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
 
 @media(max-width: 480px) {
     .header-center-ticker { display: none; }
-    .logo-title { font-size: 0.9rem !important; }
-    .single-logo-img { width: 28px; height: 28px; }
+    .logo-title { font-size: 0.85rem !important; }
+    .single-logo-img { width: 26px; height: 26px; }
 }
-```[cite: 7]
