@@ -901,12 +901,14 @@ function closeAuthModal() { document.getElementById('auth-modal').classList.remo
 async function toggleNotificationDropdown() {
     const dropdown = document.getElementById('notificationDropdown');
     dropdown.classList.toggle('active');
-    
-    // إذا فتحت القائمة، نصفر العداد بصرياً وكمان نمسح أو نصفر الإشعارات سحابياً عشان ميرجعش تاني
+
     if(dropdown.classList.contains('active')) {
         const badge = document.getElementById('notifBadge');
         if(badge) badge.innerText = "0";
- function addSystemNotification(msg, recipientRole) {
+        
+    }
+}
+async function addSystemNotification(msg, recipientRole) {
     systemNotifications.unshift({ msg, time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}), recipient: recipientRole });
     updateNotificationsUI();
     await saveDataToCloud('systemNotifications', systemNotifications);
