@@ -898,7 +898,16 @@ function openLoginModal(type) {
 }
 function closeAuthModal() { document.getElementById('auth-modal').classList.remove('active'); }
 
-function toggleNotificationDropdown() { document.getElementById('notificationDropdown').classList.toggle('active'); }
+function toggleNotificationDropdown() {
+    const dropdown = document.getElementById('notificationDropdown');
+    dropdown.classList.toggle('active');
+    
+    // إذا أصبحت القائمة مفتوحة، نقوم بتصفير العداد الأحمر فوراً
+    if(dropdown.classList.contains('active')) {
+        const badge = document.getElementById('notifBadge');
+        if(badge) badge.innerText = "0";
+    }
+}
 
 async function addSystemNotification(msg, recipientRole) {
     systemNotifications.unshift({ msg, time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}), recipient: recipientRole });
