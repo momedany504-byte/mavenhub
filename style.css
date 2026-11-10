@@ -556,3 +556,11 @@ body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
     display: flex !important;
 }
 
+.floating-preview-eye-btn {
+    position: fixed !important;
+    top: 85px !important;
+    right: 25px !important;
+    z-index: 99999 !important;
+    /* ضمان عدم تأثرها بأي سكرول أو إزاحة */
+    transform: none !important;
+}
