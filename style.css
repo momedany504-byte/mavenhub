@@ -485,19 +485,81 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     .hero-content-grid { grid-template-columns: 1fr; }
     .potw-banner-floating { flex-direction: column; text-align: center; gap: 15px; }
     
-    header { padding: 10px 15px; }
-    .logo-title { font-size: 1.2rem; }
-    .maven-hero { padding: 40px 20px; }
-    .hero-left h1 { font-size: 2.2rem; }
+    /* تنظيم الهيدر الرئيسي على الموبايل ليصبح صفين متناسقين */
+    header, .top-navbar, .header-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        padding: 8px 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* جعل الصف العلوي يحتوي على (الثلاث شرط، الدارك مود، واللغة) جنب بعض بانتظام */
+    .header-top-row, .top-navbar-row-1, .header-left-cluster {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 6px !important;
+    }
+
+    /* الصف السفلي يحتوي على أزرار التنقل الأساسية وزر تسجيل الدخول أو بروفايلك */
+    .header-bottom-row, .top-navbar-row-2 {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 6px !important;
+        border-top: 1px solid rgba(59, 130, 246, 0.2);
+        padding-top: 6px !important;
+    }
+
+    .logo-title { font-size: 1.1rem; }
+    .maven-hero { padding: 30px 15px !important; }
+    .hero-left h1 { font-size: 2rem !important; }
     .hero-action-row { flex-direction: column; align-items: stretch; }
     .hero-btns { justify-content: center; }
     .grid-cards { grid-template-columns: 1fr; }
+
+    /* تصغير الأزرار والتحكمات لتناسب العرض المنظم */
+    .top-navbar button, .top-navbar a, .ctrl-btn, .lang-dropdown {
+        padding: 4px 8px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* ضبط بروفايل المستخدم بعد تسجيل الدخول ليكون متناسقاً وبجانب الصورة والاسم */
+    .user-profile-badge, .logged-user-container, .profile-dropdown-area, #headerUserAvatarArea {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        padding: 3px 8px !important;
+        background: rgba(59, 130, 246, 0.15);
+        border-radius: 20px;
+        max-width: 140px !important;
+    }
+
+    .user-profile-badge img, .logged-user-avatar {
+        width: 26px !important;
+        height: 26px !important;
+        border-radius: 50%;
+    }
+
+    #headerUserName {
+        font-size: 0.7rem !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
 }
 
 @media(max-width: 480px) {
     .header-center-ticker { display: none; }
-    .logo-title { font-size: 1.05rem; }
-    .single-logo-img { width: 36px; height: 36px; }
-    .ctrl-btn { padding: 5px 10px; font-size: 0.8rem; }
-    .lang-dropdown { padding: 4px 6px; font-size: 0.8rem; }
+    .logo-title { font-size: 0.95rem !important; }
+    .single-logo-img { width: 32px; height: 32px; }
+    .ctrl-btn { padding: 4px 8px !important; font-size: 0.75rem !important; }
+    .lang-dropdown { padding: 3px 5px !important; font-size: 0.75rem !important; }
 }
