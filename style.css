@@ -550,16 +550,16 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
         display: none !important;
     }
 }
-/* ضبط مكان أيقونة العين على الموبايل لتكون ثابتة وبارزة بعيداً عن أزرار الهيدر */
 @media(max-width: 900px) {
     .floating-preview-eye-btn {
         position: fixed !important;
-        top: 75px !important;       /* تحت الهيدر مباشرة وبشكل مرتب */
-        right: 15px !important;      /* في أقصى يمين الشاشة */
-        width: 38px !important;
-        height: 38px !important;
+        top: 130px !important;       /* نازلة تحت الهيدر بمسافة ممتازة ومرتاحة */
+        right: 15px !important;      /* ثابتة على يمين الشاشة تماماً */
+        width: 40px !important;
+        height: 40px !important;
         z-index: 999999 !important;
-        box-shadow: 0 0 20px var(--accent-glow) !important;
+        transform: none !important;
+        -webkit-transform: none !important;
     }
 }
 body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
