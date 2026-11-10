@@ -29,6 +29,14 @@ async function fetchAllDataFromCloud() {
                 if (key === 'academyLegendsData' && row.value) academyLegendsData = row.value;
                 if (key === 'coachNotebookEntries' && row.value) coachNotebookEntries = row.value;
                 if (key === 'parentsAccounts' && row.value) parentsAccounts = row.value;
+                if (key === 'staffCredentials' && row.value) {
+                    // دمج صور وصلاحيات المدربين المحفوظة سحابياً
+                    for(let k in row.value) {
+                        if(staffCredentials[k]) {
+                            staffCredentials[k].img = row.value[k].img || staffCredentials[k].img;
+                        }
+                    }
+                }
             });
             console.log("تم جلب البيانات من فايربيز بنجاح!");
         }
@@ -590,11 +598,26 @@ function executeCropAndSave() {
         staffCredentials[activeCoachKeyForAvatar].img = croppedDataUrl;
         renderCoachesImages();
         updateHeaderUserAvatarUI();
-        alert('تم قص وحفظ صورتك الشخصية كمدرب بنجاح!');
+        
+        // حفظ صور المدربين سحابياً لكي تظل ثابتة بعد الـ Refresh
+        let staffImgsMap = {};
+        for(let k in staffCredentials) {
+            staffImgsMap[k] = { img: staffCredentials[k].img };
+        }
+        saveDataToCloud('staffCredentials', staffImgsMap);
+
+        alert('تم قص وحفظ صورتك الشخصية كمدرب وحفظها في السحابة بنجاح!');
     } else if(cropTargetType === 'parent') {
         document.getElementById('parent-avatar').src = croppedDataUrl;
-        if(currentLoggedInParentObj) currentLoggedInParentObj.avatar = croppedDataUrl;
-        alert('تم قص وحفظ صورة ولي الأمر بنجاح!');
+        if(currentLoggedInParentObj) {
+            currentLoggedInParentObj.avatar = croppedDataUrl;
+            let parentKey = currentLoggedInParentObj.son.name.toLowerCase();
+            if(parentsAccounts[parentKey]) {
+                parentsAccounts[parentKey].avatar = croppedDataUrl;
+                saveDataToCloud('parentsAccounts', parentsAccounts);
+            }
+        }
+        alert('تم قص وحفظ صورة ولي الأمر وحفظها في السحابة بنجاح!');
     } else if(cropTargetType === 'gallery' && currentGallerySlotId) {
         let found = artisticGalleryImages.find(img => img.id === currentGallerySlotId);
         if(found) {
