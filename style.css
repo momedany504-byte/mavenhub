@@ -491,7 +491,7 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
         flex-direction: row !important;
         justify-content: space-between !important;
         align-items: center !important;
-        flex-wrap: wrap !important; /* يسمح بالانتقال لسطر ثاني لو المساحة ضاقت بدل الاختفاء */
+        flex-wrap: wrap !important;
         padding: 8px 10px !important;
         gap: 8px !important;
     }
@@ -507,28 +507,42 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     .hero-action-row { flex-direction: column; align-items: stretch; gap: 10px; }
     .hero-btns { justify-content: center; display: flex; gap: 10px; }
     .grid-cards { grid-template-columns: 1fr; }
+
+    /* ضبط حاوية بروفايل المدرب بعد تسجيل الدخول لتتناسب مع أزرار الهيدر أفقياً ومنع المساحات الزائدة */
+    .user-profile-badge, .logged-user-container, .profile-dropdown-area, #headerUserAvatarArea {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        padding: 2px 4px !important;
+        margin: 0 !important;
+        max-width: 130px !important;
+        vertical-align: middle !important;
+    }
+
+    /* تصغير صورة وحجم اسم البروفايل الشخصية في الهيدر لكي لا تسبب تداخلاً أو نزول لسطر جديد */
+    .user-profile-badge img, .logged-user-avatar {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    #headerUserName {
+        font-size: 0.7rem !important;
+        max-width: 80px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    /* إلغاء الهوامش والحشو الذي يترك مساحة فارغة أعلى الهيدر */
+    header .header-container, .top-navbar {
+        margin-bottom: 0 !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
 }
 
 @media (max-width: 480px) {
     .header-center-ticker { display: none; }
     .logo-title { font-size: 0.85rem !important; }
     .single-logo-img { width: 30px; height: 30px; }
-}
-@media (max-width: 900px) {
-    /* ضبط حاوية بروفايل المدرب بعد تسجيل الدخول لتتناسب مع أزرار الهيدر أفقياً */
-    .user-profile-badge, .logged-user-container, .profile-dropdown-area {
-        max-width: 140px !important;
-        font-size: 0.75rem !important;
-        padding: 4px 8px !important;
-        text-align: center !important;
-        overflow: hidden !important;
-        white-space: nowrap !important;
-        text-overflow: ellipsis !important;
-    }
-
-    /* تصغير صورة البروفايل الشخصية في الهيدر لكي لا تسبب تداخلاً */
-    .user-profile-badge img, .logged-user-avatar {
-        width: 28px !important;
-        height: 28px !important;
-    }
 }
