@@ -580,19 +580,22 @@ function drawCropCanvas() {
     cropCtxObj.stroke();
 }
 
-function startCropDrag(e) {
+function startCropDrag(x, y) {
     isDraggingCrop = true;
-    dragStartX = e.offsetX - cropBox.x;
-    dragStartY = e.offsetY - cropBox.y;
+    dragStartX = x - cropBox.x;
+    dragStartY = y - cropBox.y;
 }
-function moveCropDrag(e) {
+
+function moveCropDrag(x, y) {
     if(!isDraggingCrop) return;
-    cropBox.x = Math.max(0, Math.min(cropCanvasObj.width - cropBox.size, e.offsetX - dragStartX));
-    cropBox.y = Math.max(0, Math.min(cropCanvasObj.height - cropBox.size, e.offsetY - dragStartY));
+    cropBox.x = Math.max(0, Math.min(cropCanvasObj.width - cropBox.size, x - dragStartX));
+    cropBox.y = Math.max(0, Math.min(cropCanvasObj.height - cropBox.size, y - dragStartY));
     drawCropCanvas();
 }
-function endCropDrag() { isDraggingCrop = false; }
 
+function endCropDrag() {
+    isDraggingCrop = false;
+}
 function executeCropAndSave() {
     let tempCanvas = document.createElement('canvas');
     tempCanvas.width = 300;
