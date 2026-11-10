@@ -1061,25 +1061,33 @@ function updateHeaderUserAvatarUI() {
     const userImg = document.getElementById('headerUserImg');
     const userName = document.getElementById('headerUserName');
     const loginBtn = document.getElementById('unifiedLoginBtn');
+    const headerContainer = document.querySelector('.header-container') || document.querySelector('header');
 
-    if (loggedInUserType === 'player' && currentLoggedInPlayer) {
+    if (loggedInUserType === 'player' || loggedInUserType === 'parent' || loggedInUserType === 'staff') {
         avatarArea.style.display = 'flex';
-        userImg.src = currentLoggedInPlayer.img;
-        userName.innerText = currentLoggedInPlayer.name;
+        
+        // تحديد الصورة والاسم حسب نوع المستخدم المسجل
+        if (loggedInUserType === 'player' && currentLoggedInPlayer) {
+            userImg.src = currentLoggedInPlayer.img;
+            userName.innerText = currentLoggedInPlayer.name;
+        } else if (loggedInUserType === 'parent' && currentLoggedInParentObj) {
+            userImg.src = currentLoggedInParentObj.avatar;
+            userName.innerText = currentLoggedInParentObj.name;
+        } else if (loggedInUserType === 'staff') {
+            userImg.src = staffCredentials[loggedInStaffKey]?.img || '';
+            userName.innerText = loggedInStaffName;
+        }
+
         loginBtn.style.display = 'none';
-    } else if (loggedInUserType === 'parent' && currentLoggedInParentObj) {
-        avatarArea.style.display = 'flex';
-        userImg.src = currentLoggedInParentObj.avatar;
-        userName.innerText = 'ولي أمر: ' + currentLoggedInParentObj.name;
-        loginBtn.style.display = 'none';
-    } else if (loggedInUserType === 'staff') {
-        avatarArea.style.display = 'flex';
-        userImg.src = staffCredentials[loggedInStaffKey]?.img || '';
-        userName.innerText = loggedInStaffName;
-        loginBtn.style.display = 'none';
+
+        // الحركة الذكية: نقل بروفايل المستخدم أوتوماتيكياً ليكون بجانب "Maven Hub" للأعلى على الموبايل
+        if (window.innerWidth <= 900) {
+            avatarArea.classList.add('moved-to-top-logo');
+        }
     } else {
         avatarArea.style.display = 'none';
         loginBtn.style.display = 'block';
+        avatarArea.classList.remove('moved-to-top-logo');
     }
 }
 
