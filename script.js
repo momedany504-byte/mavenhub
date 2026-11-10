@@ -1090,6 +1090,7 @@ function updateHeaderUserAvatarUI() {
         avatarArea.classList.remove('moved-to-top-logo');
     }
 }
+```[cite: 1]
 
 function globalLogout() {
     loggedInUserType = null;
