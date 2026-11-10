@@ -550,18 +550,19 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
         display: none !important;
     }
 }
-@media(max-width: 900px) {
-    .floating-preview-eye-btn {
-        position: fixed !important;
-        top: 130px !important;       /* نازلة تحت الهيدر بمسافة ممتازة ومرتاحة */
-        right: 15px !important;      /* ثابتة على يمين الشاشة تماماً */
-        width: 40px !important;
-        height: 40px !important;
-        z-index: 999999 !important;
-        transform: none !important;
-        -webkit-transform: none !important;
-    }
+/* تثبيت زر المعاينة (العين) في مكانها تماماً على الموبايل والكمبيوتر وعدم تحركها نهائياً مع السكرول */
+.floating-preview-eye-btn {
+    position: fixed !important;
+    top: 75px !important;
+    right: 15px !important;
+    z-index: 999999 !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    /* إخراجها من أي حاوية قد تؤثر على تثبيتها */
+    margin: 0 !important;
 }
+
+حط الكود ده في **آخر سطر** في ملف الـ `style.css` واحفظ الملف (`Ctrl + S`)، وجرب من الموبايل؛ هتثبت في مكانها تماماً ولن تتحرك مع التمرير أبداً وبشكل مظبوط جداً بعيد عن أزرار الهيدر! 💪⚽
 body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
 #headerUserAvatarArea[style*="display:flex"] {
     display: flex !important;
