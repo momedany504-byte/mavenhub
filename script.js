@@ -1156,19 +1156,33 @@ function triggerCoachFlipAndBio(coachKey) {
 
 function closePlayerModal() { document.getElementById('player-modal').classList.remove('active'); }
 
+// دالة توليد حصص يومي الأحد والخميس تبدأ دائماً من أول يوم في الشهر الحالي (مثلاً 1 نوفمبر)
 function generateAutomaticSchedule(playerSessionsCount = 8) {
     let sessions = [];
-    let currentDate = new Date();
-    let dayOfWeek = currentDate.getDay();
-    let daysUntilNextSunday = (0 - dayOfWeek + 7) % 7;
-    if (daysUntilNextSunday === 0) daysUntilNextSunday = 7;
-    currentDate.setDate(currentDate.getDate() + daysUntilNextSunday);
+    
+    // ضبط تاريخ البداية ليكون يوم 1 من الشهر الحالي
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth(); // الشهر الحالي
+    let startDate = new Date(year, month, 1); // يوم 1 في الشهر
+    
+    // البحث عن أول يوم (أحد أو خميس) يوافق أو بعد تاريخ 1 في الشهر
+    let currentDate = new Date(startDate);
+    while (currentDate.getDay() !== 0 && currentDate.getDay() !== 4) { // 0 هو الأحد، 4 هو الخميس
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
     for(let i = 0; i < playerSessionsCount; i++) {
         let dayName = currentDate.getDay() === 0 ? "الأحد" : "الخميس";
         let dateStr = currentDate.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
         sessions.push({ day: dayName, date: dateStr, attended: false });
-        if(currentDate.getDay() === 0) currentDate.setDate(currentDate.getDate() + 4);
-        else currentDate.setDate(currentDate.getDate() + 3);
+        
+        // التبديل بين الأحد والخميس
+        if(currentDate.getDay() === 0) {
+            currentDate.setDate(currentDate.getDate() + 4); // من الأحد للخميس (4 أيام)
+        } else {
+            currentDate.setDate(currentDate.getDate() + 3); // من الخميس للأحد (3 أيام)
+        }
     }
     return sessions;
 }
