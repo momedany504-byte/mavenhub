@@ -1,12 +1,13 @@
-
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 const firebaseConfig = {
-  apiKey: "AIzaSyD2DLWwr1fI_4wZYlEroVTGrg1QHrpF8uE",
-  authDomain: "mavenhub-72863.firebaseapp.com",
-  projectId: "mavenhub-72863",
-  storageBucket: "mavenhub-72863.firebasestorage.app",
-  messagingSenderId: "219331508714",
-  appId: "1:219331508714:web:4b40030b8b03a9ec481a93",
-  measurementId: "G-WX1MGBDSS4"
+    apiKey: "AIzaSyD2DLWwr1fI_4wZYlEroVTGrg1QHrpF8uE",
+    authDomain: "mavenhub-72863.firebaseapp.com",
+    projectId: "mavenhub-72863",
+    storageBucket: "mavenhub-72863.firebasestorage.app",
+    messagingSenderId: "219331508714",
+    appId: "1:219331508714:web:4b40030b8b03a9ec481a93",
+    measurementId: "G-WX1MGBDSS4"
 };
 
 // تهيئة Firebase
@@ -20,7 +21,7 @@ async function fetchAllDataFromCloud() {
         if (!querySnapshot.empty) {
             querySnapshot.forEach(doc => {
                 let row = doc.data();
-                let key = doc.id; // أو استخدام حقل key داخل المستند
+                let key = doc.id;
                 if (key === 'playersData' && row.value) playersData = row.value;
                 if (key === 'newsArticles' && row.value) newsArticles = row.value;
                 if (key === 'playerOfTheMonth' && row.value) playerOfTheMonth = row.value;
@@ -29,13 +30,14 @@ async function fetchAllDataFromCloud() {
                 if (key === 'coachNotebookEntries' && row.value) coachNotebookEntries = row.value;
                 if (key === 'parentsAccounts' && row.value) parentsAccounts = row.value;
             });
+            console.log("تم جلب البيانات من فايربيز بنجاح!");
         }
     } catch (err) {
         console.log("استمرار العمل محلياً نظراً لخطأ في الاتصال بقاعدة البيانات:", err);
     }
 }
 
-// دالة لحفظ أو تحديث البيانات في Firestore (يمكنك استخدامها عند تعديل أي بيانات)
+// دالة لحفظ أو تحديث البيانات في Firestore
 async function saveDataToCloud(keyName, valueData) {
     try {
         await db.collection('site_data').doc(keyName).set({
@@ -45,30 +47,6 @@ async function saveDataToCloud(keyName, valueData) {
         console.log(`تم حفظ البيانات بنجاح لـ: ${keyName}`);
     } catch (error) {
         console.error("خطأ في حفظ البيانات على فايربيز:", error);
-    }
-}
-
-
-async function fetchAllDataFromCloud() {
-    try {
-        let { data, error } = await supabase.from('site_data').select('*');
-        if (error) {
-            console.error('خطأ في جلب البيانات:', error);
-            return;
-        }
-        if (data && data.length > 0) {
-            data.forEach(row => {
-                if (row.key === 'playersData' && row.value) playersData = row.value;
-                if (row.key === 'newsArticles' && row.value) newsArticles = row.value;
-                if (row.key === 'playerOfTheMonth' && row.value) playerOfTheMonth = row.value;
-                if (row.key === 'playerOfTheWeek' && row.value) playerOfTheWeek = row.value;
-                if (row.key === 'academyLegendsData' && row.value) academyLegendsData = row.value;
-                if (row.key === 'coachNotebookEntries' && row.value) coachNotebookEntries = row.value;
-                if (row.key === 'parentsAccounts' && row.value) parentsAccounts = row.value;
-            });
-        }
-    } catch (err) {
-        console.log("استمرار العمل محلياً");
     }
 }
 
@@ -93,6 +71,15 @@ window.addEventListener('load', async () => {
     if(typeof renderCoachNotebookList === 'function') renderCoachNotebookList();
     if(typeof renderNewsTickers === 'function') renderNewsTickers();
     if(typeof renderNewsFullList === 'function') renderNewsFullList();
+
+    const savedCoachKey = localStorage.getItem('maven_saved_coach_key');
+    if(savedCoachKey && staffCredentials[savedCoachKey]) {
+        isStaffLoggedIn = true;
+        loggedInStaffKey = savedCoachKey;
+        loggedInStaffName = staffCredentials[savedCoachKey].name;
+        loggedInUserType = 'staff';
+        updateHeaderUserAvatarUI();
+    }
 });
 
 const translations = {
@@ -478,38 +465,6 @@ const staffCredentials = {
     "amir": { pass: "amir12341234", name: "كابتن/ أمير أحمد", img: "" },
     "medany": { pass: "medany12341234", name: "محلل الأداء/ محمد مدني", img: "" }
 };
-window.addEventListener('load', async () => {
-    try {
-        await fetchAllDataFromCloud();
-    } catch (err) {
-        console.log("استمرار العمل محلياً");
-    }
-
-    const loadingScreen = document.getElementById('loading-screen');
-    if(loadingScreen) {
-        loadingScreen.classList.add('fade-out');
-        setTimeout(() => loadingScreen.style.display = 'none', 500);
-    }
-
-    renderArtisticGallery();
-    renderAcademyLegends();
-    updatePotmUI();
-    updatePotwUI();
-    updateNotificationsUI();
-    renderCoachesImages();
-    renderCoachNotebookList();
-    renderNewsTickers();
-    renderNewsFullList();
-
-    const savedCoachKey = localStorage.getItem('maven_saved_coach_key');
-    if(savedCoachKey && staffCredentials[savedCoachKey]) {
-        isStaffLoggedIn = true;
-        loggedInStaffKey = savedCoachKey;
-        loggedInStaffName = staffCredentials[savedCoachKey].name;
-        loggedInUserType = 'staff';
-        updateHeaderUserAvatarUI();
-    }
-});
 
 function renderCoachesImages() {
     for(let key in staffCredentials) {
@@ -628,7 +583,8 @@ function executeCropAndSave() {
     if(cropTargetType === 'player' && currentActivePlayerForPhoto) {
         currentActivePlayerForPhoto.img = croppedDataUrl;
         document.getElementById('modal-player-avatar').src = croppedDataUrl;
-        alert('تم قص وحفظ الصورة الشخصية للاعب بنجاح!');
+        saveDataToCloud('playersData', playersData);
+        alert('تم قص وحفظ الصورة الشخصية للاعب بنجاح وحفظها في السحابة!');
         if(currentGroupKey) renderPlayersCards(currentGroupKey);
     } else if(cropTargetType === 'coach' && activeCoachKeyForAvatar) {
         staffCredentials[activeCoachKeyForAvatar].img = croppedDataUrl;
@@ -649,16 +605,19 @@ function executeCropAndSave() {
     } else if(cropTargetType === 'potm') {
         playerOfTheMonth.img = croppedDataUrl;
         updatePotmUI();
-        alert('تم تحديث صورة لاعب الشهر بنجاح!');
+        saveDataToCloud('playerOfTheMonth', playerOfTheMonth);
+        alert('تم تحديث صورة لاعب الشهر وحفظها في السحابة!');
     } else if(cropTargetType === 'potw') {
         playerOfTheWeek.img = croppedDataUrl;
         updatePotwUI();
-        alert('تم تحديث صورة لاعب الأسبوع بنجاح!');
+        saveDataToCloud('playerOfTheWeek', playerOfTheWeek);
+        alert('تم تحديث صورة لاعب الأسبوع وحفظها في السحابة!');
     } else if(cropTargetType === 'legend') {
         const monthIdx = document.getElementById('admin-legend-month-select').value;
         academyLegendsData[monthIdx].img = croppedDataUrl;
         renderAcademyLegends();
-        alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
+        saveDataToCloud('academyLegendsData', academyLegendsData);
+        alert('تم حفظ بطاقة POTM الشهرية وحفظها في السحابة!');
     } else if(cropTargetType === 'news') {
         window.tempNewsCroppedImg = croppedDataUrl;
         alert('تم اقتصاص صورة الخبر بنجاح!');
@@ -680,7 +639,8 @@ function addNewCoachNote() {
     });
     input.value = '';
     renderCoachNotebookList();
-    alert('تم حفظ الملاحظة بنجاح وتوثيقها بالتاريخ والوقت!');
+    saveDataToCloud('coachNotebookEntries', coachNotebookEntries);
+    alert('تم حفظ الملاحظة وحفظها في السحابة بنجاح!');
 }
 
 function renderCoachNotebookList() {
@@ -723,7 +683,8 @@ function addNewNewsArticle() {
     window.tempNewsCroppedImg = '';
     renderNewsTickers();
     renderNewsFullList();
-    alert('تم نشر الخبر بنجاح في الواجهة!');
+    saveDataToCloud('newsArticles', newsArticles);
+    alert('تم نشر الخبر وحفظه في السحابة بنجاح!');
 }
 
 function renderNewsTickers() {
@@ -1210,6 +1171,7 @@ function toggleBubbleAttendance(playerId, sessionIdx) {
     
     player.schedule[sessionIdx].attended = !player.schedule[sessionIdx].attended;
     checkAndResetScheduleIfCompleted(player);
+    saveDataToCloud('playersData', playersData);
     renderPlayerDetailsModal(player, true, true);
 }
 
@@ -1388,7 +1350,8 @@ function deletePlayerPermanently(playerId) {
     }
 
     closePlayerModal();
-    alert('تم حذف اللاعب نهائياً من سجلات النادي بنجاح.');
+    saveDataToCloud('playersData', playersData);
+    alert('تم حذف اللاعب نهائياً من سجلات النادي وحفظ التغييرات في السحابة.');
     if(foundGroupKey) {
         renderPlayersCards(foundGroupKey);
     }
@@ -1413,7 +1376,9 @@ function addPlayerWarning(playerId) {
     if(!player.warnings) player.warnings = [];
     player.warnings.push({ text: text, date: dateStr });
     document.getElementById('new-warning-input').value = '';
-    alert('تم إرسال الإنذار وتوثيقه تاريخياً بنجاح!');
+    
+    saveDataToCloud('playersData', playersData);
+    alert('تم إرسال الإنذار وتوثيقه وحفظه في السحابة بنجاح!');
     renderPlayerDetailsModal(player, true, false);
 }
 
@@ -1427,7 +1392,8 @@ function resetPlayerStats(playerId) {
     ['commitment','respect','passion','tackling','positioning','interceptions','clearing','explosive','ballspeed','recovery','stamina','onevone','dribbletac','smartsf','shield','shotchoice','shotacc','weakfoot','finishing','breakingpass','firsttouch','scanning','pressingtrig'].forEach(k => {
         player.eval[k] = '-';
     });
-    alert('تم عمل Reset وإعادة تعيين الإحصائيات لـ (- من 5) بنجاح!');
+    saveDataToCloud('playersData', playersData);
+    alert('تم تصفير التقييمات وحفظ التغييرات في السحابة!');
     renderPlayerDetailsModal(player, true, false);
 }
 
@@ -1452,7 +1418,8 @@ function savePlayerEdits(playerId) {
     });
     player.eval.finalDecision = document.getElementById('edit-decision').value.trim();
 
-    alert('تم تحديث استمارة التقييم الاحترافية بنجاح!');
+    saveDataToCloud('playersData', playersData);
+    alert('تم تحديث استمارة التقييم وحفظها في فايربيز بنجاح!');
     renderPlayerDetailsModal(player, true, false);
     if(currentGroupKey) renderPlayersCards(currentGroupKey);
 }
@@ -1541,8 +1508,9 @@ function approveParentRequest(idx) {
     const req = pendingParentRequests[idx];
     parentsAccounts[req.sonName.toLowerCase()] = { parentName: req.parentName, pass: req.pass, avatar: req.avatar, sonObj: req.sonObj };
     pendingParentRequests.splice(idx, 1);
+    saveDataToCloud('parentsAccounts', parentsAccounts);
     addSystemNotification(`تمت الموافقة على حساب ولي الأمر لـ (${req.parentName}).`, 'parent');
-    alert('تم اعتماد ولي الأمر بنجاح!');
+    alert('تم اعتماد ولي الأمر وحفظ الحساب في السحابة!');
     renderCoachDashboardData();
 }
 
@@ -1550,7 +1518,8 @@ function updatePotmSettingsDevice() {
     const name = document.getElementById('admin-potm-name').value.trim();
     if(name) playerOfTheMonth.name = name;
     updatePotmUI();
-    alert('تم تحديث لاعب الشهر بنجاح!');
+    saveDataToCloud('playerOfTheMonth', playerOfTheMonth);
+    alert('تم تحديث لاعب الشهر وحفظه في السحابة بنجاح!');
 }
 
 function updatePotmUI() {
@@ -1562,7 +1531,8 @@ function updatePotwSettingsDevice() {
     const name = document.getElementById('admin-potw-name').value.trim();
     if(name) playerOfTheWeek.name = name;
     updatePotwUI();
-    alert('تم تحديث لاعب الأسبوع (فضي) بنجاح!');
+    saveDataToCloud('playerOfTheWeek', playerOfTheWeek);
+    alert('تم تحديث لاعب الأسبوع وحفظه في السحابة بنجاح!');
 }
 
 function updatePotwUI() {
@@ -1586,7 +1556,8 @@ function saveAcademyLegendEditDevice() {
             academyLegendsData[monthIdx].nameKa = newName;
         }
         renderAcademyLegends();
-        alert('تم حفظ بطاقة POTM الشهرية بنجاح!');
+        saveDataToCloud('academyLegendsData', academyLegendsData);
+        alert('تم حفظ بطاقة POTM الشهرية وحفظها في السحابة بنجاح!');
     }
 }
 
@@ -1635,7 +1606,9 @@ function addNewPlayerByStaffDevice() {
     };
     playersData[group].push(newPlayerObj);
     window.tempNewPlayerCroppedImg = '';
-    alert('تم إنشاء بروفايل اللاعب بنجاح!');
+    
+    saveDataToCloud('playersData', playersData);
+    alert('تم إنشاء بروفايل اللاعب وحفظه في فايربيز بنجاح!');
     closeCoachDashboard();
     if(currentGroupKey === group) renderPlayersCards(group);
 }
