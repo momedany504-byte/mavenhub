@@ -550,17 +550,16 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
         display: none !important;
     }
 }
-
+.floating-preview-eye-btn {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 999999 !important;
+    transform: none !important;
+    will-change: transform;
+}
 body:not(.logged-out) #headerUserAvatarArea[style*="display: flex"],
 #headerUserAvatarArea[style*="display:flex"] {
     display: flex !important;
 }
 
-.floating-preview-eye-btn {
-    position: fixed !important;
-    top: 85px !important;
-    right: 25px !important;
-    z-index: 99999 !important;
-    /* ضمان عدم تأثرها بأي سكرول أو إزاحة */
-    transform: none !important;
-}
