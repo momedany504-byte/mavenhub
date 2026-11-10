@@ -901,11 +901,17 @@ function closeAuthModal() { document.getElementById('auth-modal').classList.remo
 async function toggleNotificationDropdown() {
     const dropdown = document.getElementById('notificationDropdown');
     dropdown.classList.toggle('active');
-
+    
+    // إذا فتحت القائمة وشوفت الإشعارات
     if(dropdown.classList.contains('active')) {
         const badge = document.getElementById('notifBadge');
         if(badge) badge.innerText = "0";
         
+        // تفريغ الإشعارات وحفظ التحديث في سحابة فايربيز عشان ميرجعوش تاني مع الريفريش
+        if(systemNotifications.length > 0) {
+            systemNotifications = [];
+            await saveDataToCloud('systemNotifications', systemNotifications);
+        }
     }
 }
 async function addSystemNotification(msg, recipientRole) {
