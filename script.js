@@ -14,7 +14,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// دالة جلب البيانات من Cloud Firestore
+// دالة جلب البيانات من Cloud Firestore (شاملة طلبات أولياء الأمور المعلقة والإشعارات)
 async function fetchAllDataFromCloud() {
     try {
         let querySnapshot = await db.collection('site_data').get();
@@ -29,6 +29,8 @@ async function fetchAllDataFromCloud() {
                 if (key === 'academyLegendsData' && row.value) academyLegendsData = row.value;
                 if (key === 'coachNotebookEntries' && row.value) coachNotebookEntries = row.value;
                 if (key === 'parentsAccounts' && row.value) parentsAccounts = row.value;
+                if (key === 'pendingParentRequests' && row.value) pendingParentRequests = row.value; // جلب طلبات أولياء الأمور المعلقة سحابياً
+                if (key === 'systemNotifications' && row.value) systemNotifications = row.value; // جلب الإشعارات سحابياً
                 if (key === 'staffCredentials' && row.value) {
                     for(let k in row.value) {
                         if(staffCredentials[k]) {
@@ -898,9 +900,10 @@ function closeAuthModal() { document.getElementById('auth-modal').classList.remo
 
 function toggleNotificationDropdown() { document.getElementById('notificationDropdown').classList.toggle('active'); }
 
-function addSystemNotification(msg, recipientRole) {
+async function addSystemNotification(msg, recipientRole) {
     systemNotifications.unshift({ msg, time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}), recipient: recipientRole });
     updateNotificationsUI();
+    await saveDataToCloud('systemNotifications', systemNotifications);
 }
 
 function updateNotificationsUI() {
@@ -929,16 +932,17 @@ function openForgotPasswordModal(role) {
 }
 function closeForgotPasswordModal() { document.getElementById('forgot-pass-modal').classList.remove('active'); }
 
-function submitForgotPasswordRequest() {
+async function submitForgotPasswordRequest() {
     const name = document.getElementById('forgotInputName').value.trim();
     if(!name) { alert('أدخل الاسم من فضلك'); return; }
     pendingForgotRequests.push({ name, time: new Date().toLocaleString() });
-    addSystemNotification(`طلب استعادة كلمة المرور مقدم من: ${name}.`, 'coach');
+    await addSystemNotification(`طلب استعادة كلمة المرور مقدم من: ${name}.`, 'coach');
     alert('تم إرسال طلب استعادة كلمة المرور للمدربين بنجاح.');
     closeForgotPasswordModal();
 }
 
-function parentRegisterWhatsApp() {
+// دالة تسجيل ولي الأمر وحفظ الطلب سحابياً لكي يظهر عند المدرب من أي جهاز
+async function parentRegisterWhatsApp() {
     const sonName = document.getElementById('parent-reg-sonname').value.trim();
     const fullName = document.getElementById('parent-reg-fullname').value.trim();
     const phone = document.getElementById('parent-reg-phone').value.trim();
@@ -957,20 +961,26 @@ function parentRegisterWhatsApp() {
     }
 
     const avatarUrl = document.getElementById('parent-avatar').src || '';
-    pendingParentRequests.push({
+    
+    const newRequest = {
+        id: Date.now(),
         parentName: fullName,
         sonName: foundPlayer.name,
         phone: phone,
         pass: pass,
         avatar: avatarUrl,
         sonObj: foundPlayer
-    });
-    addSystemNotification(`طلب حساب ولي أمر جديد لـ (${fullName}) خاص بالابن (${foundPlayer.name}).`, 'coach');
+    };
+
+    pendingParentRequests.push(newRequest);
+    await saveDataToCloud('pendingParentRequests', pendingParentRequests);
+
+    await addSystemNotification(`طلب حساب ولي أمر جديد لـ (${fullName}) خاص بالابن (${foundPlayer.name}).`, 'coach');
     
     const waMessage = encodeURIComponent(`مرحباً إدارة نادي Maven Hub، أود طلب تفعيل حساب ولي الأمر.\nاسم ولي الأمر: ${fullName}\nاسم الابن اللاعب: ${foundPlayer.name}\nرقم الهاتف: ${phone}`);
     window.open(`https://wa.me/201009955294?text=${waMessage}`, '_blank');
 
-    alert('تم إرسال طلب انضمامك وجاري توجيهك لواتساب النادي لإتمام التفعيل مع المدربين.');
+    alert('تم إرسال طلب انضمامك بنجاح وجاري توجيهك لواتساب النادي لإتمام التفعيل مع المدربين.');
     switchParentTab('login');
 }
 
@@ -1124,6 +1134,7 @@ function updateHeaderUserAvatarUI() {
         if (notifBellArea) notifBellArea.style.display = 'none';
     }
 }
+
 function globalLogout() {
     loggedInUserType = null;
     isStaffLoggedIn = false;
@@ -1608,12 +1619,17 @@ function renderCoachDashboardData() {
     renderCoachNotebookList();
 }
 
-function approveParentRequest(idx) {
+async function approveParentRequest(idx) {
     const req = pendingParentRequests[idx];
     parentsAccounts[req.sonName.toLowerCase()] = { parentName: req.parentName, pass: req.pass, avatar: req.avatar, sonObj: req.sonObj };
+    
     pendingParentRequests.splice(idx, 1);
-    saveDataToCloud('parentsAccounts', parentsAccounts);
-    addSystemNotification(`تمت الموافقة على حساب ولي الأمر لـ (${req.parentName}).`, 'parent');
+    
+    await saveDataToCloud('parentsAccounts', parentsAccounts);
+    await saveDataToCloud('pendingParentRequests', pendingParentRequests);
+
+    await addSystemNotification(`تمت الموافقة على حساب ولي الأمر لـ (${req.parentName}).`, 'parent');
+
     alert('تم اعتماد ولي الأمر وحفظ الحساب في السحابة!');
     renderCoachDashboardData();
 }
@@ -1737,12 +1753,12 @@ function openCoachBio(coachKey) {
 }
 function closeCoachBio() { document.getElementById('coach-bio-modal').classList.remove('active'); }
 
-function sendDirectMessageToCoach() {
+async function sendDirectMessageToCoach() {
     const msg = document.getElementById('directCoachMsgInput').value.trim();
     if(!msg) { alert('اكتب الرسالة أولاً'); return; }
     let senderName = loggedInUserType === 'player' ? currentLoggedInPlayer.name : currentLoggedInParentObj.name;
     let senderTypeLabel = loggedInUserType === 'player' ? 'اللاعب' : 'ولي أمر اللاعب';
-    addSystemNotification(`رسالة جديدة للمدرب (${targetCoachForDirectMsg}) من ${senderTypeLabel}: (${senderName}). النص: ${msg}`, 'coach');
+    await addSystemNotification(`رسالة جديدة للمدرب (${targetCoachForDirectMsg}) من ${senderTypeLabel}: (${senderName}). النص: ${msg}`, 'coach');
     alert('تم إرسال رسالتك للمدرب كإشعار فوري بنجاح!');
     document.getElementById('directCoachMsgInput').value = '';
     closeCoachBio();
@@ -1782,4 +1798,3 @@ function openLightbox(imgUrl) {
 function closeLightbox() {
     document.getElementById('lightbox-modal').classList.remove('active');
 }
-
