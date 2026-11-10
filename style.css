@@ -540,3 +540,7 @@ footer { background: var(--primary); color: var(--text); text-align: center; pad
     .logo-title { font-size: 0.85rem !important; }
     .single-logo-img { width: 26px; height: 26px; }
 }
+/* إخفاء حاوية البروفايل إذا كانت مخفية أساساً أو في وضع الزائر */
+#headerUserAvatarArea[style*="display: none"] {
+    display: none !important;
+}
