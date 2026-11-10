@@ -906,7 +906,7 @@ async function toggleNotificationDropdown() {
     if(dropdown.classList.contains('active')) {
         const badge = document.getElementById('notifBadge');
         if(badge) badge.innerText = "0";
-async function addSystemNotification(msg, recipientRole) {
+ function addSystemNotification(msg, recipientRole) {
     systemNotifications.unshift({ msg, time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}), recipient: recipientRole });
     updateNotificationsUI();
     await saveDataToCloud('systemNotifications', systemNotifications);
