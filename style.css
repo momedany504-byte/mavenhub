@@ -688,3 +688,16 @@ body:not(.logged-out) .notification-bell-area,
     background: #0b131e;
     border-radius: 12px;
 }
+/* ضبط صور الأخبار في الواجهة وكل أقسام الأخبار لتظهر كاملة بدون أي قص */
+.news-strip-body img, 
+#newsSectionFullList img, 
+.news-container img, 
+.news-card img,
+.news-item img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    max-height: 550px !important;
+    background: #0b131e !important;
+    border-radius: 12px !important;
+}
