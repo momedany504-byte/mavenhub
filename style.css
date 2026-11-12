@@ -679,3 +679,12 @@ body:not(.logged-out) .notification-bell-area,
     box-shadow: 0 0 35px #2563eb, inset 0 0 15px rgba(255,255,255,0.5);
     transform: scale(1.02);
 }
+/* ضبط صور الأخبار لكي تظهر كاملة بدون أي قص */
+.news-strip-body img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    max-height: 500px !important;
+    background: #0b131e;
+    border-radius: 12px;
+}
