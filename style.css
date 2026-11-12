@@ -679,7 +679,7 @@ body:not(.logged-out) .notification-bell-area,
     box-shadow: 0 0 35px #2563eb, inset 0 0 15px rgba(255,255,255,0.5);
     transform: scale(1.02);
 }
-/* كود شامل وموحد لضمان ظهور جميع صور الأخبار كاملة بدون قص */
+/* إلغاء أي قص للصورة وجعلها تتطابق داخل الكارد بالكامل */
 .news-strip-body img, 
 #newsSectionFullList img, 
 .news-container img, 
@@ -688,7 +688,5 @@ body:not(.logged-out) .notification-bell-area,
     width: 100% !important;
     height: auto !important;
     object-fit: contain !important;
-    max-height: 550px !important;
     background: #0b131e !important;
-    border-radius: 12px !important;
 }
