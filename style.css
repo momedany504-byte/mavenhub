@@ -608,3 +608,74 @@ body:not(.logged-out) .notification-bell-area,
     left: 0 !important;
     direction: rtl !important;
 }
+/* تصميم أزرار النيون لوسائل الدفع داخل بروفايل ولي الأمر */
+.neon-payment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+    box-shadow: 0 0 30px var(--accent-glow);
+}
+
+.neon-pay-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+
+/* زر الفيزا (إضاءة نيون زرقاء مميزة) */
+.neon-pay-visa {
+    background: rgba(14, 116, 144, 0.2);
+    color: #38bdf8;
+    border-color: #0284c7;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+.neon-pay-visa:hover {
+    background: #0284c7;
+    color: #fff;
+    box-shadow: 0 0 35px #0284c7, inset 0 0 15px rgba(255,255,255,0.5);
+    transform: scale(1.02);
+}
+
+/* زر الماستر كارد (إضاءة نيون حمراء/برتقالية) */
+.neon-pay-master {
+    background: rgba(220, 38, 38, 0.2);
+    color: #fca5a5;
+    border-color: #ef4444;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+.neon-pay-master:hover {
+    background: #ef4444;
+    color: #fff;
+    box-shadow: 0 0 35px #ef4444, inset 0 0 15px rgba(255,255,255,0.5);
+    transform: scale(1.02);
+}
+
+/* زر الباي بال (إضاءة نيون سماوية عميقة) */
+.neon-pay-paypal {
+    background: rgba(30, 64, 175, 0.2);
+    color: #60a5fa;
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+.neon-pay-paypal:hover {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 0 35px #2563eb, inset 0 0 15px rgba(255,255,255,0.5);
+    transform: scale(1.02);
+}
