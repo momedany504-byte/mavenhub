@@ -679,14 +679,24 @@ body:not(.logged-out) .notification-bell-area,
     box-shadow: 0 0 35px #2563eb, inset 0 0 15px rgba(255,255,255,0.5);
     transform: scale(1.02);
 }
-/* إلغاء أي قص للصورة وجعلها تتطابق داخل الكارد بالكامل */
-.news-strip-body img, 
-#newsSectionFullList img, 
-.news-container img, 
-.news-card img,
-.news-item img {
+/* توسيع مساحة كارد الأخبار والواجهة لتظهر الصور بشكل أوسع وأوضح */
+.news-card, 
+.news-container, 
+.news-strip-body, 
+#newsSectionFullList {
+    max-width: 900px !important; /* توسيع أقصى عرض للكارد (يمكنك تعديل الرقم حسب رغبتك) */
     width: 100% !important;
-    height: auto !important;
+    margin: 0 auto 25px auto !important; /* توسيط الكارد وإضافة مسافة تحته */
+}
+
+/* زيادة مساحة عرض الصورة بداخل الكارد */
+.news-card img, 
+.news-container img, 
+.news-strip-body img, 
+#newsSectionFullList img {
+    width: 100% !important;
+    max-height: 650px !important; /* زيادة ارتفاع الصورة الأقصى لتناسب المساحة الجديدة */
     object-fit: contain !important;
     background: #0b131e !important;
+    border-radius: 12px !important;
 }
